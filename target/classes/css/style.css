@@ -1,0 +1,600 @@
+/* Library App - Stile Moderno */
+/* Design contemporaneo con toni marroncini e sliding selectors */
+
+.root {
+    -fx-font-family: "Georgia", "Times New Roman", serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #faf8f5;
+}
+
+/* === NAVIGATION BAR CENTRALE CON SLIDING SELECTOR === */
+.nav-wrapper {
+    -fx-background-color: #faf8f5;
+    -fx-padding: 20 30;
+    -fx-alignment: center;
+}
+
+.nav-container {
+    -fx-background-color: #e8dad0;
+    -fx-background-radius: 30;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.15), 10, 0, 0, 3);
+    -fx-pref-width: 450px;
+    -fx-max-width: 450px;
+}
+
+.nav-slider-track {
+    -fx-background-color: transparent;
+    -fx-spacing: 0;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b7355;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-padding: 12 35;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-min-width: 140px;
+    -fx-alignment: center;
+    -fx-effect: none;
+}
+
+.nav-button:hover {
+    -fx-text-fill: #5a4a3a;
+}
+
+.nav-button.active {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #5a4a3a;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 2);
+}
+
+.slider {
+    -fx-background-color: white;
+    -fx-background-radius: 25;
+    -fx-pref-width: 140px;
+    -fx-pref-height: 36px;
+}
+
+/* === HEADER === */
+.header-container {
+    -fx-background-color: #faf8f5;
+    -fx-padding: 25 30 15 30;
+    -fx-spacing: 60;
+    -fx-alignment: center;
+}
+
+.logo-text {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6b5444;
+    -fx-letter-spacing: 1px;
+}
+
+.login-button {
+    -fx-background-color: #8b7355;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.3), 8, 0, 0, 2);
+}
+
+.login-button:hover {
+    -fx-background-color: #75604a;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.4), 10, 0, 0, 3);
+}
+
+/* === CONTENUTO === */
+.content-area {
+    -fx-background-color: #faf8f5;
+    -fx-padding: 30;
+}
+
+.page-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+    -fx-padding: 0 0 10 0;
+}
+
+.page-subtitle {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #8b7355;
+    -fx-padding: 0 0 20 30;
+}
+
+/* === CARDS LIBRI MODERNE === */
+.book-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.08), 12, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+.book-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.18), 18, 0, 0, 6);
+    -fx-translate-y: -3;
+}
+
+.book-card.unavailable {
+    -fx-background-color: #f5f5f5;
+    -fx-opacity: 0.75;
+}
+
+.book-cover {
+    -fx-background-color: linear-gradient(to bottom, #d4b89e, #c9a88a);
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);
+}
+
+.book-cover.unavailable {
+    -fx-background-color: linear-gradient(to bottom, #d0d0d0, #b8b8b8);
+}
+
+.book-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+    -fx-wrap-text: true;
+}
+
+.book-title.unavailable {
+    -fx-text-fill: #888888;
+}
+
+.book-author {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #8b7355;
+    -fx-font-style: italic;
+}
+
+.book-author.unavailable {
+    -fx-text-fill: #999999;
+}
+
+.book-genre {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b7355;
+    -fx-padding: 4 10;
+    -fx-background-color: #f0e8dc;
+    -fx-background-radius: 12;
+}
+
+.book-genre.unavailable {
+    -fx-background-color: #e8e8e8;
+    -fx-text-fill: #999999;
+}
+
+.unavailable-badge {
+    -fx-background-color: #888888;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 10px;
+    -fx-padding: 3 8;
+    -fx-background-radius: 10;
+}
+
+/* === SEARCH SELECTOR (simile alla nav) === */
+.search-selector-wrapper {
+    -fx-background-color: #faf8f5;
+    -fx-background-radius: 25;
+	-fx-border-color: #e8dad0;
+	-fx-border-width: 2;
+	-fx-border-radius: 25;
+    -fx-padding: 5;
+	-fx-spacing: 25;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.1), 8, 0, 0, 2);
+}
+
+.search-selector-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b7355;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-min-width: 100px;
+}
+
+.search-selector-button:hover {
+    -fx-text-fill: #5a4a3a;
+}
+
+.search-selector-button.active {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #5a4a3a;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0, 0, 1);
+}
+
+/* === PANNELLO RICERCA MODERNO === */
+.search-panel {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.1), 15, 0, 0, 4);
+    -fx-spacing: 20;
+}
+
+.form-group {
+    -fx-spacing: 10;
+}
+
+.text-field, .combo-box {
+    -fx-background-color: #faf8f5;
+    -fx-background-radius: 10;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-padding: 12 15;
+    -fx-text-fill: #5a4a3a;
+}
+
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #8b7355;
+    -fx-background-color: #ffffff;
+}
+
+.check-box {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #5a4a3a;
+}
+
+.check-box .box {
+    -fx-background-color: #faf8f5;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #8b7355;
+    -fx-border-color: #8b7355;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #ffffff;
+}
+
+.search-button {
+    -fx-background-color: #8b7355;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 35;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.3), 8, 0, 0, 2);
+}
+
+.search-button:hover {
+    -fx-background-color: #75604a;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.4), 10, 0, 0, 3);
+}
+
+.clear-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b7355;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-padding: 12 25;
+    -fx-background-radius: 10;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+}
+
+.clear-button:hover {
+    -fx-background-color: #faf8f5;
+}
+
+/* === BACHECA POST MODERNI === */
+.post-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.08), 12, 0, 0, 3);
+    -fx-spacing: 15;
+}
+
+.post-header {
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+	-fx-font-size: 17px;
+	-fx-text-fill: #5a4a3a;
+}
+
+.post-author {
+    -fx-font-family: "Georgia", serif;
+	-fx-alignment: center-right;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+}
+
+.post-date {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #999;
+}
+
+.post-content {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #4a4a4a;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
+	-fx-padding: 10px;
+}
+
+.admin-badge {
+    -fx-background-color: #8b7355;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+}
+
+/* === LOGIN PAGE === */
+.login-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.15), 20, 0, 0, 5);
+    -fx-spacing: 25;
+    -fx-max-width: 450px;
+}
+
+.login-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+}
+
+.login-subtitle,
+.register-button{
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #8b7355;
+}
+.register-button:hover {
+    -fx-text-fill: #5a4a3a;
+    -fx-underline: true;
+}
+
+.error-label {
+    -fx-text-fill: #820505;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+	-fx-alignment: center; 
+	-fx-max-width: Infinity;
+}
+
+.submit-button {
+    -fx-background-color: #8b7355;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-padding: 14 40;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.3), 8, 0, 0, 2);
+}
+
+.submit-button:hover {
+    -fx-background-color: #75604a;
+    -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.4), 10, 0, 0, 3);
+}
+
+/* === BOOK DETAIL PAGE === */
+.detail-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-padding: 35;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.1), 15, 0, 0, 4);
+    -fx-spacing: 20;
+}
+
+.detail-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+    -fx-wrap-text: true;
+}
+
+.detail-author {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 20px;
+    -fx-text-fill: #8b7355;
+    -fx-font-style: italic;
+}
+
+.detail-label {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #8b7355;
+    -fx-font-weight: 600;
+}
+
+.detail-value {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #5a4a3a;
+}
+
+.plot-text {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #4a4a4a;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
+}
+
+.action-box {
+    -fx-background-color: #faf8f5;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+    -fx-spacing: 15;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+}
+
+.action-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+}
+
+.spinner {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+}
+.spinner .increment-arrow-button{
+    -fx-background-color: #f5eee6; /* beige chiaro */
+    -fx-background-radius: 0 7 0 0;
+    -fx-border-radius: 0 7 0 0;
+	-fx-border-color: #e8dad0;
+	-fx-border-width: 1; /* bordi separati */
+    -fx-cursor: hand;
+}
+.spinner .decrement-arrow-button {
+    -fx-background-color: #f5eee6; /* beige chiaro */
+    -fx-background-radius: 0 0 7 0;
+    -fx-border-radius: 0 0 7 0;
+	-fx-border-color: #e8dad0;
+	-fx-border-width: 1; /* bordi separati */
+    -fx-cursor: hand;
+}
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #faf4ed; /* colore leggermente più chiaro */
+}
+.spinner .text-field {
+    -fx-border-color: transparent;
+	-fx-font-size: 18px;
+	-fx-alignment: center;
+	-fx-padding: 4 6 4 6; 
+}
+
+.buy-button {
+    -fx-background-color: #8b7355;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 30;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.buy-button:hover {
+    -fx-background-color: #75604a;
+}
+
+.borrow-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b7355;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 30;
+    -fx-background-radius: 10;
+    -fx-border-color: #8b7355;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+}
+
+.borrow-button:hover {
+    -fx-background-color: #faf8f5;
+}
+
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b7355;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-text-fill: #5a4a3a;
+    -fx-underline: true;
+}
+
+/* === SCROLL PANE === */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport,
+.scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical{
+    -fx-background-color: #faf8f5;
+    -fx-background-radius: 10;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-padding: 2; /* piccolo margine interno */
+	-fx-pref-width: 20;   /* spessore visivo */
+}
+
+.scroll-bar:vertical .thumb{
+    -fx-background-color: #8b7355;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-pref-width: 18;   /* spessore visivo */
+	-fx-cursor: hand;
+}
+
+.scroll-bar:vertical .thumb:hover{
+    -fx-background-color: #75604a; /* un po’ più visibile */
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+/* === SEPARATORE === */
+.separator {
+    -fx-background-color: #e8dad0;
+}

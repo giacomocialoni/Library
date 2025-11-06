@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.CercaControllerGUI">
+   <children>
+         <Label styleClass="page-subtitle" text="Trova il libro perfetto per te" />
+      <Separator prefWidth="200.0" styleClass="separator" />
+      <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+          
+          <content>
+              <VBox spacing="30">
+                  <padding>
+                      <Insets bottom="10" left="10" right="10" top="10" />
+                  </padding>
+                  
+                  <!-- Pannello ricerca moderno -->
+                  <VBox alignment="CENTER" maxWidth="900" spacing="20" styleClass="search-panel">
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                             <Label styleClass="label" text="Cerca per" />
+                             <HBox alignment="CENTER" spacing="0" styleClass="search-selector-wrapper" GridPane.columnIndex="1">
+                                 <Button fx:id="searchByTitleButton" onAction="#selectSearchByTitle" styleClass="search-selector-button" text="Titolo" />
+                                 <Button fx:id="searchByAuthorButton" onAction="#selectSearchByAuthor" styleClass="search-selector-button" text="Autore" />
+                             </HBox>
+                     </children>
+                  </GridPane>
+                      
+                      <!-- Campo ricerca unificato -->
+                      <VBox spacing="10">
+                          <Label fx:id="searchLabel" styleClass="label" text="Titolo del libro" />
+                          <TextField fx:id="searchField" promptText="Inserisci il titolo del libro..." styleClass="text-field" />
+                      </VBox>
+                      
+                      <!-- Riga filtri (Genere e Anno) -->
+                      <HBox alignment="CENTER" spacing="20">
+                          <!-- Filtro genere -->
+                          <VBox spacing="10" HBox.hgrow="ALWAYS">
+                              <Label styleClass="label" text="Genere" />
+                              <ComboBox fx:id="genereCombo" maxWidth="Infinity" promptText="Tutti i generi" styleClass="combo-box">
+                            <!-- I generi saranno popolati dal controller -->
+                        </ComboBox>
+                          </VBox>
+                          
+                          <!-- Filtro anno -->
+                          <VBox spacing="10" HBox.hgrow="ALWAYS">
+                              <Label styleClass="label" text="Anno di pubblicazione" />
+                              <TextField fx:id="annoField" promptText="es. 2020" styleClass="text-field" />
+                          </VBox>
+                      </HBox>
+                      
+                      <!-- Checkbox libri non disponibili -->
+                      <HBox alignment="CENTER_LEFT">
+                          <CheckBox fx:id="showUnavailableCheckbox" styleClass="check-box" text="Mostra anche libri non disponibili" />
+                      </HBox>
+                      
+                      <!-- Pulsanti azione -->
+                      <HBox alignment="CENTER" spacing="15">
+                          <VBox.margin>
+                              <Insets top="10" />
+                          </VBox.margin>
+                          <Button onAction="#handleSearch" styleClass="search-button" text="Cerca" />
+                          <Button onAction="#handleClearFilters" styleClass="clear-button" text="Cancella Filtri" />
+                      </HBox>
+                  </VBox>
+                  
+                  <!-- Risultati ricerca -->
+                  <VBox spacing="20">
+					    <Label fx:id="resultsLabel" styleClass="page-subtitle" text="Risultati della ricerca" />
+					
+					    <FlowPane fx:id="resultsFlowPane" hgap="20" prefWrapLength="900" vgap="20">
+					        <!-- Qui il controller popolerà i libri dinamicamente -->
+					    </FlowPane>
+					</VBox>
+                  
+              </VBox>
+          </content>
+      </ScrollPane>
+   </children>
+</VBox>

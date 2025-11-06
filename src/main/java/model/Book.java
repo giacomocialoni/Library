@@ -1,0 +1,87 @@
+package model;
+
+public class Book {
+
+    private int id;
+    private String title;
+    private String author;
+    private String category;
+    private int year;
+    private String publisher;
+    private int pages;
+    private String isbn;
+    private int stock;
+    private String plot;
+    private String imagePath;
+
+    // --- COSTRUTTORI ---
+    public Book() {}
+
+    public Book(int id, String title, String author, String category, int year, String publisher, int pages, String isbn, int stock, String plot, String imagePath) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.category = category;
+        this.year = year;
+        this.publisher = publisher;
+        this.pages = pages;
+        this.isbn = isbn;
+        this.stock = stock;
+        this.plot = plot;
+        this.imagePath = imagePath;
+    }
+
+    // --- GETTER E SETTER ---
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getAuthor() { return author; }
+    public void setAuthor(String author) { this.author = author; }
+    
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public int getPages() { return pages; }
+    public void setPages(int pages) { this.pages = pages; }
+
+    public String getPublisher() { return publisher; }
+    public void setPublisher(String publisher) { this.publisher = publisher; }
+    
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+
+    public String getPlot() { return plot; }
+    public void setPlot(String plot) { this.plot = plot; }
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+
+    @Override
+    public String toString() {
+        return String.format("%s (%d) - %s", title, year, author);
+    }
+
+    // Per confronti e liste
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Book)) return false;
+        Book other = (Book) obj;
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+}

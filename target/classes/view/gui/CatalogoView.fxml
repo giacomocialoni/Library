@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.CatalogoControllerGUI">
+   <children>
+         
+                  <!-- Titolo pagina -->
+         <Label styleClass="page-subtitle" text="Esplora la nostra collezione" />
+      <Separator prefWidth="200.0" styleClass="separator" />
+      <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+          
+          <content>
+              <VBox spacing="25">
+                  <padding>
+                      <Insets bottom="10" left="10" right="10" top="10" />
+                  </padding>
+                  
+                  <!-- Griglia di libri -->
+                  <FlowPane fx:id="booksFlowPane" hgap="20" prefWrapLength="900" vgap="20">
+                      
+                      <padding>
+		                    <Insets bottom="10" left="10" right="10" top="10" />
+		              </padding>
+                      
+                  </FlowPane>
+              </VBox>
+          </content>
+      </ScrollPane>
+   </children>
+</VBox>
