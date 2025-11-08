@@ -3,17 +3,20 @@ package controller.gui;
 import app.state.AppState;
 import app.state.CatalogoState;
 import app.state.CercaState;
+import app.state.LoginState;
 import app.state.StateManager;
 import controller.app.BookDetailController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import model.Book;
+import utils.BuyResult;
+import utils.BorrowResult;
 import view.components.BookDetailFactory;
 
 public class BookDetailControllerGUI {
 
-    @FXML private Label titleLabel;
+	@FXML private Label titleLabel;
     @FXML private Label authorLabel;
     @FXML private Label genreLabel;
     @FXML private Label yearLabel;
@@ -60,13 +63,45 @@ public class BookDetailControllerGUI {
     @FXML
     public void handleBuy() {
         int quantity = quantitySpinner.getValue();
-        appController.buyBook(bookId, quantity);
+        BuyResult result = appController.buyBook(bookId, quantity);
+        switch (result) {
+	        case SUCCESS -> {
+	        	// TODO Successo
+	        }
+	        case NOT_LOGGED -> {
+	        	stateManager.setState(new LoginState(stateManager));
+	        }
+	        case INSUFFICIENT_STOCK -> {
+	        	// TODO Gestisci insufficient stock
+	        }
+	        case ERROR -> {
+	        	// TODO errore
+	        }
+        }
+        
     }
 
     @FXML
     public void handleBorrow() {
-        int quantity = quantitySpinner.getValue();
-        appController.borrowBook(bookId, quantity);
+    	int quantity = quantitySpinner.getValue();
+        BorrowResult result = appController.borrowBook(bookId, quantity);
+        switch (result) {
+	        case SUCCESS -> {
+	        	// TODO Successo
+	        }
+	        case NOT_LOGGED -> {
+	        	stateManager.setState(new LoginState(stateManager));
+	        }
+	        case INSUFFICIENT_STOCK -> {
+	        	// TODO Gestisci insufficient stock
+	        }
+	        case NOT_AUTORIZED -> {
+	        	// TODO Not autorized
+	        }
+	        case ERROR -> {
+	        	// TODO errore
+	        }
+        }
     }
 
     @FXML

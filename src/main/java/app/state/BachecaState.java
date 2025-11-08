@@ -14,13 +14,17 @@ public class BachecaState implements AppState {
 
     @Override
     public void onEnter() {
-        BachecaControllerGUI controller = stateManager.getStageManager().<BachecaControllerGUI>loadContent(StageManager.BACHECA_VIEW);
-        if (controller != null)
-            controller.setStateManager(stateManager);
+    	// carica la vista nella main view attiva (guest/user)
+        BachecaControllerGUI controllerBacheca =
+            stateManager.getStageManager().<BachecaControllerGUI>loadContent(StageManager.BACHECA_VIEW);
 
-        // aggiorna bottone attivo nella main view
-        MainControllerGUI controllerMain = stateManager.getStageManager().getMainController();
-        controllerMain.updateActiveButtonByState();
+        if (controllerBacheca != null)
+        	controllerBacheca.setStateManager(stateManager);
+
+        // aggiorna bottone attivo nella main view attiva
+        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
+        if (controllerMain != null)
+            controllerMain.updateActiveButtonByState();
     }
 
     @Override
@@ -30,6 +34,6 @@ public class BachecaState implements AppState {
 
     @Override
     public void goBack() {
-        stateManager.setState(new MainState(stateManager));
+        stateManager.goBack();
     }
 }

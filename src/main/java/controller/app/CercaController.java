@@ -26,7 +26,7 @@ public class CercaController {
                 .collect(Collectors.toList());
     }
     
-    public List<Book> searchBooks(String searchText, String searchMode, String category, String year, boolean includeUnavailable) {
-        return bookDAO.getSearchedBooks(searchText, searchMode, category, year, includeUnavailable);
+    public List<Book> searchBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) {
+        return bookDAO.getSearchedBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
     }
 }

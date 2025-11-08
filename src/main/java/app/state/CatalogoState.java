@@ -14,16 +14,17 @@ public class CatalogoState implements AppState {
 
     @Override
     public void onEnter() {
-        // carica la vista
+        // carica la vista nella main view attiva (guest/user)
         CatalogoControllerGUI controllerCatalogo =
             stateManager.getStageManager().<CatalogoControllerGUI>loadContent(StageManager.CATALOGO_VIEW);
 
         if (controllerCatalogo != null)
             controllerCatalogo.setStateManager(stateManager);
 
-        // aggiorna bottone attivo nella main view
-        MainControllerGUI controllerMain = stateManager.getStageManager().getMainController();
-        controllerMain.updateActiveButtonByState();
+        // aggiorna bottone attivo nella main view attiva
+        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
+        if (controllerMain != null)
+            controllerMain.updateActiveButtonByState();
     }
 
     @Override
@@ -33,6 +34,6 @@ public class CatalogoState implements AppState {
 
     @Override
     public void goBack() {
-        stateManager.setState(new MainState(stateManager));
+        stateManager.goBack(); // se serve, anche questo può essere guest/user-aware
     }
 }

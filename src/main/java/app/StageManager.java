@@ -6,17 +6,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+
+import controller.gui.MainGuestControllerGUI;
+import controller.gui.MainUserControllerGUI;
 import controller.gui.MainControllerGUI;
+
 import dao.factory.DAOFactory;
 import app.state.StateManager;
 
 public class StageManager {
-    private final StateManager stateManager;    
+
+    private final StateManager stateManager;
     private final Stage primaryStage;
-    private MainControllerGUI mainController;
+
+    private MainGuestControllerGUI mainGuestController;
+    private MainUserControllerGUI mainUserController;
 
     private static final String BASE_PATH = "/view/gui/";
-    public static final String MAIN_VIEW = BASE_PATH + "MainView.fxml";
+    public static final String MAIN_GUEST_VIEW = BASE_PATH + "MainGuestView.fxml";
+    public static final String MAIN_USER_VIEW = BASE_PATH + "MainUserView.fxml";
     public static final String CATALOGO_VIEW = BASE_PATH + "CatalogoView.fxml";
     public static final String CERCA_VIEW = BASE_PATH + "CercaView.fxml";
     public static final String BACHECA_VIEW = BASE_PATH + "BachecaView.fxml";
@@ -27,17 +35,17 @@ public class StageManager {
         this.primaryStage = stage;
         this.stateManager = new StateManager(daoFactory);
         this.stateManager.setStageManager(this); // collega lo state manager
-        initMainView();
+        initGuestView(); // mostra la view guest all’avvio
     }
 
-    private void initMainView() {
+    /** Mostra la view Guest (login/guest) */
+    private void initGuestView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_VIEW));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_GUEST_VIEW));
             Parent root = loader.load();
 
-            // Recupero controller principale
-            mainController = loader.getController();
-            mainController.setStateManager(stateManager); // collega lo state manager
+            mainGuestController = loader.getController();
+            mainGuestController.setStateManager(stateManager);
 
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
@@ -49,16 +57,47 @@ public class StageManager {
         }
     }
 
-    public MainControllerGUI getMainController() {
-        return mainController;
+    /** Mostra la view User dopo login */
+    public MainUserControllerGUI loadMainUserView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_USER_VIEW));
+            Parent root = loader.load();
+
+            MainUserControllerGUI controller = loader.getController();
+            controller.setStateManager(stateManager);
+
+            mainUserController = controller;
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Library - User");
+            primaryStage.show();
+
+            return controller;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
+    /** Ritorna il controller principale attivo (guest o user) */
+    public MainControllerGUI getActiveMainController() {
+        if (mainUserController != null)
+            return mainUserController;
+        return mainGuestController;
+    }
+
+    /** Carica un contenuto FXML nella view attiva */
     @SuppressWarnings("unchecked")
     public <T> T loadContent(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node node = loader.load();
-            mainController.setContent(node);
+
+            MainControllerGUI activeController = getActiveMainController();
+            if (activeController != null)
+                activeController.setContent(node);
+
             return (T) loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,5 +105,7 @@ public class StageManager {
         }
     }
 
-	public StateManager getStateManager() {return stateManager;}
+    public StateManager getStateManager() {
+        return stateManager;
+    }
 }

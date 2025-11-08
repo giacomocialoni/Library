@@ -2,3 +2,4 @@ app/ApplicationCLI.class
 app/StageManager.class
 app/Main.class
 app/ApplicationGUI.class
+controller/gui/BookDetailControllerGUI$1.class

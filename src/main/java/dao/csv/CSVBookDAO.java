@@ -120,7 +120,7 @@ public class CSVBookDAO implements BookDAO {
     }
 
 	@Override
-	public List<Book> getSearchedBooks(String searchText, String searchMode, String category, String year,
+	public List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo,
 			boolean includeUnavailable) {
 		// TODO Auto-generated method stub
 		return null;

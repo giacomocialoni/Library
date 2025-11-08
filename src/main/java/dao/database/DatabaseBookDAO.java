@@ -43,13 +43,15 @@ public class DatabaseBookDAO implements BookDAO {
         return books;
     }
     
-    public List<Book> getSearchedBooks(String searchText, String searchMode, String category, String year, boolean includeUnavailable) {
+    public List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) {
         List<Book> books = new ArrayList<>();
+
         String sql = "SELECT * FROM books WHERE " +
                      "((? = 'title' AND LOWER(title) LIKE ?) " +
                      "OR (? = 'author' AND LOWER(author) LIKE ?)) " +
                      "AND ((? IS NULL OR ? = '') OR category = ?) " +
-                     "AND ((? IS NULL OR ? = '') OR CAST(year AS CHAR) = ?) " +
+                     "AND ((? IS NULL OR ? = '') OR year >= CAST(? AS UNSIGNED)) " +
+                     "AND ((? IS NULL OR ? = '') OR year <= CAST(? AS UNSIGNED)) " +
                      "AND (? = 1 OR stock > 0)";
 
         try (Connection conn = dbConnection.getConnection();
@@ -57,21 +59,31 @@ public class DatabaseBookDAO implements BookDAO {
 
             String searchPattern = "%" + (searchText != null ? searchText.toLowerCase() : "") + "%";
 
+            // Search mode (title / author)
             stmt.setString(1, searchMode);
             stmt.setString(2, searchPattern);
             stmt.setString(3, searchMode);
             stmt.setString(4, searchPattern);
 
+            // Category
             stmt.setString(5, category);
             stmt.setString(6, category);
             stmt.setString(7, category);
 
-            stmt.setString(8, year);
-            stmt.setString(9, year);
-            stmt.setString(10, year);
+            // Year From (lower bound)
+            stmt.setString(8, yearFrom);
+            stmt.setString(9, yearFrom);
+            stmt.setString(10, yearFrom);
 
-            stmt.setInt(11, includeUnavailable ? 1 : 0);
+            // Year To (upper bound)
+            stmt.setString(11, yearTo);
+            stmt.setString(12, yearTo);
+            stmt.setString(13, yearTo);
 
+            // Include unavailable
+            stmt.setInt(14, includeUnavailable ? 1 : 0);
+
+            // Execute query
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 books.add(new Book(
@@ -88,9 +100,11 @@ public class DatabaseBookDAO implements BookDAO {
                     rs.getString("image_path")
                 ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return books;
     }
 

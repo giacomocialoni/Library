@@ -14,13 +14,17 @@ public class LoginState implements AppState {
 
     @Override
     public void onEnter() {
-        // Carica la view di login
-        LoginControllerGUI controller = stateManager.getStageManager().loadContent(StageManager.LOGIN_VIEW);
-        controller.setStateManager(stateManager);
+        // carica la vista nella main view attiva (guest/user)
+        LoginControllerGUI controllerLogin =
+            stateManager.getStageManager().<LoginControllerGUI>loadContent(StageManager.LOGIN_VIEW);
 
-        // aggiorna bottone attivo nella main view
-        MainControllerGUI controllerMain = stateManager.getStageManager().getMainController();
-        controllerMain.updateActiveButtonByState();
+        if (controllerLogin != null)
+        	controllerLogin.setStateManager(stateManager);
+
+        // aggiorna bottone attivo nella main view attiva
+        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
+        if (controllerMain != null)
+            controllerMain.updateActiveButtonByState();
     }
 
     @Override

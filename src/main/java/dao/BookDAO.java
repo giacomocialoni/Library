@@ -9,5 +9,5 @@ public interface BookDAO {
     void addBook(Book book);
     void updateBook(Book book);
     void deleteBook(int id);
-	List<Book> getSearchedBooks(String searchText, String searchMode, String category, String year, boolean includeUnavailable);
+	List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable);
 }

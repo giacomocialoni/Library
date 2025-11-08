@@ -18,7 +18,8 @@ public class CercaControllerGUI {
     @FXML private Label searchLabel;
     @FXML private TextField searchField;
     @FXML private ComboBox<String> genereCombo;
-    @FXML private TextField annoField;
+    @FXML private TextField annoFromField;
+    @FXML private TextField annoToField;
     @FXML private CheckBox showUnavailableCheckbox;
     @FXML private FlowPane resultsFlowPane;
     @FXML private Label resultsLabel;
@@ -78,10 +79,11 @@ public class CercaControllerGUI {
 
         String searchText = searchField.getText().toLowerCase();
         String category = genereCombo.getValue();
-        String year = annoField.getText();
+        String yearFrom = annoFromField.getText();
+        String yearTo = annoToField.getText();
         boolean includeUnavailable = showUnavailableCheckbox.isSelected();
 
-        List<Book> books = appController.searchBooks(searchText, searchMode, category, year, includeUnavailable);
+        List<Book> books = appController.searchBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
 
         BookCardFactory cardFactory = new BookCardFactory(stateManager);
 
@@ -97,7 +99,8 @@ public class CercaControllerGUI {
     public void handleClearFilters() {
         searchField.clear();
         genereCombo.setValue(null);
-        annoField.clear();
+        annoFromField.clear();
+        annoToField.clear();
         showUnavailableCheckbox.setSelected(false);
         resultsFlowPane.getChildren().clear();
         resultsLabel.setText("Risultati della Ricerca");

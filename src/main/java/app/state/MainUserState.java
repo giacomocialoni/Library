@@ -1,20 +1,21 @@
 package app.state;
 
-import app.StageManager;
 import controller.gui.MainControllerGUI;
 
-public class MainState implements AppState {
+public class MainUserState implements AppState {
 
     private final StateManager stateManager;
 
-    public MainState(StateManager stateManager) {
+    public MainUserState(StateManager stateManager) {
         this.stateManager = stateManager;
     }
 
     @Override
     public void onEnter() {
-        StageManager stageManager = stateManager.getStageManager();
-        MainControllerGUI controller = stageManager.getMainController(); // controller deve essere già inizializzato
+        // Carica la view user se non già caricata
+        stateManager.getStageManager().loadMainUserView();
+
+        MainControllerGUI controller = stateManager.getStageManager().getActiveMainController();
         if (controller != null) {
             controller.setStateManager(stateManager);
             // Mostra subito il catalogo
@@ -25,12 +26,8 @@ public class MainState implements AppState {
     }
 
     @Override
-    public void onExit() {
-        // Nessuna azione specifica
-    }
+    public void onExit() { }
 
     @Override
-    public void goBack() {
-        // Niente, è lo stato base
-    }
+    public void goBack() { }
 }

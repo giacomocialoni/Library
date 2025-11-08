@@ -5,6 +5,8 @@ import dao.BookDAO;
 import dao.factory.DAOFactory;
 import model.Account;
 import model.Book;
+import utils.BorrowResult;
+import utils.BuyResult;
 
 public class BookDetailController {
 
@@ -18,33 +20,39 @@ public class BookDetailController {
         return bookDAO.getBookById(bookId);
     }
 
-    public void buyBook(int bookId, int quantity) {
+    public BuyResult buyBook(int bookId, int quantity) {
         Session session = Session.getInstance();
 
         if (!session.isLoggedIn()) {
-            System.out.println("Non sei loggato, non puoi acquistare libri.");
-            return;
+            return BuyResult.NOT_LOGGED;
         }
-
         Account user = session.getLoggedUser();
-        System.out.println("Acquisto " + quantity + " copia/e del libro ID: " + bookId +
-                           " da parte di " + user.getEmail());
-
-        // TODO: logica per ridurre stock e registrare acquisto nel database
+        try {
+            // TODO: logica vera per lo stock e l'acquisto
+            System.out.println("Acquisto " + quantity + " copia/e del libro ID: " + bookId +
+                               " da parte di " + user.getEmail());
+            return BuyResult.SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BuyResult.ERROR;
+        }
     }
 
-    public void borrowBook(int bookId, int quantity) {
+    public BorrowResult borrowBook(int bookId, int quantity) {
         Session session = Session.getInstance();
 
         if (!session.isLoggedIn()) {
-            System.out.println("Non sei loggato, non puoi prendere libri in prestito.");
-            return;
+            return BorrowResult.NOT_LOGGED;
         }
-
         Account user = session.getLoggedUser();
-        System.out.println("Prestito " + quantity + " copia/e del libro ID: " + bookId +
-                           " da parte di " + user.getEmail());
-
-        // TODO: logica per registrare prestito nel database
+        try {
+            // TODO: logica vera per lo stock e l'acquisto
+            System.out.println("Prestito " + quantity + " copia/e del libro ID: " + bookId +
+                               " da parte di " + user.getEmail());
+            return BorrowResult.SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BorrowResult.ERROR;
+        }
     }
 }

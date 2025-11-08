@@ -92,6 +92,16 @@
     -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.4), 10, 0, 0, 3);
 }
 
+.profile-text {
+	-fx-font-size: 15px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #6b5444;
+	-fx-letter-spacing: 1px;
+}
+.profile-over-text {
+	-fx-font-size: 12px;
+	-fx-text-fill: #8b7355;
+}
 /* === CONTENUTO === */
 .content-area {
     -fx-background-color: #faf8f5;

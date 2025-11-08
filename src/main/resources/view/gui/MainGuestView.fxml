@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@../../css/style.css" fx:id="root" prefWidth="1000.0" prefHeight="85000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainControllerGUI">
+<BorderPane stylesheets="@../../css/style.css" fx:id="root" prefWidth="1000.0" prefHeight="850.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainGuestControllerGUI">
     
     <top>
         <VBox>

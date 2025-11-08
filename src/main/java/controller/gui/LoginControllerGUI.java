@@ -1,9 +1,11 @@
 package controller.gui;
 
+import app.Session;
 import app.state.AppState;
 import app.state.BachecaState;
 import app.state.CatalogoState;
 import app.state.CercaState;
+import app.state.MainUserState;
 import app.state.StateManager;
 import controller.app.LoginController;
 import javafx.animation.FadeTransition;
@@ -43,17 +45,25 @@ public class LoginControllerGUI {
 
     @FXML
     private void handleLogin() {
-    	try {
+        try {
             String email = usernameField.getText();
             String password = passwordField.getText();
 
             Account account = loginController.login(email, password);
 
             if (account != null) {
-                // Login riuscito → vai al catalogo
-            	stateManager.setState(new CatalogoState(stateManager));
+                // Salva l'utente loggato nella sessione
+                Session.getInstance().login(account);
+
+                if (account.isAdmin()) {
+                    // TODO: MainAdminState
+                } else {
+                	stateManager.getStageManager().loadMainUserView();
+
+                    // Imposta stato iniziale come MainUserState
+                    stateManager.setState(new MainUserState(stateManager));
+                }
             } else {
-                // Mostra errore in label
                 showError("Credenziali errate!");
                 usernameField.setText("");
                 passwordField.setText("");
