@@ -3,9 +3,13 @@ package view.components;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import model.Book;
 import app.state.BookDetailState;
@@ -21,18 +25,17 @@ public class BookCardFactory {
         this.stateManager = stateManager;
     }
 
-    public VBox createBookCard(Book book) {
-        VBox bookBox = new VBox(8);
-        bookBox.getStyleClass().add("book-card");
-        bookBox.setAlignment(Pos.CENTER);
-        bookBox.setPrefSize(200, 300);
-        bookBox.setPadding(new Insets(15));
-        bookBox.setMaxSize(200, 300);
+    public StackPane createBookCard(Book book) {
+        // Contenuto principale della card
+        VBox contentBox = new VBox(8);
+        contentBox.getStyleClass().add("book-card");
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPrefSize(200, 300);
+        contentBox.setPadding(new Insets(15));
 
         // Immagine copertina
         String imagePath = "/images/" + book.getImagePath();
         InputStream imageStream = getClass().getResourceAsStream(imagePath);
-
         if (imageStream == null) {
             System.err.println("Immagine non trovata: " + imagePath);
             imageStream = getClass().getResourceAsStream("/images/default.jpg");
@@ -42,36 +45,62 @@ public class BookCardFactory {
         cover.setFitWidth(150);
         cover.setFitHeight(180);
         cover.setPreserveRatio(true);
-        cover.getStyleClass().add("book-cover");
-
-        // Titolo
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(8);
+        shadow.setColor(Color.rgb(0,0,0,0.2));
+        
+        // Etichette
         Label titleLabel = new Label(book.getTitle());
         titleLabel.getStyleClass().add("book-title");
         titleLabel.setWrapText(true);
         titleLabel.setMaxWidth(180);
         titleLabel.setTextAlignment(TextAlignment.CENTER);
 
-        // Autore
         Label authorLabel = new Label(book.getAuthor());
         authorLabel.getStyleClass().add("book-author");
         authorLabel.setWrapText(true);
         authorLabel.setMaxWidth(180);
         authorLabel.setTextAlignment(TextAlignment.CENTER);
 
-        // Categoria
         Label genreLabel = new Label(book.getCategory());
         genreLabel.getStyleClass().add("book-genre");
         genreLabel.setWrapText(true);
         genreLabel.setMaxWidth(180);
         genreLabel.setAlignment(Pos.CENTER);
 
-        bookBox.getChildren().addAll(cover, titleLabel, authorLabel, genreLabel);
+        contentBox.getChildren().addAll(cover, titleLabel, authorLabel, genreLabel);
 
-        // Evento click
-        bookBox.setOnMouseClicked(e ->
-            stateManager.setState(new BookDetailState(stateManager, book.getId()))
+        // StackPane per gestire la sovrapposizione
+        StackPane card = new StackPane(contentBox);
+        card.setPrefSize(200, 300);
+        card.setAlignment(Pos.CENTER);
+
+        // Se non disponibile
+        if (book.getStock() <= 0) {
+            contentBox.getStyleClass().add("unavailable");
+            titleLabel.getStyleClass().add("unavailable");
+            authorLabel.getStyleClass().add("unavailable");
+            genreLabel.getStyleClass().add("unavailable");
+            
+            ColorAdjust grayscale = new ColorAdjust();
+            grayscale.setSaturation(-1.0);  // -1 = completamente bianco e nero
+            cover.setEffect(grayscale);
+
+            // Banner rosso sopra
+            Label unavailableBanner = new Label("NON DISPONIBILE");
+            unavailableBanner.getStyleClass().add("unavailable-banner");
+            unavailableBanner.setPrefWidth(200);
+            unavailableBanner.setPrefHeight(20);
+
+            // Aggiungi sopra al StackPane
+            card.getChildren().add(unavailableBanner);
+        }
+
+        // Clickabile anche se non disponibile
+        card.setOnMouseClicked(e ->
+                stateManager.setState(new BookDetailState(stateManager, book.getId()))
         );
 
-        return bookBox;
+        return card;
     }
 }

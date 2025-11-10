@@ -5,6 +5,7 @@ import dao.AccountDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.PostDAO;
+import dao.UserDAO;
 
 public class CSVDAOFactory extends DAOFactory {
 
@@ -27,6 +28,12 @@ public class CSVDAOFactory extends DAOFactory {
 
 	@Override
 	protected AccountDAO createAccountDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected UserDAO createUserDAO() {
 		// TODO Auto-generated method stub
 		return null;
 	}

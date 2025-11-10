@@ -4,11 +4,13 @@ import dao.AccountDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.PostDAO;
+import dao.UserDAO;
 import dao.database.DBConnection;
 import dao.database.DatabaseAccountDAO;
 import dao.database.DatabaseBookDAO;
 import dao.database.DatabaseCategoryDAO;
 import dao.database.DatabasePostDAO;
+import dao.database.DatabaseUserDAO;
 
 public class DatabaseDAOFactory extends DAOFactory {
 
@@ -16,6 +18,10 @@ public class DatabaseDAOFactory extends DAOFactory {
 
     public DatabaseDAOFactory(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
+    }
+    
+    public DBConnection getDbConnection() {
+    	return dbConnection;
     }
 
     @Override
@@ -33,12 +39,13 @@ public class DatabaseDAOFactory extends DAOFactory {
         return new DatabasePostDAO(dbConnection);
     }
 
-    public DBConnection getDbConnection() {
-        return dbConnection;
-    }
-
 	@Override
 	protected AccountDAO createAccountDAO() {
 		return new DatabaseAccountDAO(dbConnection);
+	}
+
+	@Override
+	protected UserDAO createUserDAO() {
+		return new DatabaseUserDAO(dbConnection);
 	}
 }

@@ -7,6 +7,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Post.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/utils/BorrowResult.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/csv/CSVBookDAO.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/ProfiloController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/view/components/BookDetailFactory.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Book.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/StageManager.java
@@ -31,9 +32,11 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/MainUserControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/ApplicationGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/BachecaState.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/UserDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/ApplicationCLI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseAccountDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/LoginState.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseUserDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/CatalogoState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/CercaState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/factory/DataSourceType.java
@@ -47,9 +50,12 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/AccountDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DBConnection.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/CercaController.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/ProfiloControllerGUI.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Loan.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabasePostDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseBookDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/CercaControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/StateManager.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/view/components/LoanBookCardFactory.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/view/components/BookCardFactory.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/CatalogoControllerGUI.java

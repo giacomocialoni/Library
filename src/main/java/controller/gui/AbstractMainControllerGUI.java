@@ -19,6 +19,11 @@ public abstract class AbstractMainControllerGUI implements MainControllerGUI {
     @Override
     public void setContent(Node node) {
         contentArea.getChildren().setAll(node);
+        // Forza il ridimensionamento del contenuto
+        if (node != null) {
+            node.prefWidth(contentArea.getWidth());
+            node.prefHeight(contentArea.getHeight());
+        }
     }
 
     protected void clearActiveButtons(Button... buttons) {

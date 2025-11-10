@@ -31,11 +31,7 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI{
             BachecaState.class, bachecaButton,
             ProfiloState.class, profileButton
         );
-        if (Session.getInstance().isLoggedIn() && userLabel != null) {
-        	Account loggedUser = Session.getInstance().getLoggedUser();
-            userLabel.setText(loggedUser.getFirstName());
-            System.out.println("Settato nome: " + loggedUser.getFirstName());
-        }
+        updateUserLabel();
     }
 
     public void setContent(Node node) {
@@ -59,8 +55,7 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI{
 
     @FXML
     private void showProfile() {
-        //TODO Profile State
-    	//stateManager.setState(new ProfileState(stateManager));
+    	stateManager.setState(new ProfiloState(stateManager));
     }
 
     public void updateActiveButtonByState() {
@@ -71,5 +66,13 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI{
 
     private void clearActiveButtons() {
         stateButtonMap.values().forEach(b -> b.getStyleClass().remove("active"));
+    }
+    private void updateUserLabel() {
+        if (userLabel != null && Session.getInstance().isLoggedIn()) {
+            Account loggedUser = Session.getInstance().getLoggedUser();
+            userLabel.setText(loggedUser.getFirstName());
+        } else if (userLabel != null) {
+            userLabel.setText("Guest"); // Fallback
+        }
     }
 }

@@ -37,7 +37,7 @@
             <Label fx:id="errorLabel" styleClass="error-label" visible="false" />
             
             <!-- Pulsante Login -->
-            <Button maxWidth="Infinity" onAction="#handleLogin" styleClass="submit-button" text="Accedi" defaultButton="true">
+            <Button defaultButton="true" maxWidth="Infinity" onAction="#handleLogin" styleClass="submit-button" text="Accedi">
                 <VBox.margin>
                     <Insets top="15" />
                 </VBox.margin>

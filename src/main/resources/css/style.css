@@ -7,6 +7,11 @@
     -fx-background-color: #faf8f5;
 }
 
+
+.scrollpane {
+	-fx-max-height: 100px;
+}
+
 /* === NAVIGATION BAR CENTRALE CON SLIDING SELECTOR === */
 .nav-wrapper {
     -fx-background-color: #faf8f5;
@@ -102,7 +107,7 @@
 	-fx-font-size: 12px;
 	-fx-text-fill: #8b7355;
 }
-/* === CONTENUTO === */
+/* === BOOK CARD === */
 .content-area {
     -fx-background-color: #faf8f5;
     -fx-padding: 30;
@@ -123,7 +128,6 @@
     -fx-padding: 0 0 20 30;
 }
 
-/* === CARDS LIBRI MODERNE === */
 .book-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 15;
@@ -137,31 +141,11 @@
     -fx-translate-y: -3;
 }
 
-.book-card.unavailable {
-    -fx-background-color: #f5f5f5;
-    -fx-opacity: 0.75;
-}
-
-.book-cover {
-    -fx-background-color: linear-gradient(to bottom, #d4b89e, #c9a88a);
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);
-}
-
-.book-cover.unavailable {
-    -fx-background-color: linear-gradient(to bottom, #d0d0d0, #b8b8b8);
-}
-
 .book-title {
     -fx-font-family: "Georgia", serif;
     -fx-font-size: 17px;
     -fx-font-weight: bold;
     -fx-text-fill: #5a4a3a;
-    -fx-wrap-text: true;
-}
-
-.book-title.unavailable {
-    -fx-text-fill: #888888;
 }
 
 .book-author {
@@ -169,10 +153,6 @@
     -fx-font-size: 14px;
     -fx-text-fill: #8b7355;
     -fx-font-style: italic;
-}
-
-.book-author.unavailable {
-    -fx-text-fill: #999999;
 }
 
 .book-genre {
@@ -184,20 +164,27 @@
     -fx-background-radius: 12;
 }
 
-.book-genre.unavailable {
-    -fx-background-color: #e8e8e8;
+/* === STATO NON DISPONIBILE === */
+.book-card.unavailable .book-title,
+.book-card.unavailable .book-author,
+.book-card.unavailable .book-genre {
     -fx-text-fill: #999999;
 }
-
-.unavailable-badge {
-    -fx-background-color: #888888;
-    -fx-text-fill: #ffffff;
-    -fx-font-family: "Georgia", serif;
-    -fx-font-size: 10px;
-    -fx-padding: 3 8;
-    -fx-background-radius: 10;
+.book-card.unavailable .book-genre {
+	-fx-background-color: #f0f0f0;
 }
 
+/* Banner rosso visibile sopra tutta la card */
+.unavailable-banner {
+    -fx-background-color: rgba(200, 0, 0, 0.4);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-letter-spacing: 3px;
+	-fx-background-radius: 25;
+}
 /* === SEARCH SELECTOR (simile alla nav) === */
 .search-selector-wrapper {
     -fx-background-color: #faf8f5;
@@ -433,7 +420,7 @@
 
 .detail-title {
     -fx-font-family: "Georgia", serif;
-    -fx-font-size: 32px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #5a4a3a;
     -fx-wrap-text: true;
@@ -441,7 +428,7 @@
 
 .detail-author {
     -fx-font-family: "Georgia", serif;
-    -fx-font-size: 20px;
+    -fx-font-size: 18px;
     -fx-text-fill: #8b7355;
     -fx-font-style: italic;
 }
@@ -515,6 +502,15 @@
 	-fx-font-size: 18px;
 	-fx-alignment: center;
 	-fx-padding: 4 6 4 6; 
+}
+.spinner:disabled {
+    -fx-opacity: 1; /* mantiene visibile il background */
+}
+
+.spinner:disabled .increment-arrow-button,
+.spinner:disabled .decrement-arrow-button {
+    -fx-background-color: #f0f0f0; /* grigio chiaro */
+    -fx-cursor: default;
 }
 
 .buy-button {
@@ -592,8 +588,25 @@
     -fx-pref-width: 18;   /* spessore visivo */
 	-fx-cursor: hand;
 }
+.scroll-bar:horizontal{
+    -fx-background-color: #faf8f5;
+    -fx-background-radius: 10;
+    -fx-border-color: #e8dad0;
+    -fx-border-height: 2;
+    -fx-border-radius: 10;
+    -fx-padding: 2; /* piccolo margine interno */
+	-fx-pref-height: 20;   /* spessore visivo */
+}
 
-.scroll-bar:vertical .thumb:hover{
+.scroll-bar:horizontal .thumb{
+    -fx-background-color: #8b7355;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-pref-height: 18;   /* spessore visivo */
+	-fx-cursor: hand;
+}
+
+.scroll-bar .thumb:hover{
     -fx-background-color: #75604a; /* un po’ più visibile */
 }
 
@@ -603,6 +616,95 @@
     -fx-padding: 0;
     -fx-pref-width: 0;
     -fx-pref-height: 0;
+}
+
+/* === PROFILO === */
+.profile-area {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 20;
+	-fx-padding: 30;
+	-fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.1), 15, 0, 0, 4);
+	-fx-spacing: 10;
+}
+
+.profile-label {
+	-fx-pref-width: 80px;
+	-fx-font-size: 14px;
+}
+
+.profile-text-field {
+	-fx-pref-width: 800px;
+}
+
+/* === STILE CARD PRESTITI === */
+.loan-card-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.08), 12, 0, 0, 3);
+    -fx-spacing: 20;
+    -fx-alignment: center-left;
+}
+
+.loan-info-box {
+    -fx-background-color: #f8f4f0;
+    -fx-background-radius: 10;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-padding: 15;
+    -fx-pref-width: 250;
+}
+
+.loan-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #8b7355;
+}
+
+.remaining-time-loan {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Colori per lo stato del prestito */
+.loan-expired {
+    -fx-text-fill: #d32f2f;
+}
+
+.loan-warning {
+    -fx-text-fill: #f57c00;
+}
+
+.loan-normal {
+    -fx-text-fill: #388e3c;
+}
+.loan-label {
+    -fx-font-size: 12px;
+	-fx-text-fill: #8b7355;
+}
+
+.remaining-time-loan {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+	-fx-text-fill: #8b7355;
+}
+/* === SCROLL PANE PER LIBRI ACQUISTATI/PRESTATI === */
+.scroll-pane.book-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: #e8dad0;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.scroll-pane.book-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane.book-scroll .content {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
 }
 /* === SEPARATORE === */
 .separator {

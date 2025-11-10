@@ -30,16 +30,16 @@ public class StageManager {
     public static final String BACHECA_VIEW = BASE_PATH + "BachecaView.fxml";
     public static final String BOOK_DETAIL_VIEW = BASE_PATH + "BookDetailView.fxml";
     public static final String LOGIN_VIEW = BASE_PATH + "LoginView.fxml";
+    public static final String PROFILO_VIEW = BASE_PATH + "ProfiloView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
         this.primaryStage = stage;
         this.stateManager = new StateManager(daoFactory);
         this.stateManager.setStageManager(this); // collega lo state manager
-        initGuestView(); // mostra la view guest all’avvio
+        showGuestView(); // mostra la view guest all’avvio
     }
 
-    /** Mostra la view Guest (login/guest) */
-    private void initGuestView() {
+    public void showGuestView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_GUEST_VIEW));
             Parent root = loader.load();
@@ -51,6 +51,9 @@ public class StageManager {
             primaryStage.setScene(scene);
             primaryStage.setTitle("Library");
             primaryStage.show();
+
+            // reset controller user
+            mainUserController = null;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,6 +74,11 @@ public class StageManager {
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Library - User");
+            
+            // Forza il ridimensionamento corretto
+            primaryStage.sizeToScene();
+            primaryStage.setMinWidth(1000);
+            primaryStage.setMinHeight(700);
             primaryStage.show();
 
             return controller;

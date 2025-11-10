@@ -5,7 +5,7 @@ import controller.app.CercaController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import model.Book;
 import view.components.BookCardFactory;
 
@@ -88,7 +88,7 @@ public class CercaControllerGUI {
         BookCardFactory cardFactory = new BookCardFactory(stateManager);
 
         for (Book book : books) {
-            VBox bookBox = cardFactory.createBookCard(book);
+            StackPane bookBox = cardFactory.createBookCard(book);
             resultsFlowPane.getChildren().add(bookBox);
         }
 

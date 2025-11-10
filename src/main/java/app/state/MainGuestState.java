@@ -12,6 +12,7 @@ public class MainGuestState implements AppState {
 
     @Override
     public void onEnter() {
+    	stateManager.getStageManager().showGuestView();
         MainControllerGUI controller = stateManager.getStageManager().getActiveMainController();
         if (controller != null) {
             controller.setStateManager(stateManager);

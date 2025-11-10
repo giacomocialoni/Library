@@ -4,6 +4,7 @@ import dao.AccountDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.PostDAO;
+import dao.UserDAO;
 import dao.database.DBConnection;
 
 public abstract class DAOFactory {
@@ -11,6 +12,7 @@ public abstract class DAOFactory {
     protected CategoryDAO categoryDAO;
     protected PostDAO postDAO;
     protected AccountDAO accountDAO;
+    protected UserDAO userDAO;
 
     private static DAOFactory activeFactory;
     
@@ -19,6 +21,7 @@ public abstract class DAOFactory {
     protected abstract CategoryDAO createCategoryDAO();
     protected abstract PostDAO createPostDAO();
     protected abstract AccountDAO createAccountDAO();
+    protected abstract UserDAO createUserDAO();
 
     // Gestione singleton
     public static void setActiveFactory(DAOFactory factory) {
@@ -55,6 +58,12 @@ public abstract class DAOFactory {
         if (accountDAO == null)
         	accountDAO = createAccountDAO();
         return accountDAO;
+    }
+    
+    public UserDAO getUserDAO() {
+        if (userDAO == null)
+            userDAO = createUserDAO();
+        return userDAO;
     }
     
     // Factory selector

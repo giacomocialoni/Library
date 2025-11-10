@@ -5,7 +5,7 @@ import controller.app.CatalogoController;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import model.Book;
 import view.components.BookCardFactory;
 
@@ -27,7 +27,7 @@ public class CatalogoControllerGUI {
         BookCardFactory cardFactory = new BookCardFactory(stateManager);
 
         for (Book book : books) {
-            VBox bookBox = cardFactory.createBookCard(book);
+            StackPane bookBox = cardFactory.createBookCard(book);
             booksFlowPane.getChildren().add(bookBox);
         }
     }

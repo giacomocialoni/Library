@@ -1,6 +1,7 @@
 package dao.csv;
 
 import model.Book;
+import model.Loan;
 import dao.BookDAO;
 
 import java.io.*;
@@ -122,6 +123,18 @@ public class CSVBookDAO implements BookDAO {
 	@Override
 	public List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo,
 			boolean includeUnavailable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Book> getPurchasedBooks(String userEmail) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Loan> getLoanedBooks(String userEmail) {
 		// TODO Auto-generated method stub
 		return null;
 	}
