@@ -36,7 +36,7 @@ public class StageManager {
         this.primaryStage = stage;
         this.stateManager = new StateManager(daoFactory);
         this.stateManager.setStageManager(this); // collega lo state manager
-        showGuestView(); // mostra la view guest all’avvio
+        showGuestView(); // mostra la view guest all'avvio
     }
 
     public void showGuestView() {
@@ -56,7 +56,7 @@ public class StageManager {
             mainUserController = null;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Errore nel caricamento della view guest: " + e.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class StageManager {
 
             return controller;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Errore nel caricamento della view user: " + e.getMessage());
             return null;
         }
     }
@@ -108,7 +108,7 @@ public class StageManager {
 
             return (T) loader.getController();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Errore nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
             return null;
         }
     }
