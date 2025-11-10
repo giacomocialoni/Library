@@ -6,6 +6,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -19,71 +21,67 @@
             <VBox alignment="CENTER" spacing="30.0">
                <children>
             
-                    <!-- Box informazioni utente -->
-                    <VBox alignment="CENTER" spacing="5.0" styleClass="profile-area">
+                    <!-- Box informazioni utente - USANDO GRIDPANE -->
+                    <VBox alignment="CENTER" spacing="15.0" styleClass="profile-area">
                         <children>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                           <children>
-                                  <Label styleClass="profile-label" text="Nome:" />
-                                  <TextField fx:id="firstNameField" editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="700.0" styleClass="profile-textfield" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                           <children>
-                  
-                                                                      <Label styleClass="profile-label" text="Cognome:" />
-                                  <TextField fx:id="lastNameField" editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="700.0" styleClass="profile-textfield" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                           <children>
-                  
-                                                                      <Label styleClass="profile-label" text="Email:" />
-                                  <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="700.0" styleClass="profile-textfield" />
-                           </children>
-                        </HBox>
-                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <children>
-                  
-                                                                      <Label styleClass="profile-label" text="Password:" />
-                                    <TextField fx:id="passwordField" editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="700.0" styleClass="profile-textfield" />
-                                    <Button fx:id="showPasswordButton" />
-                                </children>
-                            </HBox>
-                  
-                                            <!-- Logout -->
-                          <Button fx:id="logoutButton" onAction="#handleLogout" styleClass="login-button" text="Logout" />
+                            <GridPane hgap="10" vgap="10">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="NEVER" minWidth="80" prefWidth="80" />
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="500" prefWidth="500" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="40" prefWidth="40" />
+                                </columnConstraints>
+                                
+                                <!-- Riga Nome -->
+                                <Label styleClass="profile-label" text="Nome:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField fx:id="firstNameField" editable="false" styleClass="profile-textfield" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                
+                                <!-- Riga Cognome -->
+                                <Label styleClass="profile-label" text="Cognome:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <TextField fx:id="lastNameField" editable="false" styleClass="profile-textfield" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                
+                                <!-- Riga Email -->
+                                <Label styleClass="profile-label" text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <TextField fx:id="emailField" editable="false" styleClass="profile-textfield" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                
+                                <!-- Riga Password -->
+                                <Label styleClass="profile-label" text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <HBox spacing="5" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <TextField fx:id="passwordField" editable="false" styleClass="profile-textfield" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="showPasswordButton" style="-fx-background-color: transparent; -fx-padding: 5;" />
+                                </HBox>
+                            </GridPane>
+                            
+                            <!-- Logout -->
+                            <Button fx:id="logoutButton" onAction="#handleLogout" styleClass="login-button" text="Logout" />
                         </children>
                     </VBox>
                   
                   <!-- Libri acquistati di recente -->
-					<VBox spacing="10">
-					   <children>
-					        <Label styleClass="page-subtitle" text="Libri acquistati di recente" />
-					        <!-- ScrollPane per libri acquistati - ALTEZZA FLESSIBILE -->
-					        <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" 
-					                    styleClass="scroll-pane">
-					            <content>
-					                <HBox fx:id="recentPurchasesBox" spacing="15" />
-					            </content>
-					        </ScrollPane>
-					   </children>
-					</VBox>
-					
-					<!-- Libri in prestito -->
-					<VBox spacing="10">
-					   <children>
-					        <Label styleClass="page-subtitle" text="Libri in Prestito" />
-					        <!-- ScrollPane per libri in prestito - ALTEZZA FLESSIBILE -->
-					        <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED" 
-					                    styleClass="scroll-pane">
-					            <content>
-					                <HBox fx:id="loansBox" spacing="15" />
-					            </content>
-					        </ScrollPane>
-					        <Label fx:id="noLoansLabel" styleClass="page-subtitle" text="Nessun libro in prestito" visible="false" managed="false" />
-					   </children>
-					</VBox>
+                  <VBox spacing="10">
+                     <children>
+                          <Label styleClass="page-subtitle" text="Libri acquistati di recente" />
+                          <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" 
+                                      styleClass="scroll-pane">
+                              <content>
+                                  <HBox fx:id="recentPurchasesBox" spacing="15" />
+                              </content>
+                          </ScrollPane>
+                     </children>
+                  </VBox>
+                  
+                  <!-- Libri in prestito -->
+                  <VBox spacing="10">
+                     <children>
+                          <Label styleClass="page-subtitle" text="Libri in Prestito" />
+                          <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED" 
+                                      styleClass="scroll-pane">
+                              <content>
+                                  <HBox fx:id="loansBox" spacing="15" />
+                              </content>
+                          </ScrollPane>
+                          <Label fx:id="noLoansLabel" styleClass="page-subtitle" text="Nessun libro in prestito" visible="false" managed="false" />
+                     </children>
+                  </VBox>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -634,6 +634,7 @@
 
 .profile-text-field {
 	-fx-pref-width: 800px;
+	-fx-background-color: #ffffff;
 }
 
 /* === STILE CARD PRESTITI === */
