@@ -14,6 +14,7 @@
 	    <maven.compiler.release>19</maven.compiler.release>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>25</javafx.version>
+        <sonar.css.ignore>true</sonar.css.ignore>
     </properties>
 
     <dependencies>
