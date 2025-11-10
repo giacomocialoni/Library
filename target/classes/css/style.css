@@ -1,6 +1,5 @@
 /* Library App - Stile Moderno */
-/* Design contemporaneo con toni marroncini e sliding selectors */
-
+/* scss-lint:disable PseudoClassSelector, PropertySortOrder, UnknownProperty */
 .root {
     -fx-font-family: "Georgia", "Times New Roman", serif;
     -fx-font-size: 14px;
@@ -588,7 +587,6 @@
     -fx-pref-width: 18;   /* spessore visivo */
 	-fx-cursor: hand;
 }
-/* scss-lint:disable PseudoClassSelector */
 .scroll-bar:horizontal {
     -fx-background-color: #faf8f5;
     -fx-background-radius: 10;
@@ -598,7 +596,6 @@
     -fx-padding: 2; /* piccolo margine interno */
 	-fx-pref-height: 20;   /* spessore visivo */
 }
-/* scss-lint:enable PseudoClassSelector */
 .scroll-bar:horizontal .thumb{
     -fx-background-color: #8b7355;
     -fx-background-radius: 8;
@@ -712,3 +709,4 @@
 .separator {
     -fx-background-color: #e8dad0;
 }
+/* scss-lint:enable PseudoClassSelector, PropertySortOrder, UnknownProperty */
