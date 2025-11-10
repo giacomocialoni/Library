@@ -588,7 +588,8 @@
     -fx-pref-width: 18;   /* spessore visivo */
 	-fx-cursor: hand;
 }
-.scroll-bar:horizontal{
+/* scss-lint:disable PseudoClassSelector */
+.scroll-bar:horizontal {
     -fx-background-color: #faf8f5;
     -fx-background-radius: 10;
     -fx-border-color: #e8dad0;
@@ -597,7 +598,7 @@
     -fx-padding: 2; /* piccolo margine interno */
 	-fx-pref-height: 20;   /* spessore visivo */
 }
-
+/* scss-lint:enable PseudoClassSelector */
 .scroll-bar:horizontal .thumb{
     -fx-background-color: #8b7355;
     -fx-background-radius: 8;
