@@ -13,6 +13,11 @@ import java.util.List;
 
 public class CercaControllerGUI {
 
+    // Costanti per le modalità di ricerca
+    private static final String SEARCH_MODE_TITLE = "title";
+    private static final String SEARCH_MODE_AUTHOR = "author";
+    private static final String ACTIVE_STYLE_CLASS = "active";
+    
     @FXML private Button searchByTitleButton;
     @FXML private Button searchByAuthorButton;
     @FXML private Label searchLabel;
@@ -24,7 +29,7 @@ public class CercaControllerGUI {
     @FXML private FlowPane resultsFlowPane;
     @FXML private Label resultsLabel;
 
-    private String searchMode = "title";
+    private String searchMode = SEARCH_MODE_TITLE;
     private StateManager stateManager;
     private final CercaController appController = new CercaController();
 
@@ -49,7 +54,7 @@ public class CercaControllerGUI {
 
     @FXML
     public void selectSearchByTitle() {
-        searchMode = "title";
+        searchMode = SEARCH_MODE_TITLE;
         updateSearchSelector();
         searchLabel.setText("Titolo del libro");
         searchField.setPromptText("Inserisci il titolo del libro...");
@@ -57,20 +62,20 @@ public class CercaControllerGUI {
 
     @FXML
     public void selectSearchByAuthor() {
-        searchMode = "author";
+        searchMode = SEARCH_MODE_AUTHOR;
         updateSearchSelector();
         searchLabel.setText("Autore del libro");
         searchField.setPromptText("Inserisci il nome dell'autore...");
     }
 
     private void updateSearchSelector() {
-        searchByTitleButton.getStyleClass().remove("active");
-        searchByAuthorButton.getStyleClass().remove("active");
+        searchByTitleButton.getStyleClass().remove(ACTIVE_STYLE_CLASS);
+        searchByAuthorButton.getStyleClass().remove(ACTIVE_STYLE_CLASS);
 
-        if (searchMode.equals("title"))
-            searchByTitleButton.getStyleClass().add("active");
+        if (SEARCH_MODE_TITLE.equals(searchMode))
+            searchByTitleButton.getStyleClass().add(ACTIVE_STYLE_CLASS);
         else
-            searchByAuthorButton.getStyleClass().add("active");
+            searchByAuthorButton.getStyleClass().add(ACTIVE_STYLE_CLASS);
     }
 
     @FXML

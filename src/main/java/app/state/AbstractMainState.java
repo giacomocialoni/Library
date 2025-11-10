@@ -5,7 +5,7 @@ import controller.gui.MainControllerGUI;
 public abstract class AbstractMainState implements AppState {
     protected final StateManager stateManager;
 
-    public AbstractMainState(StateManager stateManager) {
+    protected AbstractMainState(StateManager stateManager) {
         this.stateManager = stateManager;
     }
 

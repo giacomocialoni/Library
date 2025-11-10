@@ -20,6 +20,10 @@ import java.io.InputStream;
 public class BookCardFactory {
 
     private final StateManager stateManager;
+    
+    // Costanti per le classi CSS
+    private static final String UNAVAILABLE_STYLE_CLASS = "unavailable";
+    private static final String UNAVAILABLE_BANNER_STYLE_CLASS = "unavailable-banner";
 
     public BookCardFactory(StateManager stateManager) {
         this.stateManager = stateManager;
@@ -77,10 +81,10 @@ public class BookCardFactory {
 
         // Se non disponibile
         if (book.getStock() <= 0) {
-            contentBox.getStyleClass().add("unavailable");
-            titleLabel.getStyleClass().add("unavailable");
-            authorLabel.getStyleClass().add("unavailable");
-            genreLabel.getStyleClass().add("unavailable");
+            contentBox.getStyleClass().add(UNAVAILABLE_STYLE_CLASS);
+            titleLabel.getStyleClass().add(UNAVAILABLE_STYLE_CLASS);
+            authorLabel.getStyleClass().add(UNAVAILABLE_STYLE_CLASS);
+            genreLabel.getStyleClass().add(UNAVAILABLE_STYLE_CLASS);
             
             ColorAdjust grayscale = new ColorAdjust();
             grayscale.setSaturation(-1.0);  // -1 = completamente bianco e nero
@@ -88,7 +92,7 @@ public class BookCardFactory {
 
             // Banner rosso sopra
             Label unavailableBanner = new Label("NON DISPONIBILE");
-            unavailableBanner.getStyleClass().add("unavailable-banner");
+            unavailableBanner.getStyleClass().add(UNAVAILABLE_BANNER_STYLE_CLASS);
             unavailableBanner.setPrefWidth(200);
             unavailableBanner.setPrefHeight(20);
 
