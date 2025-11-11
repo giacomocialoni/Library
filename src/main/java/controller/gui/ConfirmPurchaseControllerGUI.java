@@ -1,6 +1,5 @@
 package controller.gui;
 
-import app.state.AppState;
 import app.state.StateManager;
 import controller.app.PurchaseController;
 import javafx.fxml.FXML;
@@ -22,7 +21,6 @@ public class ConfirmPurchaseControllerGUI {
     private StateManager stateManager;
     private Book book;
     private int quantity;
-    private AppState previousState;
     private PurchaseController purchaseController;
 
     public void setStateManager(StateManager stateManager) {
@@ -30,10 +28,9 @@ public class ConfirmPurchaseControllerGUI {
         this.purchaseController = new PurchaseController();
     }
 
-    public void setPurchaseData(Book book, int quantity, AppState previousState) {
+    public void setPurchaseData(Book book, int quantity) {
         this.book = book;
         this.quantity = quantity;
-        this.previousState = previousState;
         updateUI();
     }
 
@@ -61,13 +58,20 @@ public class ConfirmPurchaseControllerGUI {
     }
 
     @FXML
+    private void handleCancel() {
+        // MODIFICATO: usa goBack() invece di setState()
+        stateManager.goBack();
+    }
+
+    @FXML
     private void handleConfirm() {
         BuyResult result = purchaseController.buyBook(book.getId(), quantity);
         
         switch (result) {
             case SUCCESS -> {
                 showSuccess("Acquisto effettuato con successo!");
-                stateManager.setState(previousState);
+                // MODIFICATO: dopo successo, torna indietro (pop dello stack)
+                stateManager.goBack();
             }
             case INSUFFICIENT_STOCK -> {
                 showError("Stock insufficiente! Aggiornando i dati...");
@@ -76,11 +80,6 @@ public class ConfirmPurchaseControllerGUI {
             case ERROR -> showError("Errore durante l'acquisto. Riprova.");
             case NOT_LOGGED -> showError("Errore sessione persa. Riprova.");
         }
-    }
-
-    @FXML
-    private void handleCancel() {
-        stateManager.setState(previousState);
     }
 
     private void showSuccess(String message) {

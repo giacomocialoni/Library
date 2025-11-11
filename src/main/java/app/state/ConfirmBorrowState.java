@@ -1,30 +1,29 @@
 package app.state;
 
 import app.StageManager;
-import controller.gui.ConfirmPurchaseControllerGUI;
+import controller.gui.ConfirmBorrowControllerGUI;
 import model.Book;
 
-public class ConfirmPurchaseState implements AppState {
+public class ConfirmBorrowState implements AppState {
 
     private final StateManager stateManager;
     private final StageManager stageManager;
     private final Book book;
-    private final int quantity;
 
-    public ConfirmPurchaseState(StateManager stateManager, Book book, int quantity) {
+    // MODIFICATO: rimuovi previousState dal costruttore
+    public ConfirmBorrowState(StateManager stateManager, Book book) {
         this.stateManager = stateManager;
         this.stageManager = stateManager.getStageManager();
         this.book = book;
-        this.quantity = quantity;
     }
 
     @Override
     public void onEnter() {
-        // Carica la vista di conferma acquisto
-        ConfirmPurchaseControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_PURCHASE_VIEW);
+        // Carica la vista di conferma prestito
+        ConfirmBorrowControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_BORROW_VIEW);
         if (controller != null) {
             controller.setStateManager(stateManager);
-            controller.setPurchaseData(book, quantity);
+            controller.setBorrowData(book); // MODIFICATO: passa solo il libro
         }
     }
 

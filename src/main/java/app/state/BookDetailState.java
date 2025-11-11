@@ -3,7 +3,6 @@ package app.state;
 import app.StageManager;
 import controller.gui.BookDetailControllerGUI;
 
-
 public class BookDetailState implements AppState {
 
     private final StateManager stateManager;
@@ -33,6 +32,7 @@ public class BookDetailState implements AppState {
 
     @Override
     public void goBack() {
-        // Torna allo stato precedente (ad esempio Catalogo)
+        // MODIFICATO: usa goBack() per tornare allo stato precedente
+        stateManager.goBack();
     }
 }

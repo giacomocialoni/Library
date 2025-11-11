@@ -2,38 +2,44 @@ package app.state;
 
 import app.StageManager;
 import controller.gui.LoginControllerGUI;
-import controller.gui.MainControllerGUI;
 
 public class LoginState implements AppState {
 
     private final StateManager stateManager;
+    private final StageManager stageManager;
+    private final Runnable onLoginSuccess; // NUOVO: callback per login riuscito
 
+    // Costruttore esistente per backward compatibility
     public LoginState(StateManager stateManager) {
+        this(stateManager, null);
+    }
+
+    // NUOVO: costruttore con callback
+    public LoginState(StateManager stateManager, Runnable onLoginSuccess) {
         this.stateManager = stateManager;
+        this.stageManager = stateManager.getStageManager();
+        this.onLoginSuccess = onLoginSuccess;
     }
 
     @Override
     public void onEnter() {
-        // carica la vista nella main view attiva (guest/user)
-        LoginControllerGUI controllerLogin =
-            stateManager.getStageManager().<LoginControllerGUI>loadContent(StageManager.LOGIN_VIEW);
-
-        if (controllerLogin != null)
-        	controllerLogin.setStateManager(stateManager);
-
-        // aggiorna bottone attivo nella main view attiva
-        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
-        if (controllerMain != null)
-            controllerMain.updateActiveButtonByState();
+        LoginControllerGUI controller = stageManager.loadContent(StageManager.LOGIN_VIEW);
+        if (controller != null) {
+            controller.setStateManager(stateManager);
+            // NUOVO: passa il callback al controller
+            if (onLoginSuccess != null) {
+                controller.setOnLoginSuccessCallback(onLoginSuccess);
+            }
+        }
     }
 
     @Override
     public void onExit() {
-        // Nessuna operazione particolare (potresti aggiungere cleanup in futuro)
+        // Cleanup se necessario
     }
 
     @Override
     public void goBack() {
-        // Eventuale torna indietro
+        stateManager.goBack();
     }
 }

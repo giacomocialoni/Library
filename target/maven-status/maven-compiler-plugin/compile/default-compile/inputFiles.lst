@@ -27,6 +27,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/MainControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabasePurchaseDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/User.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/ConfirmBorrowState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/ProfiloState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/BookDetailControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/AbstractMainControllerGUI.java
@@ -54,6 +55,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/MainGuestState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/MainGuestControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/Main.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/ConfirmBorrowControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/CategoryDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/CatalogoController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/BachecaControllerGUI.java

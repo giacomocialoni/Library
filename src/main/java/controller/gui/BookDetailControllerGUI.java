@@ -1,8 +1,10 @@
 package controller.gui;
 
+import app.Session;
 import app.state.AppState;
 import app.state.CatalogoState;
 import app.state.CercaState;
+import app.state.ConfirmBorrowState;
 import app.state.ConfirmPurchaseState;
 import app.state.LoginState;
 import app.state.StateManager;
@@ -11,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import model.Book;
-import utils.BorrowResult;
 import view.components.BookDetailFactory;
 
 public class BookDetailControllerGUI {
@@ -31,7 +32,6 @@ public class BookDetailControllerGUI {
     @FXML private Button buyButton;
     @FXML private Button borrowButton;
 
-    private int bookId;
     private StateManager stateManager;
     private BookDetailController appController;
     private Book currentBook;
@@ -42,7 +42,6 @@ public class BookDetailControllerGUI {
     }
 
     public void loadBook(int bookId) {
-        this.bookId = bookId;
         updateBackButtonText();
 
         Book book = appController.getBookById(bookId);
@@ -85,29 +84,55 @@ public class BookDetailControllerGUI {
 
     @FXML
     public void handleBuy() {
-        int quantity = quantitySpinner.getValue();
-        
-        if (currentBook != null) {
-            stateManager.setState(new ConfirmPurchaseState(
-                stateManager, 
-                currentBook, 
-                quantity, 
-                stateManager.getCurrentState() // stato precedente
-            ));
+        // NUOVO: controlla se l'utente è loggato
+        if (!Session.getInstance().isLoggedIn()) {
+            // Vai allo stato di login con callback per l'acquisto
+            stateManager.setState(new LoginState(stateManager, () -> {
+                // Callback chiamata dopo il login riuscito
+                if (currentBook != null) {
+                    int quantity = quantitySpinner.getValue();
+                    stateManager.setState(new ConfirmPurchaseState(
+                        stateManager, 
+                        currentBook, 
+                        quantity
+                    ));
+                }
+            }));
+        } else {
+            // Utente già loggato, procedi normalmente
+            int quantity = quantitySpinner.getValue();
+            if (currentBook != null) {
+                stateManager.setState(new ConfirmPurchaseState(
+                    stateManager, 
+                    currentBook, 
+                    quantity
+                ));
+            }
         }
     }
 
     @FXML
     public void handleBorrow() {
-        // MODIFICATO: logica temporanea, poi implementerò BorrowStatusState
-        BorrowResult result = appController.borrowBook(bookId);
-        switch (result) {
-            case SUCCESS -> showSuccess("Prestito effettuato con successo!");
-            case NOT_LOGGED -> stateManager.setState(new LoginState(stateManager));
-            case INSUFFICIENT_STOCK -> showError("Libro non disponibile per il prestito");
-            case MAX_LOANS_REACHED -> showError("Hai raggiunto il limite massimo di 3 prestiti attivi");
-            case EXPIRED_LOAN_EXISTS -> showError("Hai prestiti scaduti da restituire");
-            case ERROR -> showError("Errore durante il prestito");
+        // NUOVO: controlla se l'utente è loggato
+        if (!Session.getInstance().isLoggedIn()) {
+            // Vai allo stato di login con callback per il prestito
+            stateManager.setState(new LoginState(stateManager, () -> {
+                // Callback chiamata dopo il login riuscito
+                if (currentBook != null) {
+                    stateManager.setState(new ConfirmBorrowState(
+                        stateManager, 
+                        currentBook
+                    ));
+                }
+            }));
+        } else {
+            // Utente già loggato, procedi normalmente
+            if (currentBook != null) {
+                stateManager.setState(new ConfirmBorrowState(
+                    stateManager, 
+                    currentBook
+                ));
+            }
         }
     }
 
@@ -124,24 +149,6 @@ public class BookDetailControllerGUI {
             backButton.setText("← Torna a Cerca");
         else
             backButton.setText("← Torna indietro");
-    }
-
-    // Metodi helper per messaggi (temporanei)
-    private void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-        loadBook(bookId); // Ricarica per aggiornare disponibilità
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     // Getters

@@ -34,6 +34,7 @@ public class LoginControllerGUI {
 
     private StateManager stateManager;
     private LoginController loginController;
+    private Runnable onLoginSuccessCallback;
     
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
@@ -44,6 +45,10 @@ public class LoginControllerGUI {
         }
     }
 
+    public void setOnLoginSuccessCallback(Runnable callback) {
+        this.onLoginSuccessCallback = callback;
+    }
+    
     @FXML
     private void handleLogin() {
         try {
@@ -56,14 +61,18 @@ public class LoginControllerGUI {
                 // Salva l'utente loggato nella sessione
                 Session.getInstance().login(account);
 
-                if (account.isAdmin()) {
-                    // TODO: MainAdminState
+                if (onLoginSuccessCallback != null) {
+                    // Esegui il callback (es: torna alla conferma acquisto/prestito)
+                    onLoginSuccessCallback.run();
                 } else {
-                	stateManager.getStageManager().loadMainUserView();
-
-                    // Imposta stato iniziale come MainUserState
-                    stateManager.setState(new MainUserState(stateManager));
-                }
+                    // Comportamento normale: vai alla main user view
+                    if (account.isAdmin()) {
+                        // TODO: MainAdminState
+                    } else {
+                        stateManager.getStageManager().loadMainUserView();
+                        stateManager.setState(new MainUserState(stateManager));
+                    }
+                }  stateManager.setState(new MainUserState(stateManager));
             } else {
                 showError("Credenziali errate!");
                 usernameField.setText("");

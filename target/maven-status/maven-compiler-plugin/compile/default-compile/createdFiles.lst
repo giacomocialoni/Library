@@ -31,6 +31,7 @@ dao/PostDAO.class
 controller/app/BachecaController.class
 controller/gui/MainGuestControllerGUI.class
 app/state/BachecaState.class
+controller/gui/ConfirmBorrowControllerGUI$1.class
 dao/database/DatabasePostDAO.class
 controller/app/CercaController.class
 app/state/CatalogoState.class
@@ -48,7 +49,6 @@ controller/gui/ProfiloControllerGUI.class
 app/state/ProfiloState.class
 model/Post.class
 app/ApplicationGUI.class
-controller/gui/BookDetailControllerGUI$1.class
 dao/database/DatabaseUserDAO.class
 controller/gui/ConfirmPurchaseControllerGUI$1.class
 model/Book.class
