@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,9 +31,12 @@ public class ProfiloControllerGUI {
     @FXML private TextField passwordField;
     @FXML private Button showPasswordButton;
     @FXML private HBox recentPurchasesBox;
-    @FXML private HBox loansBox; // Cambiato da ScrollPane a HBox
+    @FXML private HBox loansBox;
+    @FXML private ScrollPane loansPane;
+    @FXML private ScrollPane purchasesPane;
     @FXML private Button logoutButton;
-    @FXML private Label noLoansLabel;
+    @FXML private Label LoansLabel;
+    @FXML private Label PurchasesLabel; // Aggiungi questa label nel FXML
 
     private StateManager stateManager;
     private final ProfiloController appController = new ProfiloController();
@@ -104,6 +108,18 @@ public class ProfiloControllerGUI {
     private void populateRecentPurchases() {
         recentPurchasesBox.getChildren().clear();
         List<Book> purchasedBooks = appController.getPurchasedBooks(user.getEmail());
+
+        if (purchasedBooks.isEmpty()) {
+            // Mostra messaggio "Nessun libro acquistato"
+            PurchasesLabel.setText("Non hai ancora acquistato libri");
+            purchasesPane.setVisible(false);
+            purchasesPane.setManaged(false);
+            return;
+        }
+        
+        purchasesPane.setVisible(true);
+        purchasesPane.setManaged(true);
+
         for (Book book : purchasedBooks) {
             StackPane card = cardFactory.createBookCard(book);
             recentPurchasesBox.getChildren().add(card);
@@ -116,14 +132,14 @@ public class ProfiloControllerGUI {
 
         if (loans.isEmpty()) {
             // Mostra messaggio "Nessun prestito"
-            noLoansLabel.setVisible(true);
-            noLoansLabel.setManaged(true);
+            LoansLabel.setText("Non hai prestiti attivi");
+            loansPane.setVisible(false);
+            loansPane.setManaged(false);
             return;
         }
 
-        // Nascondi messaggio "Nessun prestito"
-        noLoansLabel.setVisible(false);
-        noLoansLabel.setManaged(false);
+        loansPane.setVisible(true);
+        loansPane.setManaged(true);
 
         LoanBookCardFactory loanCardFactory = new LoanBookCardFactory(cardFactory);
 

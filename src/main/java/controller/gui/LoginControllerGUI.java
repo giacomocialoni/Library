@@ -6,6 +6,7 @@ import app.state.BachecaState;
 import app.state.CatalogoState;
 import app.state.CercaState;
 import app.state.MainUserState;
+import app.state.SignInState;
 import app.state.StateManager;
 import controller.app.LoginController;
 import javafx.animation.FadeTransition;
@@ -111,8 +112,7 @@ public class LoginControllerGUI {
 
     @FXML
     private void handleRegister() {
-        // TODO: futura pagina registrazione
-        System.out.println("Funzione registra non ancora implementata.");
+        stateManager.setState(new SignInState(stateManager));
     }
 
     @FXML

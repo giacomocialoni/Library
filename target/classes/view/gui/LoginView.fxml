@@ -17,10 +17,10 @@
         
         <!-- Titolo -->
         <Label styleClass="login-title" text="Accedi" />
-        <Label styleClass="login-subtitle" text="Benvenuto nella Library" />
+        <Label styleClass="login-subtitle" text="Bentrornato nella Library" />
         
         <!-- Form login -->
-        <VBox maxWidth="400" spacing="20">
+        <VBox maxWidth="400" spacing="15.0">
             
             <!-- Campo Email/Username -->
             <VBox spacing="10">

@@ -30,6 +30,7 @@ public class StageManager {
     public static final String BACHECA_VIEW = BASE_PATH + "BachecaView.fxml";
     public static final String BOOK_DETAIL_VIEW = BASE_PATH + "BookDetailView.fxml";
     public static final String LOGIN_VIEW = BASE_PATH + "LoginView.fxml";
+    public static final String SIGN_IN_VIEW = BASE_PATH + "SignInView.fxml";
     public static final String PROFILO_VIEW = BASE_PATH + "ProfiloView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {

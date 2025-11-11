@@ -4,6 +4,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/view/components/PostCardFactory.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/BookDetailState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/MainAdminState.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/SignInState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Post.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/utils/BorrowResult.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/csv/CSVBookDAO.java
@@ -17,6 +18,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/AppState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Account.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/factory/DAOFactory.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/SignInController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/BookDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/MainControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/User.java
@@ -50,6 +52,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/BachecaControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/AccountDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DBConnection.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/SignInControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/CercaController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/ProfiloControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/model/Loan.java

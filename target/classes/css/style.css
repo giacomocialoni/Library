@@ -85,8 +85,8 @@
     -fx-font-family: "Georgia", serif;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
-    -fx-padding: 10 25;
-    -fx-background-radius: 20;
+    -fx-padding: 15 30;
+    -fx-background-radius: 25;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(139, 115, 85, 0.3), 8, 0, 0, 2);
 }
@@ -242,6 +242,7 @@
     -fx-font-size: 14px;
     -fx-padding: 12 15;
     -fx-text-fill: #5a4a3a;
+	-fx-min-width: 200px;
 }
 
 .text-field:focused, .combo-box:focused {
