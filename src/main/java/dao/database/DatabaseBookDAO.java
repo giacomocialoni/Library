@@ -54,8 +54,8 @@ public class DatabaseBookDAO implements BookDAO {
 
     @Override
     public void addBook(Book book) {
-        String sql = "INSERT INTO books (id, title, author, category, year, publisher, pages, isbn, stock, plot, image_path) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO books (id, title, author, category, year, publisher, pages, isbn, stock, plot, image_path, price) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -69,12 +69,23 @@ public class DatabaseBookDAO implements BookDAO {
 
     @Override
     public void updateBook(Book book) {
-        String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=? WHERE id=?";
+        String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=? price=? WHERE id=?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            fillBookPreparedStatement(stmt, book);
-            stmt.setInt(11, book.getId());
+            stmt.setString(1, book.getTitle());
+            stmt.setString(2, book.getAuthor());
+            stmt.setString(3, book.getCategory());
+            stmt.setInt(4, book.getYear());
+            stmt.setString(5, book.getPublisher());
+            stmt.setInt(6, book.getPages());
+            stmt.setString(7, book.getIsbn());
+            stmt.setInt(8, book.getStock()); // QUESTO È IMPORTANTE - aggiorna lo stock
+            stmt.setString(9, book.getPlot());
+            stmt.setString(10, book.getImagePath());
+            stmt.setDouble(11, book.getPrice());
+            stmt.setInt(12, book.getId());
+            
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -184,7 +195,7 @@ public class DatabaseBookDAO implements BookDAO {
                 java.sql.Date dueDateSql = rs.getDate("due_date");
                 java.sql.Date fromDateSql = rs.getDate("loan_date");
                 if (dueDateSql != null) {
-                    loans.add(new Loan(book, dueDateSql.toLocalDate(), fromDateSql.toLocalDate()));
+                    loans.add(new Loan(book, dueDateSql.toLocalDate(), fromDateSql.toLocalDate(), true));
                 }
             }
 
@@ -209,7 +220,8 @@ public class DatabaseBookDAO implements BookDAO {
             rs.getString("isbn"),
             rs.getInt("stock"),
             rs.getString("plot"),
-            rs.getString("image_path")
+            rs.getString("image_path"),
+            rs.getDouble("price")
         );
     }
 

@@ -9,7 +9,9 @@ import dao.database.DBConnection;
 import dao.database.DatabaseAccountDAO;
 import dao.database.DatabaseBookDAO;
 import dao.database.DatabaseCategoryDAO;
+import dao.database.DatabaseLoanDAO;
 import dao.database.DatabasePostDAO;
+import dao.database.DatabasePurchaseDAO;
 import dao.database.DatabaseUserDAO;
 
 public class DatabaseDAOFactory extends DAOFactory {
@@ -47,5 +49,15 @@ public class DatabaseDAOFactory extends DAOFactory {
 	@Override
 	protected UserDAO createUserDAO() {
 		return new DatabaseUserDAO(dbConnection);
+	}
+	
+	@Override
+	protected LoanDAO createLoanDAO() {
+	    return new DatabaseLoanDAO(dbConnection);
+	}
+
+	@Override
+	protected PurchaseDAO createPurchaseDAO() {
+	    return new DatabasePurchaseDAO(dbConnection);
 	}
 }

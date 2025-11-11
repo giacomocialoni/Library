@@ -36,6 +36,8 @@ public class CSVBookDAO implements BookDAO {
                         Integer.parseInt(fields[8]),      // stock
                         fields[9],                        // plot
                         fields[10]                        // imagePath
+, 0
+                        
                 ));
             }
         } catch (IOException e) {

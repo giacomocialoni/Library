@@ -32,6 +32,7 @@ public class StageManager {
     public static final String LOGIN_VIEW = BASE_PATH + "LoginView.fxml";
     public static final String SIGN_IN_VIEW = BASE_PATH + "SignInView.fxml";
     public static final String PROFILO_VIEW = BASE_PATH + "ProfiloView.fxml";
+    public static final String CONFIRM_PURCHASE_VIEW = BASE_PATH + "ConfirmPurchaseView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
         this.primaryStage = stage;

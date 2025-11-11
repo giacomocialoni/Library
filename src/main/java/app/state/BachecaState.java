@@ -19,7 +19,7 @@ public class BachecaState implements AppState {
             stateManager.getStageManager().<BachecaControllerGUI>loadContent(StageManager.BACHECA_VIEW);
 
         if (controllerBacheca != null)
-        	controllerBacheca.setStateManager(stateManager);
+        	controllerBacheca.setStateManager();
 
         // aggiorna bottone attivo nella main view attiva
         MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();

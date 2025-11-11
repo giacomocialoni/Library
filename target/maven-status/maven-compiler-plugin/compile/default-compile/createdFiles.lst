@@ -50,6 +50,7 @@ model/Post.class
 app/ApplicationGUI.class
 controller/gui/BookDetailControllerGUI$1.class
 dao/database/DatabaseUserDAO.class
+controller/gui/ConfirmPurchaseControllerGUI$1.class
 model/Book.class
 controller/gui/CatalogoControllerGUI.class
 controller/gui/CercaControllerGUI.class

@@ -13,11 +13,12 @@ public class Book {
     private int stock;
     private String plot;
     private String imagePath;
+    private double price;
 
     // --- COSTRUTTORI ---
     public Book() {}
 
-    public Book(int id, String title, String author, String category, int year, String publisher, int pages, String isbn, int stock, String plot, String imagePath) {
+    public Book(int id, String title, String author, String category, int year, String publisher, int pages, String isbn, int stock, String plot, String imagePath, double price) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -29,6 +30,7 @@ public class Book {
         this.stock = stock;
         this.plot = plot;
         this.imagePath = imagePath;
+        this.price = price;
     }
 
     // --- GETTER E SETTER ---
@@ -64,6 +66,9 @@ public class Book {
 
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public double getPrice() { return price; }
+    public void setImagePath(double price) { this.price = price; }
 
 
     @Override

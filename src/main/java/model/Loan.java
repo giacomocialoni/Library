@@ -6,11 +6,14 @@ public class Loan {
     private final Book book;
     private final LocalDate dueDate;
     private final LocalDate fromDate;
+    private final boolean returned;
 
-    public Loan(Book book, LocalDate dueDate, LocalDate fromDate) {
+
+    public Loan(Book book, LocalDate dueDate, LocalDate fromDate, boolean returned) {
         this.book = book;
         this.dueDate = dueDate;
-        this.fromDate = dueDate;
+        this.fromDate = fromDate;
+        this.returned = returned;
     }
 
     public Book getBook() {
@@ -23,6 +26,10 @@ public class Loan {
     
     public LocalDate getDueDate() {
         return dueDate;
+    }
+    
+    public boolean isReturned() {
+    	return returned;
     }
 
     public boolean isExpired() {

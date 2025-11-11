@@ -37,4 +37,16 @@ public class CSVDAOFactory extends DAOFactory {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	protected LoanDAO createLoanDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected PurchaseDAO createPurchaseDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

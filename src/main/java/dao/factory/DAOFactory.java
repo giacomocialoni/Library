@@ -13,6 +13,8 @@ public abstract class DAOFactory {
     protected PostDAO postDAO;
     protected AccountDAO accountDAO;
     protected UserDAO userDAO;
+    protected abstract LoanDAO createLoanDAO();
+    protected abstract PurchaseDAO createPurchaseDAO();
 
     private static DAOFactory activeFactory;
     
@@ -21,7 +23,9 @@ public abstract class DAOFactory {
     protected abstract CategoryDAO createCategoryDAO();
     protected abstract PostDAO createPostDAO();
     protected abstract AccountDAO createAccountDAO();
-    protected abstract UserDAO createUserDAO();
+    protected abstract UserDAO createUserDAO();    
+    private LoanDAO loanDAO;
+    private PurchaseDAO purchaseDAO;
 
     // Gestione singleton
     public static void setActiveFactory(DAOFactory factory) {
@@ -64,6 +68,18 @@ public abstract class DAOFactory {
         if (userDAO == null)
             userDAO = createUserDAO();
         return userDAO;
+    }
+    
+    public LoanDAO getLoanDAO() {
+        if (loanDAO == null)
+            loanDAO = createLoanDAO();
+        return loanDAO;
+    }
+
+    public PurchaseDAO getPurchaseDAO() {
+        if (purchaseDAO == null)
+            purchaseDAO = createPurchaseDAO();
+        return purchaseDAO;
     }
     
     // Factory selector
