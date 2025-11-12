@@ -34,6 +34,8 @@ public class StageManager {
     public static final String PROFILO_VIEW = BASE_PATH + "ProfiloView.fxml";
     public static final String CONFIRM_PURCHASE_VIEW = BASE_PATH + "ConfirmPurchaseView.fxml";
     public static final String CONFIRM_BORROW_VIEW = BASE_PATH + "ConfirmBorrowView.fxml";
+    public static final String ERROR_VIEW = BASE_PATH + "ErrorView.fxml";
+    public static final String SUCCESS_VIEW = BASE_PATH + "SuccessView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
         this.primaryStage = stage;

@@ -50,6 +50,11 @@ public class StateManager {
             currentState.onEnter();
         }
     }
+    
+    public void goBackTwoStates() {
+    	goBack();
+    	goBack();
+    }
 
     public AppState getPreviousState() {
         return history.isEmpty() ? null : history.peek();

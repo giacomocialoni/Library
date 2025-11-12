@@ -11,6 +11,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/factory/PurchaseDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/utils/BorrowResult.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/BorrowController.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/SuccessControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/csv/CSVBookDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/ProfiloController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/view/components/BookDetailFactory.java
@@ -33,6 +34,7 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/AbstractMainControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/app/BachecaController.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/LoginControllerGUI.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/ErrorState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseCategoryDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/MainUserState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseLoanDAO.java
@@ -43,9 +45,11 @@
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/AbstractMainState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/factory/LoanDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/BachecaState.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/controller/gui/ErrorControllerGUI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/UserDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/ApplicationCLI.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseAccountDAO.java
+/Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/SuccessState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/LoginState.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/dao/database/DatabaseUserDAO.java
 /Users/giacomocialoni/eclipse-workspace/Library/src/main/java/app/state/CatalogoState.java

@@ -39,9 +39,6 @@
                 
                 <Label styleClass="detailConfirmLabel" text="Prezzo:" GridPane.rowIndex="2" />
                 <Label fx:id="priceLabel" styleClass="confirmValue" text="Gratis" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                
-                <Label styleClass="detailConfirmLabel" text="Disponibilità:" GridPane.rowIndex="3" />
-                <Label fx:id="availabilityLabel" styleClass="confirmValue" text="10 copie" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </children>
         </GridPane>
     </VBox>

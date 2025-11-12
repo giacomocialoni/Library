@@ -6,6 +6,7 @@ import app.state.CatalogoState;
 import app.state.CercaState;
 import app.state.ConfirmBorrowState;
 import app.state.ConfirmPurchaseState;
+import app.state.ErrorState;
 import app.state.LoginState;
 import app.state.StateManager;
 import controller.app.BookDetailController;
@@ -48,10 +49,11 @@ public class BookDetailControllerGUI {
         this.currentBook = book;
         
         if (book == null) {
-            titleLabel.setText("Libro non trovato");
-            buyButton.setDisable(true);
-            borrowButton.setDisable(true);
-            return;
+        	stateManager.setState(new ErrorState(
+                    stateManager,
+                    "Libro non trovato! Il libro potrebbe essere stato rimosso."
+                ));
+        	return;
         }
 
         updateQuantitySpinner(book.getStock());

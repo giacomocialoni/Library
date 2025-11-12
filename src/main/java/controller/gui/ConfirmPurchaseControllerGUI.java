@@ -1,10 +1,11 @@
 package controller.gui;
 
+import app.state.ErrorState;
 import app.state.StateManager;
+import app.state.SuccessState;
 import controller.app.PurchaseController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import model.Book;
 import utils.BuyResult;
@@ -69,32 +70,25 @@ public class ConfirmPurchaseControllerGUI {
         
         switch (result) {
             case SUCCESS -> {
-                showSuccess("Acquisto effettuato con successo!");
-                // MODIFICATO: dopo successo, torna indietro (pop dello stack)
-                stateManager.goBack();
+                stateManager.setState(new SuccessState(
+                        stateManager, 
+                        "Acquisto effettuato con successo!"
+                    ));
             }
             case INSUFFICIENT_STOCK -> {
-                showError("Stock insufficiente! Aggiornando i dati...");
-                updateUI(); // Ricarica i dati
+                // MODIFICATO: senza returnState
+                stateManager.setState(new ErrorState(
+                    stateManager, 
+                    "Stock insufficiente! Sono disponibili solo " + book.getStock() + " copie."
+                ));
             }
-            case ERROR -> showError("Errore durante l'acquisto. Riprova.");
-            case NOT_LOGGED -> showError("Errore sessione persa. Riprova.");
+            case ERROR -> {
+                stateManager.setState(new ErrorState(
+                    stateManager, 
+                    "Errore durante l'acquisto. Riprova più tardi."
+                ));
+            }
+            default -> throw new IllegalArgumentException("Unexpected value: " + result);
         }
-    }
-
-    private void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
