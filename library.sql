@@ -91,19 +91,28 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
   CONSTRAINT `wishlist_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Evento per aggiornare automaticamente i prestiti scaduti
 DELIMITER $$
 
-CREATE EVENT IF NOT EXISTS `update_expired_loans`
+-- Evento aggiornamento giornaliero
+CREATE EVENT IF NOT EXISTS `daily_cleanup_tasks`
 ON SCHEDULE EVERY 1 DAY
 STARTS CURRENT_TIMESTAMP
 ON COMPLETION PRESERVE
 ENABLE
 DO
 BEGIN
+    -- 1. Aggiorna i prestiti scaduti (LOANED -> EXPIRED)
     UPDATE loans 
     SET status = 'EXPIRED' 
     WHERE status = 'LOANED' AND returning_date < CURRENT_DATE;
+    
+    -- 2. Elimina i prestiti RESERVED oltre 14 giorni
+    DELETE FROM loans 
+    WHERE status = 'RESERVED' AND reserved_date < DATE_SUB(CURRENT_DATE, INTERVAL 14 DAY);
+    
+    -- 3. Elimina gli acquisti RESERVED oltre 14 giorni
+    DELETE FROM purchases 
+    WHERE status = 'RESERVED' AND status_date < DATE_SUB(CURRENT_DATE, INTERVAL 14 DAY);
 END$$
 
 DELIMITER ;
