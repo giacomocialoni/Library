@@ -1,6 +1,6 @@
 package utils;
 
-public enum BorrowResult {
+public enum LoanResult {
     SUCCESS,
     NOT_LOGGED,
     INSUFFICIENT_STOCK,

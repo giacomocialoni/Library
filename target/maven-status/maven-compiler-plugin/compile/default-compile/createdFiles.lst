@@ -15,7 +15,6 @@ view/components/BookCardFactory.class
 app/state/StateManager.class
 model/Account.class
 app/Main.class
-utils/BorrowResult.class
 controller/app/ProfiloController.class
 dao/CategoryDAO.class
 controller/gui/AbstractMainControllerGUI.class
@@ -31,12 +30,12 @@ dao/PostDAO.class
 controller/app/BachecaController.class
 controller/gui/MainGuestControllerGUI.class
 app/state/BachecaState.class
-controller/gui/ConfirmBorrowControllerGUI$1.class
 dao/database/DatabasePostDAO.class
 controller/app/CercaController.class
 app/state/CatalogoState.class
 dao/AccountDAO.class
 model/Loan.class
+controller/gui/PurchaseControllerGUI$1.class
 dao/database/DatabaseBookDAO.class
 view/components/BookDetailFactory.class
 dao/factory/CSVDAOFactory.class
@@ -44,13 +43,13 @@ view/components/LoanBookCardFactory.class
 controller/gui/MainControllerGUI.class
 app/StageManager.class
 app/state/MainAdminState.class
+controller/gui/LoanControllerGUI$1.class
 controller/gui/BookDetailControllerGUI.class
 controller/gui/ProfiloControllerGUI.class
 app/state/ProfiloState.class
 model/Post.class
 app/ApplicationGUI.class
 dao/database/DatabaseUserDAO.class
-controller/gui/ConfirmPurchaseControllerGUI$1.class
 model/Book.class
 controller/gui/CatalogoControllerGUI.class
 controller/gui/CercaControllerGUI.class

@@ -61,30 +61,30 @@
                     </VBox>
                   
                   <!-- Libri acquistati di recente -->
-                  <VBox spacing="10">
-                     <children>
-                          <Label fx:id="LoansLabel" styleClass="page-subtitle" text="Libri acquistati di recente" />
-                          <!-- ScrollPane per libri acquistati -->
-                          <ScrollPane fx:id="loansPane" fitToHeight="true" hbarPolicy="AS_NEEDED" minHeight="-Infinity" prefHeight="350.0" styleClass="scroll-pane" vbarPolicy="NEVER">
-                              <content>
-                                  <HBox fx:id="recentPurchasesBox" spacing="15" />
-                              </content>
-                          </ScrollPane>
-                     </children>
-                  </VBox>
-                  
-                  <!-- Libri in prestito -->
-                  <VBox spacing="10">
-                     <children>
-                          <Label fx:id="PurchasesLabel" styleClass="page-subtitle" text="Libri in Prestito" />
-                          <!-- ScrollPane per libri in prestito -->
-                          <ScrollPane fx:id="purchasesPane" fitToHeight="true" hbarPolicy="AS_NEEDED" styleClass="scroll-pane" vbarPolicy="AS_NEEDED">
-                              <content>
-                                  <HBox fx:id="loansBox" spacing="15" />
-                              </content>
-                          </ScrollPane>
-                     </children>
-                  </VBox>
+					<VBox spacing="10">
+					    <children>
+					        <Label fx:id="PurchasesLabel" styleClass="page-subtitle" text="Libri acquistati di recente" />
+					        <!-- ScrollPane per libri acquistati -->
+					        <ScrollPane fx:id="purchasesPane" fitToHeight="true" hbarPolicy="AS_NEEDED" minHeight="-Infinity" prefHeight="350.0" styleClass="scroll-pane" vbarPolicy="NEVER">
+					            <content>
+					                <HBox fx:id="recentPurchasesBox" spacing="15" />
+					            </content>
+					        </ScrollPane>
+					    </children>
+					</VBox>
+					
+					<!-- Libri in prestito -->
+					<VBox spacing="10">
+					    <children>
+					        <Label fx:id="LoansLabel" styleClass="page-subtitle" text="Libri in Prestito" />
+					        <!-- ScrollPane per libri in prestito -->
+					        <ScrollPane fx:id="loansPane" fitToHeight="true" hbarPolicy="AS_NEEDED" styleClass="scroll-pane" vbarPolicy="AS_NEEDED">
+					            <content>
+					                <HBox fx:id="loansBox" spacing="15" />
+					            </content>
+					        </ScrollPane>
+					    </children>
+					</VBox>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

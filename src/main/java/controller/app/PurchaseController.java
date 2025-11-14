@@ -2,13 +2,11 @@ package controller.app;
 
 import app.Session;
 import dao.BookDAO;
+import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
-import dao.factory.PurchaseDAO;
 import model.Account;
 import model.Book;
 import utils.BuyResult;
-
-import java.time.LocalDate;
 
 public class PurchaseController {
 
@@ -44,10 +42,8 @@ public class PurchaseController {
             book.setStock(book.getStock() - quantity);
             bookDAO.updateBook(book);
 
-            System.out.println("Stock dopo l'acquisto: " + book.getStock());
-
             // Registra UN SOLO record in purchase (non importa la quantità)
-            purchaseDAO.addPurchase(user.getEmail(), bookId, LocalDate.now());
+            purchaseDAO.addReservedPurchase(user.getEmail(), bookId);
 
             return BuyResult.SUCCESS;
         } catch (Exception e) {

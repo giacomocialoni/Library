@@ -4,7 +4,9 @@ import dao.csv.CSVBookDAO;
 import dao.AccountDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
+import dao.LoanDAO;
 import dao.PostDAO;
+import dao.PurchaseDAO;
 import dao.UserDAO;
 
 public class CSVDAOFactory extends DAOFactory {

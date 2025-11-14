@@ -1,6 +1,5 @@
 package dao.database;
 
-import dao.factory.LoanDAO;
 import model.Book;
 import model.Loan;
 
@@ -9,6 +8,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import dao.LoanDAO;
+import utils.Constants;
+import utils.LoanStatus;
+
 public class DatabaseLoanDAO implements LoanDAO {
 
     private final DBConnection dbConnection;
@@ -16,28 +19,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     public DatabaseLoanDAO(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
-
-    @Override
-    public void addLoan(String userEmail, int bookId, LocalDate loanDate, LocalDate dueDate) {
-        String sql = "INSERT INTO loans (user_email, book_id, loan_date, due_date, returned) VALUES (?, ?, ?, ?, false)";
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, userEmail);
-            stmt.setInt(2, bookId);
-            stmt.setDate(3, Date.valueOf(loanDate));
-            stmt.setDate(4, Date.valueOf(dueDate));
-            stmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+	
     @Override
     public List<Loan> getActiveLoansByUser(String userEmail) {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ? AND l.returned = false";
+        String sql = "SELECT l.id as loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date, " +
+                    "b.id as book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price " +
+                    "FROM loans l JOIN books b ON l.book_id = b.id " +
+                    "WHERE l.user_email = ? AND l.status IN ('LOANED', 'EXPIRED')";
         
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -46,12 +35,8 @@ public class DatabaseLoanDAO implements LoanDAO {
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Book book = extractBookFromResultSet(rs);
-                LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-                LocalDate loanDate = rs.getDate("loan_date").toLocalDate();
-                boolean returned = rs.getBoolean("returned");
-                
-                loans.add(new Loan(book, dueDate, loanDate, returned));
+                Loan loan = extractLoanFromResultSet(rs);
+                loans.add(loan);
             }
             
         } catch (SQLException e) {
@@ -59,10 +44,68 @@ public class DatabaseLoanDAO implements LoanDAO {
         }
         return loans;
     }
+    
+    @Override
+	public List<Loan> getReservedLoansByUser(String userEmail) {
+		List<Loan> loans = new ArrayList<>();
+		String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ? AND l.status IN ('RESERVED')";
+		
+		try (Connection conn = dbConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			
+			stmt.setString(1, userEmail);
+			ResultSet rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				Loan loan = extractLoanFromResultSet(rs);
+				loans.add(loan);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return loans;
+	}
+
+    @Override
+    public void addLoan(String userEmail, int bookId) {
+        String sql = "INSERT INTO loans l (user_email, book_id, reserved_date) VALUES (?, ?, ?)";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, userEmail);
+            stmt.setInt(2, bookId);
+            stmt.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
+            stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    @Override
+    public void acceptedLoan(int loanId) {
+        String sql = "UPDATE loans l SET status = 'LOANED', loaned_date = ?, returning_date = ? WHERE l.id = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+        	LocalDate today = LocalDate.now();
+        	LocalDate returningDate = LocalDate.now().plusDays(Constants.LOANING_DAYS);
+        	
+            stmt.setDate(1, java.sql.Date.valueOf(today));
+            stmt.setDate(2, java.sql.Date.valueOf(returningDate));
+            stmt.setInt(3, loanId);
+            stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void returnLoan(int loanId) {
-        String sql = "UPDATE loans SET returned = true WHERE id = ?";
+        String sql = "UPDATE loans l SET status = 'RETURNED' WHERE l.id = ?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
@@ -86,12 +129,8 @@ public class DatabaseLoanDAO implements LoanDAO {
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Book book = extractBookFromResultSet(rs);
-                LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-                LocalDate loanDate = rs.getDate("loan_date").toLocalDate();
-                boolean returned = rs.getBoolean("returned");
-                
-                loans.add(new Loan(book, dueDate, loanDate, returned));
+                Loan loan = extractLoanFromResultSet(rs);
+                loans.add(loan);
             }
             
         } catch (SQLException e) {
@@ -100,9 +139,21 @@ public class DatabaseLoanDAO implements LoanDAO {
         return loans;
     }
 
+    private Loan extractLoanFromResultSet(ResultSet rs) throws SQLException {
+    	int id = rs.getInt("loan_id");
+        String userEmail = rs.getString("user_email");
+        Book book = extractBookFromResultSet(rs);
+        LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
+        LocalDate reservedDate = rs.getDate("reserved_date") != null ? rs.getDate("reserved_date").toLocalDate() : null;
+        LocalDate loanedDate = rs.getDate("loaned_date") != null ? rs.getDate("loaned_date").toLocalDate() : null;
+        LocalDate returningDate = rs.getDate("returning_date") != null ? rs.getDate("returning_date").toLocalDate() : null;
+        
+        return new Loan(id, userEmail, book, status, reservedDate, loanedDate, returningDate);
+    }
+
     private Book extractBookFromResultSet(ResultSet rs) throws SQLException {
         return new Book(
-            rs.getInt("id"),
+        	rs.getInt("book_id"),
             rs.getString("title"),
             rs.getString("author"),
             rs.getString("category"),

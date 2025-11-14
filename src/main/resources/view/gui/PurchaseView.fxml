@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" spacing="20" styleClass="login-container" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.ConfirmPurchaseControllerGUI">
+<VBox alignment="TOP_CENTER" spacing="20" styleClass="login-container" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.PurchaseControllerGUI">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>

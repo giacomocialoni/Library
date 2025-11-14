@@ -1,10 +1,15 @@
 package dao.database;
 
 import dao.BookDAO;
+import dao.PurchaseDAO;
+import dao.factory.DAOFactory;
 import model.Book;
 import model.Loan;
+import model.Purchase;
+import utils.LoanStatus;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,7 +166,7 @@ public class DatabaseBookDAO implements BookDAO {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT b.* FROM books b " +
                      "JOIN purchases p ON b.id = p.book_id " +
-                     "WHERE p.user_email = ?";
+                     "WHERE p.user_email = ? AND p.status = 'PURCHASED'"; // AGGIUNTA CONDIZIONE STATUS
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -177,11 +182,20 @@ public class DatabaseBookDAO implements BookDAO {
         return books;
     }
 
+    // NUOVO METODO: Restituisce tutti i Purchase (per gestione admin)
+    @Override
+    public List<Purchase> getPurchasesByUser(String userEmail) {
+        // Questo dovrebbe essere in PurchaseDAO, ma se serve qui:
+        PurchaseDAO purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
+        return purchaseDAO.getPurchasesByUser(userEmail);
+    }
+
     @Override
     public List<Loan> getLoanedBooks(String userEmail) {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT b.*, l.due_date, l.loan_date FROM books b " +
-                     "JOIN loans l ON b.id = l.book_id " +
+        // CORREZIONE: Query corretta con tutti i campi
+        String sql = "SELECT l.*, b.* FROM loans l " +
+                     "JOIN books b ON l.book_id = b.id " +
                      "WHERE l.user_email = ?";
 
         try (Connection conn = dbConnection.getConnection();
@@ -191,18 +205,27 @@ public class DatabaseBookDAO implements BookDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Book book = extractBookFromResultSet(rs); // metodo helper
-                java.sql.Date dueDateSql = rs.getDate("due_date");
-                java.sql.Date fromDateSql = rs.getDate("loan_date");
-                if (dueDateSql != null) {
-                    loans.add(new Loan(book, dueDateSql.toLocalDate(), fromDateSql.toLocalDate(), true));
-                }
+                // CORREZIONE: Estrai tutti i campi corretti
+                int loanId = rs.getInt("id");
+                String email = rs.getString("user_email");
+                Book book = extractBookFromResultSet(rs);
+                
+                LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
+                LocalDate reservedDate = rs.getDate("reserved_date") != null ? 
+                    rs.getDate("reserved_date").toLocalDate() : null;
+                LocalDate loanedDate = rs.getDate("loaned_date") != null ? 
+                    rs.getDate("loaned_date").toLocalDate() : null;
+                LocalDate returningDate = rs.getDate("returning_date") != null ? 
+                    rs.getDate("returning_date").toLocalDate() : null;
+                
+                // CORREZIONE: Crea Loan con costruttore corretto
+                Loan loan = new Loan(loanId, email, book, status, reservedDate, loanedDate, returningDate);
+                loans.add(loan);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return loans;
     }
 

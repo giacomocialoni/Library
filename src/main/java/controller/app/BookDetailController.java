@@ -3,17 +3,18 @@ package controller.app;
 import app.Session;
 import dao.factory.DAOFactory;
 import model.Book;
-import utils.BorrowResult;
+import utils.LoanResult;
 import utils.BuyResult;
+import utils.Constants;
 
 public class BookDetailController {
 
     private final PurchaseController purchaseController;
-    private final BorrowController borrowController;
+    private final LoanController loanController;
 
     public BookDetailController() {
         this.purchaseController = new PurchaseController();
-        this.borrowController = new BorrowController();
+        this.loanController = new LoanController();
     }
 
     public Book getBookById(int bookId) {
@@ -24,8 +25,8 @@ public class BookDetailController {
         return purchaseController.buyBook(bookId, quantity);
     }
 
-    public BorrowResult borrowBook(int bookId) {
-        return borrowController.borrowBook(bookId);
+    public LoanResult loanBook(int bookId) {
+        return loanController.loanBook(bookId);
     }
 
     // Metodi delegati aggiuntivi
@@ -33,9 +34,7 @@ public class BookDetailController {
         return purchaseController.hasPurchasedBook(bookId);
     }
 
-    public boolean canBorrowBook(int bookId) {
-        // Verifica se l'utente può prendere in prestito il libro
-        // senza effettivamente eseguire il prestito
+    public boolean canLoanBook(int bookId) {
         Session session = app.Session.getInstance();
         if (!session.isLoggedIn()) {
             return false;
@@ -46,7 +45,7 @@ public class BookDetailController {
             return false;
         }
 
-        return !borrowController.hasExpiredLoans(session.getLoggedUser().getEmail()) &&
-               borrowController.getActiveLoansCount(session.getLoggedUser().getEmail()) < BorrowController.MAX_ACTIVE_LOANS;
+        return !loanController.hasExpiredLoans(session.getLoggedUser().getEmail()) &&
+        		loanController.getActiveLoansCount(session.getLoggedUser().getEmail()) < Constants.MAX_ACTIVE_LOANS;
     }
 }

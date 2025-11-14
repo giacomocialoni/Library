@@ -128,7 +128,7 @@ public class ProfiloControllerGUI {
 
     private void populateLoans() {
         loansBox.getChildren().clear();
-        List<Loan> loans = appController.getLoans(user.getEmail());
+        List<Loan> loans = appController.getActiveLoans(user.getEmail());
 
         if (loans.isEmpty()) {
             // Mostra messaggio "Nessun prestito"
@@ -137,7 +137,6 @@ public class ProfiloControllerGUI {
             loansPane.setManaged(false);
             return;
         }
-
         loansPane.setVisible(true);
         loansPane.setManaged(true);
 

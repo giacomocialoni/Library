@@ -4,7 +4,7 @@ import app.Session;
 import app.state.AppState;
 import app.state.CatalogoState;
 import app.state.CercaState;
-import app.state.ConfirmBorrowState;
+import app.state.ConfirmLoanState;
 import app.state.ConfirmPurchaseState;
 import app.state.ErrorState;
 import app.state.LoginState;
@@ -121,7 +121,7 @@ public class BookDetailControllerGUI {
             stateManager.setState(new LoginState(stateManager, () -> {
                 // Callback chiamata dopo il login riuscito
                 if (currentBook != null) {
-                    stateManager.setState(new ConfirmBorrowState(
+                    stateManager.setState(new ConfirmLoanState(
                         stateManager, 
                         currentBook
                     ));
@@ -130,7 +130,7 @@ public class BookDetailControllerGUI {
         } else {
             // Utente già loggato, procedi normalmente
             if (currentBook != null) {
-                stateManager.setState(new ConfirmBorrowState(
+                stateManager.setState(new ConfirmLoanState(
                     stateManager, 
                     currentBook
                 ));

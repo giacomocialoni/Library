@@ -1,7 +1,7 @@
 package app.state;
 
 import app.StageManager;
-import controller.gui.ConfirmPurchaseControllerGUI;
+import controller.gui.PurchaseControllerGUI;
 import model.Book;
 
 public class ConfirmPurchaseState implements AppState {
@@ -21,7 +21,7 @@ public class ConfirmPurchaseState implements AppState {
     @Override
     public void onEnter() {
         // Carica la vista di conferma acquisto
-        ConfirmPurchaseControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_PURCHASE_VIEW);
+        PurchaseControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_PURCHASE_VIEW);
         if (controller != null) {
             controller.setStateManager(stateManager);
             controller.setPurchaseData(book, quantity);
