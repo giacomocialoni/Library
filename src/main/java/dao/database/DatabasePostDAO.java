@@ -51,9 +51,10 @@ public class DatabasePostDAO implements PostDAO {
         return posts;
     }
 
-    // --- Metodo opzionale per aggiungere un nuovo post ---
+ // Aggiungi questo metodo a DatabasePostDAO.java se non esiste già
+    @Override
     public void addPost(Post post) {
-        String sql = "INSERT INTO posts (user_fk, title, content) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO posts (user_fk, title, content, post_date) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -61,10 +62,12 @@ public class DatabasePostDAO implements PostDAO {
             stmt.setString(1, post.getUserEmail());
             stmt.setString(2, post.getTitle());
             stmt.setString(3, post.getContent());
+            stmt.setTimestamp(4, java.sql.Timestamp.valueOf(post.getPostDate()));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Errore durante l'aggiunta del post", e);
         }
     }
 }

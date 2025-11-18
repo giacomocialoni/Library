@@ -38,6 +38,10 @@ public class Loan {
         return book;
     }
     
+    public int getBookId() {
+    	return book.getId();
+    }
+    
     public LoanStatus getLoanStatus() {
     	return status;
     }

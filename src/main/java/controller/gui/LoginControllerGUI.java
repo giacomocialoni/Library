@@ -6,6 +6,7 @@ import app.state.BachecaState;
 import app.state.CatalogoState;
 import app.state.CercaState;
 import app.state.MainUserState;
+import app.state.MainAdminState;
 import app.state.SignInState;
 import app.state.StateManager;
 import controller.app.LoginController;
@@ -61,18 +62,17 @@ public class LoginControllerGUI {
                 // Salva l'utente loggato nella sessione
                 Session.getInstance().login(account);
 
-                if (onLoginSuccessCallback != null) {
-                    // Esegui il callback (es: torna alla conferma acquisto/prestito)
-                    onLoginSuccessCallback.run();
+                // Comportamento normale: vai alla main user view
+                if (account.isAdmin()) {
+                    stateManager.setState(new MainAdminState(stateManager));
+                    // NON chiamare il callback per l'admin
                 } else {
-                    // Comportamento normale: vai alla main user view
-                    if (account.isAdmin()) {
-                        // TODO: MainAdminState
-                    } else {
-                        stateManager.getStageManager().loadMainUserView();
-                        stateManager.setState(new MainUserState(stateManager));
+                    stateManager.setState(new MainUserState(stateManager));
+                    if (onLoginSuccessCallback != null) {
+                        onLoginSuccessCallback.run();
                     }
-                }  stateManager.setState(new MainUserState(stateManager));
+                }
+                
             } else {
                 showError("Credenziali errate!");
                 usernameField.setText("");

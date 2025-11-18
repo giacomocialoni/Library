@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import controller.gui.MainGuestControllerGUI;
 import controller.gui.MainUserControllerGUI;
+import controller.gui.MainAdminControllerGUI;
 import controller.gui.MainControllerGUI;
 
 import dao.factory.DAOFactory;
@@ -21,10 +22,12 @@ public class StageManager {
 
     private MainGuestControllerGUI mainGuestController;
     private MainUserControllerGUI mainUserController;
+    private MainAdminControllerGUI mainAdminController;
 
     private static final String BASE_PATH = "/view/gui/";
     public static final String MAIN_GUEST_VIEW = BASE_PATH + "MainGuestView.fxml";
     public static final String MAIN_USER_VIEW = BASE_PATH + "MainUserView.fxml";
+    public static final String MAIN_ADMIN_VIEW = BASE_PATH + "MainAdminView.fxml";
     public static final String CATALOGO_VIEW = BASE_PATH + "CatalogoView.fxml";
     public static final String CERCA_VIEW = BASE_PATH + "CercaView.fxml";
     public static final String BACHECA_VIEW = BASE_PATH + "BachecaView.fxml";
@@ -36,6 +39,10 @@ public class StageManager {
     public static final String CONFIRM_LOAN_VIEW = BASE_PATH + "LoanView.fxml";
     public static final String ERROR_VIEW = BASE_PATH + "ErrorView.fxml";
     public static final String SUCCESS_VIEW = BASE_PATH + "SuccessView.fxml";
+	public static final String RESERVATION_VIEW = BASE_PATH + "ReservationView.fxml";
+	public static final String MANAGE_BOOKS_VIEW = BASE_PATH + "ManageBooksView.fxml";
+	public static final String MANAGE_USERS_VIEW = BASE_PATH + "ManageUsersView.fxml";
+	public static final String POST_VIEW	 = BASE_PATH + "PostView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
         this.primaryStage = stage;
@@ -97,23 +104,46 @@ public class StageManager {
     public MainControllerGUI getActiveMainController() {
         if (mainUserController != null)
             return mainUserController;
-        return mainGuestController;
+        else if (mainAdminController != null)
+        	return mainAdminController;
+        else 
+        	return mainGuestController;
     }
 
     /** Carica un contenuto FXML nella view attiva */
     @SuppressWarnings("unchecked")
     public <T> T loadContent(String fxmlPath) {
         try {
+            System.out.println("Tentativo di caricamento: " + fxmlPath);
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            if (loader.getLocation() == null) {
+                System.err.println("ERRORE: File FXML non trovato: " + fxmlPath);
+                return null;
+            }
+            
             Node node = loader.load();
 
             MainControllerGUI activeController = getActiveMainController();
-            if (activeController != null)
+            if (activeController != null) {
                 activeController.setContent(node);
+            } else {
+                System.err.println("ERRORE: Nessun controller principale attivo");
+            }
 
-            return (T) loader.getController();
+            T controller = (T) loader.getController();
+            if (controller == null) {
+                System.err.println("ATTENZIONE: Controller FXML è null per: " + fxmlPath);
+            }
+            
+            return controller;
         } catch (IOException e) {
-            System.err.println("Errore nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
+            System.err.println("ERRORE CRITICO nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            System.err.println("ERRORE IMPREVISTO nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -121,4 +151,31 @@ public class StageManager {
     public StateManager getStateManager() {
         return stateManager;
     }
+
+	public MainAdminControllerGUI loadMainAdminView() {
+		try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_ADMIN_VIEW));
+            Parent root = loader.load();
+
+            MainAdminControllerGUI controller = loader.getController();
+            controller.setStateManager(stateManager);
+
+            mainAdminController = controller;
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Library - Admin");
+            
+            // Forza il ridimensionamento corretto
+            primaryStage.sizeToScene();
+            primaryStage.setMinWidth(1000);
+            primaryStage.setMinHeight(700);
+            primaryStage.show();
+
+            return controller;
+        } catch (IOException e) {
+            System.err.println("Errore nel caricamento della view admin: " + e.getMessage());
+            return null;
+        }
+	}
 }

@@ -105,6 +105,38 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
             e.printStackTrace();
         }
     }
+    
+    @Override
+    public List<Purchase> getAllPurchases() {
+        List<Purchase> purchases = new ArrayList<>();
+        String sql = "SELECT * FROM purchases";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) purchases.add(extractPurchaseFromResultSet(rs));
+        } catch (SQLException e) { e.printStackTrace(); }
+        return purchases;
+    }
+
+    @Override
+    public List<Purchase> searchPurchases(String searchText) {
+        List<Purchase> res = new ArrayList<>();
+        String sql = "SELECT * FROM purchases p JOIN users u ON p.user_email = u.email JOIN books b ON p.book_id = b.id "
+                   + "WHERE LOWER(u.email) LIKE ? OR LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ? OR LOWER(b.title) LIKE ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String pattern = "%" + (searchText == null ? "" : searchText.toLowerCase()) + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+            stmt.setString(3, pattern);
+            stmt.setString(4, pattern);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) res.add(extractPurchaseFromResultSet(rs));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return res;
+    }
 
     private Purchase extractPurchaseFromResultSet(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");

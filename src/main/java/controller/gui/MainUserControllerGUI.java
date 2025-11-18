@@ -54,7 +54,7 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI {
             Account loggedUser = Session.getInstance().getLoggedUser();
             userLabel.setText(loggedUser.getFirstName());
         } else if (userLabel != null) {
-            userLabel.setText("Guest");
+            userLabel.setText("User");
         }
     }
 }

@@ -15,8 +15,11 @@ public abstract class AbstractMainState implements AppState {
         MainControllerGUI controller = stateManager.getStageManager().getActiveMainController();
         if (controller != null) {
             controller.setStateManager(stateManager);
-            // Mostra subito il catalogo
-            stateManager.setState(new CatalogoState(stateManager));
+            if (this instanceof MainUserState || this instanceof MainGuestState) {
+                stateManager.setState(new CatalogoState(stateManager));
+            } else if (this instanceof MainAdminState) {
+            	stateManager.setState(new ReservationState(stateManager));
+            }
         } else {
             System.err.println("MainControllerGUI non inizializzato!");
         }

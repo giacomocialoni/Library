@@ -10,4 +10,6 @@ public interface PurchaseDAO {
     List<Integer> getPurchasedBookIdsByUser(String userEmail);
     boolean hasUserPurchasedBook(String userEmail, int bookId);
 	void acceptPurchase(int purchaseId);
+    List<Purchase> getAllPurchases();
+    List<Purchase> searchPurchases(String searchText);
 }

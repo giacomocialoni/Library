@@ -10,4 +10,6 @@ public interface LoanDAO {
     List<Loan> getLoansByUser(String userEmail);
     void acceptedLoan(int loanId);
 	List<Loan> getReservedLoansByUser(String userEmail);
+	List<Loan> getAllReservedLoans();
+    List<Loan> searchLoans(String searchText);
 }
