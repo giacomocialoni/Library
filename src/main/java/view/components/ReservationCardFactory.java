@@ -12,16 +12,9 @@ import javafx.scene.shape.Rectangle;
 import model.Book;
 import model.Purchase;
 import model.Loan;
-import app.state.StateManager;
 import java.io.InputStream;
 
 public class ReservationCardFactory {
-
-    private final StateManager stateManager;
-
-    public ReservationCardFactory(StateManager stateManager) {
-        this.stateManager = stateManager;
-    }
 
     public HBox createPurchaseCard(Purchase purchase, Book book, Runnable onAccept, Runnable onReject) {
         return createReservationCard(

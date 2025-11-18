@@ -10,8 +10,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.User;
-import app.state.StateManager;
-import controller.app.ManageUsersController;
 import dao.BookDAO;
 import dao.LoanDAO;
 import dao.PurchaseDAO;
@@ -20,20 +18,17 @@ import model.Book;
 import model.Loan;
 import model.Purchase;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
 public class ManageUsersCardFactory {
 
-    private final StateManager stateManager;
     private final BookDAO bookDAO;
     private final PurchaseDAO purchaseDAO;
     private final LoanDAO loanDAO;
 
-    public ManageUsersCardFactory(StateManager stateManager) {
-        this.stateManager = stateManager;
+    public ManageUsersCardFactory() {
         this.bookDAO = DAOFactory.getActiveFactory().getBookDAO();
         this.purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
         this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();

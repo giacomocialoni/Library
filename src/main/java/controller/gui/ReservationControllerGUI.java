@@ -41,7 +41,7 @@ public class ReservationControllerGUI {
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.cardFactory = new ReservationCardFactory(stateManager);
+        this.cardFactory = new ReservationCardFactory();
         
         if (initialized) {
             loadAllReservations();

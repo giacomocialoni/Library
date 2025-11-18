@@ -11,19 +11,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import model.Book;
-import app.state.StateManager;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
 public class ManageBooksCardFactory {
 
-    private final StateManager stateManager;
+    public ManageBooksCardFactory() {}
 
-    public ManageBooksCardFactory(StateManager stateManager) {
-        this.stateManager = stateManager;
-    }
-
-    public HBox createBookCard(Book book, Consumer<Integer> onIncreaseStock, 
+	public HBox createBookCard(Book book, Consumer<Integer> onIncreaseStock, 
                               Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
         
         // Copertina del libro a sinistra

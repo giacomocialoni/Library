@@ -28,7 +28,7 @@ public class ManageUsersControllerGUI {
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.cardFactory = new ManageUsersCardFactory(stateManager);
+        this.cardFactory = new ManageUsersCardFactory();
         
         if (initialized) {
             loadUsers();

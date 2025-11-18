@@ -29,7 +29,7 @@ public class ManageBooksControllerGUI {
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.cardFactory = new ManageBooksCardFactory(stateManager);
+        this.cardFactory = new ManageBooksCardFactory();
         
         if (initialized) {
             loadBooks();
