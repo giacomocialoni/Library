@@ -68,7 +68,7 @@ public class Book {
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
     public double getPrice() { return price; }
-    public void setImagePath(double price) { this.price = price; }
+    public void setPrice(double price) { this.price = price; }
 
 
     @Override
