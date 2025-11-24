@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
 
 import controller.gui.MainGuestControllerGUI;
 import controller.gui.MainUserControllerGUI;
@@ -14,8 +13,12 @@ import controller.gui.MainControllerGUI;
 
 import dao.factory.DAOFactory;
 import app.state.StateManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StageManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(StageManager.class);
 
     private final StateManager stateManager;
     private final Stage primaryStage;
@@ -39,16 +42,16 @@ public class StageManager {
     public static final String CONFIRM_LOAN_VIEW = BASE_PATH + "LoanView.fxml";
     public static final String ERROR_VIEW = BASE_PATH + "ErrorView.fxml";
     public static final String SUCCESS_VIEW = BASE_PATH + "SuccessView.fxml";
-	public static final String RESERVATION_VIEW = BASE_PATH + "ReservationView.fxml";
-	public static final String MANAGE_BOOKS_VIEW = BASE_PATH + "ManageBooksView.fxml";
-	public static final String MANAGE_USERS_VIEW = BASE_PATH + "ManageUsersView.fxml";
-	public static final String POST_VIEW	 = BASE_PATH + "PostView.fxml";
+    public static final String RESERVATION_VIEW = BASE_PATH + "ReservationView.fxml";
+    public static final String MANAGE_BOOKS_VIEW = BASE_PATH + "ManageBooksView.fxml";
+    public static final String MANAGE_USERS_VIEW = BASE_PATH + "ManageUsersView.fxml";
+    public static final String POST_VIEW = BASE_PATH + "PostView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
         this.primaryStage = stage;
         this.stateManager = new StateManager(daoFactory);
-        this.stateManager.setStageManager(this); // collega lo state manager
-        showGuestView(); // mostra la view guest all'avvio
+        this.stateManager.setStageManager(this);
+        showGuestView();
     }
 
     public void showGuestView() {
@@ -64,15 +67,13 @@ public class StageManager {
             primaryStage.setTitle("Library");
             primaryStage.show();
 
-            // reset controller user
             mainUserController = null;
 
-        } catch (IOException e) {
-            System.err.println("Errore nel caricamento della view guest: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Errore nel caricamento della view guest: {}", MAIN_GUEST_VIEW, e);
         }
     }
 
-    /** Mostra la view User dopo login */
     public MainUserControllerGUI loadMainUserView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_USER_VIEW));
@@ -80,70 +81,79 @@ public class StageManager {
 
             MainUserControllerGUI controller = loader.getController();
             controller.setStateManager(stateManager);
-
             mainUserController = controller;
 
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Library - User");
-            
-            // Forza il ridimensionamento corretto
             primaryStage.sizeToScene();
             primaryStage.setMinWidth(1000);
             primaryStage.setMinHeight(700);
             primaryStage.show();
 
             return controller;
-        } catch (IOException e) {
-            System.err.println("Errore nel caricamento della view user: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Errore nel caricamento della view user: {}", MAIN_USER_VIEW, e);
             return null;
         }
     }
 
-    /** Ritorna il controller principale attivo (guest o user) */
-    public MainControllerGUI getActiveMainController() {
-        if (mainUserController != null)
-            return mainUserController;
-        else if (mainAdminController != null)
-        	return mainAdminController;
-        else 
-        	return mainGuestController;
+    public MainAdminControllerGUI loadMainAdminView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_ADMIN_VIEW));
+            Parent root = loader.load();
+
+            MainAdminControllerGUI controller = loader.getController();
+            controller.setStateManager(stateManager);
+            mainAdminController = controller;
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Library - Admin");
+            primaryStage.sizeToScene();
+            primaryStage.setMinWidth(1000);
+            primaryStage.setMinHeight(700);
+            primaryStage.show();
+
+            return controller;
+        } catch (Exception e) {
+            logger.error("Errore nel caricamento della view admin: {}", MAIN_ADMIN_VIEW, e);
+            return null;
+        }
     }
 
-    /** Carica un contenuto FXML nella view attiva */
+    public MainControllerGUI getActiveMainController() {
+        if (mainUserController != null) return mainUserController;
+        if (mainAdminController != null) return mainAdminController;
+        return mainGuestController;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T loadContent(String fxmlPath) {
         try {
-            System.out.println("Tentativo di caricamento: " + fxmlPath);
-            
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             if (loader.getLocation() == null) {
-                System.err.println("ERRORE: File FXML non trovato: " + fxmlPath);
+                logger.error("File FXML non trovato: {}", fxmlPath);
                 return null;
             }
-            
+
             Node node = loader.load();
 
             MainControllerGUI activeController = getActiveMainController();
             if (activeController != null) {
                 activeController.setContent(node);
             } else {
-                System.err.println("ERRORE: Nessun controller principale attivo");
+                logger.warn("Nessun controller principale attivo per caricare il contenuto: {}", fxmlPath);
             }
 
             T controller = (T) loader.getController();
             if (controller == null) {
-                System.err.println("ATTENZIONE: Controller FXML è null per: " + fxmlPath);
+                logger.warn("Controller FXML è null per: {}", fxmlPath);
             }
-            
+
             return controller;
-        } catch (IOException e) {
-            System.err.println("ERRORE CRITICO nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
-            e.printStackTrace();
-            return null;
         } catch (Exception e) {
-            System.err.println("ERRORE IMPREVISTO nel caricamento del contenuto " + fxmlPath + ": " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Errore durante il caricamento del contenuto FXML: {}", fxmlPath, e);
             return null;
         }
     }
@@ -151,31 +161,4 @@ public class StageManager {
     public StateManager getStateManager() {
         return stateManager;
     }
-
-	public MainAdminControllerGUI loadMainAdminView() {
-		try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_ADMIN_VIEW));
-            Parent root = loader.load();
-
-            MainAdminControllerGUI controller = loader.getController();
-            controller.setStateManager(stateManager);
-
-            mainAdminController = controller;
-
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.setTitle("Library - Admin");
-            
-            // Forza il ridimensionamento corretto
-            primaryStage.sizeToScene();
-            primaryStage.setMinWidth(1000);
-            primaryStage.setMinHeight(700);
-            primaryStage.show();
-
-            return controller;
-        } catch (IOException e) {
-            System.err.println("Errore nel caricamento della view admin: " + e.getMessage());
-            return null;
-        }
-	}
 }
