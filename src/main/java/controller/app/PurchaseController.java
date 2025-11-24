@@ -4,11 +4,17 @@ import app.Session;
 import dao.BookDAO;
 import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 import model.Account;
 import model.Book;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.BuyResult;
 
 public class PurchaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseController.class);
 
     private final BookDAO bookDAO;
     private final PurchaseDAO purchaseDAO;
@@ -21,45 +27,50 @@ public class PurchaseController {
 
     public BuyResult buyBook(int bookId, int quantity) {
         Session session = Session.getInstance();
-
         if (!session.isLoggedIn()) {
             return BuyResult.NOT_LOGGED;
         }
 
         Account user = session.getLoggedUser();
-        Book book = bookDAO.getBookById(bookId);
-
-        if (book == null) {
-            return BuyResult.ERROR;
-        }
-
-        if (book.getStock() < quantity) {
-            return BuyResult.INSUFFICIENT_STOCK;
-        }
 
         try {
-            // Aggiorna lo stock nel database
+            Book book = bookDAO.getBookById(bookId);
+
+            if (book.getStock() < quantity) {
+                return BuyResult.INSUFFICIENT_STOCK;
+            }
+
+            // Aggiorna lo stock
             book.setStock(book.getStock() - quantity);
             bookDAO.updateBook(book);
 
-            // Registra UN SOLO record in purchase (non importa la quantità)
+            // Registra l'acquisto
             purchaseDAO.addReservedPurchase(user.getEmail(), bookId);
 
             return BuyResult.SUCCESS;
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (RecordNotFoundException e) {
+            logger.warn("Libro non trovato id=" + bookId);
+            return BuyResult.ERROR;
+        } catch (DAOException e) {
+            logger.error("Errore DAO durante l'acquisto del libro id=" + bookId + " per utente=" + user.getEmail(), e);
             return BuyResult.ERROR;
         }
     }
 
-    // Metodo per verificare se un utente ha già acquistato un libro
     public boolean hasPurchasedBook(int bookId) {
         Session session = Session.getInstance();
         if (!session.isLoggedIn()) {
             return false;
         }
-        
+
         Account user = session.getLoggedUser();
-        return purchaseDAO.hasUserPurchasedBook(user.getEmail(), bookId);
+
+        try {
+            return purchaseDAO.hasUserPurchasedBook(user.getEmail(), bookId);
+        } catch (DAOException e) {
+            logger.error("Errore DAO durante il controllo acquisto del libro id=" + bookId + " per utente=" + user.getEmail(), e);
+            return false;
+        }
     }
 }

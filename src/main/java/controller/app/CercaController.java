@@ -3,13 +3,22 @@ package controller.app;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.RecordNotFoundException;
+import exception.DuplicateRecordException;
 import model.Book;
 import model.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CercaController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CercaController.class);
 
     private final BookDAO bookDAO;
     private final CategoryDAO categoryDAO;
@@ -20,13 +29,49 @@ public class CercaController {
     }
 
     public List<String> getAllCategoryNames() {
-        List<Category> categories = categoryDAO.getAllCategories();
-        return categories.stream()
-                .map(Category::getCategory)
-                .collect(Collectors.toList());
+        try {
+            List<Category> categories = categoryDAO.getAllCategories();
+            return categories.stream()
+                    .map(Category::getCategory)
+                    .collect(Collectors.toList());
+        } catch (SQLException e) {
+            logger.error("Errore nel recupero delle categorie dal database", e);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Book> searchBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) {
+        try {
+            return bookDAO.getSearchedBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
+        } catch (DAOException e) {
+            logger.error("Errore durante la ricerca dei libri", e);
+            return Collections.emptyList();
+        }
     }
     
-    public List<Book> searchBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) {
-        return bookDAO.getSearchedBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
+    public boolean addCategory(Category category) {
+        try {
+            categoryDAO.addCategory(category);
+            return true;
+        } catch (DuplicateRecordException e) {
+            logger.warn("Categoria già esistente: " + category.getCategory());
+            return false;
+        } catch (SQLException e) {
+            logger.error("Errore durante l'aggiunta della categoria: " + category.getCategory(), e);
+            return false;
+        }
+    }
+
+    public boolean deleteCategory(String categoryName) {
+        try {
+            categoryDAO.deleteCategory(categoryName);
+            return true;
+        } catch (RecordNotFoundException e) {
+            logger.warn("Categoria non trovata: " + categoryName);
+            return false;
+        } catch (SQLException e) {
+            logger.error("Errore durante l'eliminazione della categoria: " + categoryName, e);
+            return false;
+        }
     }
 }

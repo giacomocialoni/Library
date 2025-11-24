@@ -4,6 +4,8 @@ import app.state.StateManager;
 import app.state.ErrorState;
 import app.state.SuccessState;
 import controller.app.ManageUsersController;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -26,7 +28,7 @@ public class ManageUsersControllerGUI {
     
     private boolean initialized = false;
 
-    public void setStateManager(StateManager stateManager) {
+    public void setStateManager(StateManager stateManager) throws RecordNotFoundException, DAOException {
         this.stateManager = stateManager;
         this.cardFactory = new ManageUsersCardFactory();
         
@@ -41,7 +43,7 @@ public class ManageUsersControllerGUI {
     }
 
     @FXML
-    public void handleSearch() {
+    public void handleSearch() throws RecordNotFoundException, DAOException {
         if (cardFactory == null) {
             showError("Attenzione", "Sistema non ancora inizializzato");
             return;
@@ -60,19 +62,19 @@ public class ManageUsersControllerGUI {
     }
 
     @FXML
-    public void handleClearFilters() {
+    public void handleClearFilters() throws RecordNotFoundException, DAOException {
         searchField.clear();
         loadUsers();
     }
 
-    public void loadUsers() {
+    public void loadUsers() throws RecordNotFoundException, DAOException {
         if (cardFactory == null) return;
 
         List<User> users = appController.getAllUsers();
         displayUsers(users);
     }
 
-    private void displayUsers(List<User> users) {
+    private void displayUsers(List<User> users) throws RecordNotFoundException, DAOException {
         resultsContainer.getChildren().clear();
 
         for (User user : users) {

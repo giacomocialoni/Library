@@ -6,6 +6,8 @@ import app.state.SuccessState;
 import controller.app.ReservationController;
 import dao.BookDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -39,7 +41,7 @@ public class ReservationControllerGUI {
     private boolean initialized = false;
     private String searchMode = "user";
 
-    public void setStateManager(StateManager stateManager) {
+    public void setStateManager(StateManager stateManager) throws RecordNotFoundException, DAOException {
         this.stateManager = stateManager;
         this.cardFactory = new ReservationCardFactory();
         
@@ -84,7 +86,7 @@ public class ReservationControllerGUI {
     }
 
     @FXML
-    public void handleSearch() {
+    public void handleSearch() throws RecordNotFoundException, DAOException {
         if (cardFactory == null) {
             showError("Attenzione", "Sistema non ancora inizializzato");
             return;
@@ -120,7 +122,7 @@ public class ReservationControllerGUI {
     }
 
     @FXML
-    public void handleClearFilters() {
+    public void handleClearFilters() throws RecordNotFoundException, DAOException {
         searchField.clear();
         showSalesCheckbox.setSelected(true);
         showLoansCheckbox.setSelected(true);
@@ -129,7 +131,7 @@ public class ReservationControllerGUI {
     }
 
     @FXML
-    public void handleCheckboxChange() {
+    public void handleCheckboxChange() throws RecordNotFoundException, DAOException {
         if (cardFactory != null) {
             if (searchField.getText().trim().isEmpty()) {
                 loadAllReservations();
@@ -139,7 +141,7 @@ public class ReservationControllerGUI {
         }
     }
 
-    private void loadAllReservations() {
+    private void loadAllReservations() throws RecordNotFoundException, DAOException {
         if (cardFactory == null) return;
 
         resultsContainer.getChildren().clear();
@@ -153,7 +155,7 @@ public class ReservationControllerGUI {
         displayReservations(purchases, loans);
     }
 
-    private void displayReservations(List<Purchase> purchases, List<Loan> loans) {
+    private void displayReservations(List<Purchase> purchases, List<Loan> loans) throws RecordNotFoundException, DAOException {
         resultsContainer.getChildren().clear();
 
         int count = 0;

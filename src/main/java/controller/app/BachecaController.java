@@ -3,9 +3,14 @@ package controller.app;
 import java.util.List;
 import dao.PostDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
 import model.Post;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BachecaController {
+
+	private static final Logger logger = LoggerFactory.getLogger(BachecaController.class);
 
     private final PostDAO postDAO;
 
@@ -14,14 +19,11 @@ public class BachecaController {
     }
 
     public List<Post> getAllPostsOrderedByDate() {
-        return postDAO.getAllPostsOrderedByDate();
-    }
-
-    public void createPost(String adminUsername, String title, String text, String imagePath) {
-        //TODO Crea post in bacheca
-    }
-
-    public void deletePost(int postId) {
-        //TODO Elimina pos in bacheca
+        try {
+            return postDAO.getAllPostsOrderedByDate();
+        } catch (DAOException e) {
+            logger.error("Errore DAO durante il recupero dei post", e);
+            return List.of();
+        }
     }
 }

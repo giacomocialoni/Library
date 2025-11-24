@@ -3,6 +3,8 @@ package dao.database;
 import dao.BookDAO;
 import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 import model.Book;
 import model.Loan;
 import model.Purchase;
@@ -20,11 +22,12 @@ public class DatabaseBookDAO implements BookDAO {
     public DatabaseBookDAO(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
-
+    
     @Override
-    public List<Book> getAllBooks() {
+    public List<Book> getAllBooks() throws DAOException {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT * FROM books";
+
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -32,35 +35,39 @@ public class DatabaseBookDAO implements BookDAO {
             while (rs.next()) {
                 books.add(extractBookFromResultSet(rs));
             }
+            return books;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante il recupero di tutti i libri.", e);
         }
-        return books;
     }
 
     @Override
-    public Book getBookById(int id) {
+    public Book getBookById(int id) throws DAOException, RecordNotFoundException {
         String sql = "SELECT * FROM books WHERE id = ?";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 return extractBookFromResultSet(rs);
+            } else {
+                throw new RecordNotFoundException("Libro con ID " + id + " non trovato.");
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante il caricamento del libro con ID " + id, e);
         }
-        return null;
     }
 
     @Override
-    public void addBook(Book book) {
+    public void addBook(Book book) throws DAOException {
         String sql = "INSERT INTO books (id, title, author, category, year, publisher, pages, isbn, stock, plot, image_path, price) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -68,13 +75,14 @@ public class DatabaseBookDAO implements BookDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante l'aggiunta del libro: " + book.getTitle(), e);
         }
     }
 
     @Override
-    public void updateBook(Book book) {
+    public void updateBook(Book book) throws DAOException, RecordNotFoundException {
         String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=?, price=? WHERE id=?";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -85,45 +93,54 @@ public class DatabaseBookDAO implements BookDAO {
             stmt.setString(5, book.getPublisher());
             stmt.setInt(6, book.getPages());
             stmt.setString(7, book.getIsbn());
-            stmt.setInt(8, book.getStock()); // QUESTO È IMPORTANTE - aggiorna lo stock
+            stmt.setInt(8, book.getStock());
             stmt.setString(9, book.getPlot());
             stmt.setString(10, book.getImagePath());
             stmt.setDouble(11, book.getPrice());
             stmt.setInt(12, book.getId());
-            
-            stmt.executeUpdate();
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new RecordNotFoundException("Impossibile aggiornare: nessun libro con ID " + book.getId());
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante l'aggiornamento del libro ID " + book.getId(), e);
         }
     }
 
     @Override
-    public void deleteBook(int id) {
+    public void deleteBook(int id) throws DAOException, RecordNotFoundException {
         String sql = "DELETE FROM books WHERE id=?";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+
+            if (rows == 0) {
+                throw new RecordNotFoundException("Nessun libro trovato con ID " + id + " da eliminare.");
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante l'eliminazione del libro ID " + id, e);
         }
     }
 
     @Override
     public List<Book> getSearchedBooks(String searchText, String searchMode, String category,
-                                       String yearFrom, String yearTo, boolean includeUnavailable) {
+                                       String yearFrom, String yearTo, boolean includeUnavailable)
+            throws DAOException {
 
         List<Book> books = new ArrayList<>();
         String sql = "SELECT * FROM books WHERE " +
-                     "((? = 'title' AND LOWER(title) LIKE ?) " +
-                     "OR (? = 'author' AND LOWER(author) LIKE ?)) " +
-                     "AND ((? IS NULL OR ? = '') OR category = ?) " +
-                     "AND ((? IS NULL OR ? = '') OR year >= CAST(? AS UNSIGNED)) " +
-                     "AND ((? IS NULL OR ? = '') OR year <= CAST(? AS UNSIGNED)) " +
-                     "AND (? = 1 OR stock > 0)";
+                "((? = 'title' AND LOWER(title) LIKE ?) " +
+                "OR (? = 'author' AND LOWER(author) LIKE ?)) " +
+                "AND ((? IS NULL OR ? = '') OR category = ?) " +
+                "AND ((? IS NULL OR ? = '') OR year >= CAST(? AS UNSIGNED)) " +
+                "AND ((? IS NULL OR ? = '') OR year <= CAST(? AS UNSIGNED)) " +
+                "AND (? = 1 OR stock > 0)";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -150,53 +167,54 @@ public class DatabaseBookDAO implements BookDAO {
             stmt.setInt(14, includeUnavailable ? 1 : 0);
 
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 books.add(extractBookFromResultSet(rs));
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return books;
 
-        return books;
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante la ricerca dei libri.", e);
+        }
     }
 
     @Override
-    public List<Book> getPurchasedBooks(String userEmail) {
+    public List<Book> getPurchasedBooks(String userEmail) throws DAOException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT b.* FROM books b " +
-                     "JOIN purchases p ON b.id = p.book_id " +
-                     "WHERE p.user_email = ? AND p.status = 'PURCHASED'"; // AGGIUNTA CONDIZIONE STATUS
+        String sql = "SELECT b.* FROM books b JOIN purchases p ON b.id = p.book_id WHERE p.user_email = ? AND p.status = 'PURCHASED'";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, userEmail);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 books.add(extractBookFromResultSet(rs));
             }
 
+            return books;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante il recupero dei libri acquistati per " + userEmail, e);
         }
-        return books;
-    }
-
-    // NUOVO METODO: Restituisce tutti i Purchase (per gestione admin)
-    @Override
-    public List<Purchase> getPurchasesByUser(String userEmail) {
-        // Questo dovrebbe essere in PurchaseDAO, ma se serve qui:
-        PurchaseDAO purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
-        return purchaseDAO.getPurchasesByUser(userEmail);
     }
 
     @Override
-    public List<Loan> getLoanedBooks(String userEmail) {
+    public List<Purchase> getPurchasesByUser(String userEmail) throws DAOException {
+        try {
+            PurchaseDAO purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
+            return purchaseDAO.getPurchasesByUser(userEmail);
+        } catch (Exception e) {
+            throw new DAOException("Errore durante il recupero degli acquisti dell'utente " + userEmail, e);
+        }
+    }
+
+    @Override
+    public List<Loan> getLoanedBooks(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        // CORREZIONE: Query corretta con tutti i campi
-        String sql = "SELECT l.*, b.* FROM loans l " +
-                     "JOIN books b ON l.book_id = b.id " +
-                     "WHERE l.user_email = ?";
+        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -205,31 +223,27 @@ public class DatabaseBookDAO implements BookDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                // CORREZIONE: Estrai tutti i campi corretti
                 int loanId = rs.getInt("id");
                 String email = rs.getString("user_email");
                 Book book = extractBookFromResultSet(rs);
-                
+
                 LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
-                LocalDate reservedDate = rs.getDate("reserved_date") != null ? 
-                    rs.getDate("reserved_date").toLocalDate() : null;
-                LocalDate loanedDate = rs.getDate("loaned_date") != null ? 
-                    rs.getDate("loaned_date").toLocalDate() : null;
-                LocalDate returningDate = rs.getDate("returning_date") != null ? 
-                    rs.getDate("returning_date").toLocalDate() : null;
-                
-                // CORREZIONE: Crea Loan con costruttore corretto
-                Loan loan = new Loan(loanId, email, book, status, reservedDate, loanedDate, returningDate);
-                loans.add(loan);
+                LocalDate reservedDate = rs.getDate("reserved_date") != null ?
+                        rs.getDate("reserved_date").toLocalDate() : null;
+                LocalDate loanedDate = rs.getDate("loaned_date") != null ?
+                        rs.getDate("loaned_date").toLocalDate() : null;
+                LocalDate returningDate = rs.getDate("returning_date") != null ?
+                        rs.getDate("returning_date").toLocalDate() : null;
+
+                loans.add(new Loan(loanId, email, book, status, reservedDate, loanedDate, returningDate));
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return loans;
-    }
+            return loans;
 
-    // --- UTILITY PRIVATE ---
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero dei prestiti di " + userEmail, e);
+        }
+    }
 
     private Book extractBookFromResultSet(ResultSet rs) throws SQLException {
         return new Book(
@@ -260,5 +274,6 @@ public class DatabaseBookDAO implements BookDAO {
         stmt.setInt(9, book.getStock());
         stmt.setString(10, book.getPlot());
         stmt.setString(11, book.getImagePath());
+        stmt.setDouble(12, book.getPrice());
     }
 }

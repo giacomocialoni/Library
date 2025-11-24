@@ -2,6 +2,7 @@ package dao.database;
 
 import dao.PostDAO;
 import model.Post;
+import exception.DAOException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class DatabasePostDAO implements PostDAO {
     }
 
     @Override
-    public List<Post> getAllPostsOrderedByDate() {
+    public List<Post> getAllPostsOrderedByDate() throws DAOException {
         List<Post> posts = new ArrayList<>();
 
         String sql = """
@@ -34,26 +35,25 @@ public class DatabasePostDAO implements PostDAO {
             while (rs.next()) {
                 String authorName = rs.getString("first_name") + " " + rs.getString("last_name");
                 Post post = new Post(
-                        rs.getString("user_fk"),              // email autore
-                        authorName,                           // nome completo
-                        rs.getString("role"),                 // ruolo (admin/logged_user)
-                        rs.getString("title"),                // titolo post
-                        rs.getString("content"),              // contenuto
-                        rs.getTimestamp("post_date").toLocalDateTime() // data post
+                        rs.getString("user_fk"),
+                        authorName,
+                        rs.getString("role"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getTimestamp("post_date").toLocalDateTime()
                 );
                 posts.add(post);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return posts;
 
-        return posts;
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero dei post", e);
+        }
     }
 
- // Aggiungi questo metodo a DatabasePostDAO.java se non esiste già
     @Override
-    public void addPost(Post post) {
+    public void addPost(Post post) throws DAOException {
         String sql = "INSERT INTO posts (user_fk, title, content, post_date) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = dbConnection.getConnection();
@@ -62,12 +62,11 @@ public class DatabasePostDAO implements PostDAO {
             stmt.setString(1, post.getUserEmail());
             stmt.setString(2, post.getTitle());
             stmt.setString(3, post.getContent());
-            stmt.setTimestamp(4, java.sql.Timestamp.valueOf(post.getPostDate()));
+            stmt.setTimestamp(4, Timestamp.valueOf(post.getPostDate()));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante l'aggiunta del post", e);
+            throw new DAOException("Errore durante l'aggiunta del post", e);
         }
     }
 }

@@ -6,14 +6,18 @@ import model.Purchase;
 
 import java.util.List;
 
+import exception.DAOException;
+import exception.RecordNotFoundException;
+
 public interface BookDAO {
-    List<Book> getAllBooks();
-    Book getBookById(int id);
-    void addBook(Book book);
-    void updateBook(Book book);
-    void deleteBook(int id);
-	List<Loan> getLoanedBooks(String userEmail);
-    List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable);
-    List<Book> getPurchasedBooks(String userEmail); // Restituisce List<Book>
-    List<Purchase> getPurchasesByUser(String userEmail); // NUOVO: restituisce List<Purchase>
+
+    List<Book> getAllBooks() throws DAOException;
+    Book getBookById(int id) throws DAOException, RecordNotFoundException;
+    void addBook(Book book) throws DAOException;
+    void updateBook(Book book) throws DAOException, RecordNotFoundException;
+    void deleteBook(int id) throws DAOException, RecordNotFoundException;
+    List<Loan> getLoanedBooks(String userEmail) throws DAOException;
+    List<Book> getSearchedBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) throws DAOException;
+    List<Book> getPurchasedBooks(String userEmail) throws DAOException;
+    List<Purchase> getPurchasesByUser(String userEmail) throws DAOException;
 }

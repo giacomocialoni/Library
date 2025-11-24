@@ -2,12 +2,10 @@ package dao.database;
 
 import dao.UserDAO;
 import model.User;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,135 +18,126 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(String email) throws DAOException, RecordNotFoundException {
         String sql = "SELECT email, password, first_name, last_name FROM users WHERE email = ?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new User(
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name")
+                    );
+                } else {
+                    throw new RecordNotFoundException("Utente non trovato con email: " + email);
+                }
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante la ricerca dell'utente", e);
         }
-        return null;
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws DAOException, RecordNotFoundException {
         List<User> users = new ArrayList<>();
         String sql = "SELECT email, password, first_name, last_name FROM users ORDER BY email";
-        
+
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                User user = new User(
+                users.add(new User(
                         rs.getString("email"),
                         rs.getString("password"),
                         rs.getString("first_name"),
                         rs.getString("last_name")
-                );
-                users.add(user);
+                ));
             }
+
+            if (users.isEmpty()) {
+                throw new RecordNotFoundException("Nessun utente trovato nel database");
+            }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante il recupero di tutti gli utenti", e);
         }
         return users;
     }
 
-    // Metodo aggiuntivo utile per la ricerca
-    public List<User> searchUsers(String searchTerm) {
+    @Override
+    public List<User> searchUsers(String searchTerm) throws DAOException, RecordNotFoundException {
         List<User> users = new ArrayList<>();
         String sql = "SELECT email, password, first_name, last_name FROM users " +
-                    "WHERE LOWER(email) LIKE LOWER(?) OR LOWER(first_name) LIKE LOWER(?) OR LOWER(last_name) LIKE LOWER(?) " +
-                    "ORDER BY email";
-        
+                     "WHERE LOWER(email) LIKE LOWER(?) OR LOWER(first_name) LIKE LOWER(?) OR LOWER(last_name) LIKE LOWER(?) " +
+                     "ORDER BY email";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String likeTerm = "%" + searchTerm + "%";
+            String likeTerm = "%" + (searchTerm == null ? "" : searchTerm) + "%";
             stmt.setString(1, likeTerm);
             stmt.setString(2, likeTerm);
             stmt.setString(3, likeTerm);
-            
-            ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                User user = new User(
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name")
-                );
-                users.add(user);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    users.add(new User(
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name")
+                    ));
+                }
             }
+
+            if (users.isEmpty()) {
+                throw new RecordNotFoundException("Nessun utente trovato per la ricerca: " + searchTerm);
+            }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DAOException("Errore durante la ricerca degli utenti", e);
         }
         return users;
     }
-    
-    public boolean deleteUser(String email) {
-        // IMPORTANTE: Prima elimina le dipendenze (purchases, loans)
+
+    @Override
+    public void deleteUser(String email) throws DAOException, RecordNotFoundException {
         String deletePurchasesSql = "DELETE FROM purchases WHERE user_email = ?";
         String deleteLoansSql = "DELETE FROM loans WHERE user_email = ?";
         String deleteUserSql = "DELETE FROM users WHERE email = ?";
-        
-        Connection conn = null;
-        try {
-            conn = dbConnection.getConnection();
-            conn.setAutoCommit(false); // Inizia transazione
-            
-            // Elimina purchases
+
+        try (Connection conn = dbConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
             try (PreparedStatement stmt = conn.prepareStatement(deletePurchasesSql)) {
                 stmt.setString(1, email);
                 stmt.executeUpdate();
             }
-            
-            // Elimina loans
+
             try (PreparedStatement stmt = conn.prepareStatement(deleteLoansSql)) {
                 stmt.setString(1, email);
                 stmt.executeUpdate();
             }
-            
-            // Elimina user
+
             try (PreparedStatement stmt = conn.prepareStatement(deleteUserSql)) {
                 stmt.setString(1, email);
                 int rowsAffected = stmt.executeUpdate();
-                
-                conn.commit(); // Conferma transazione
-                return rowsAffected > 0;
+                if (rowsAffected == 0) {
+                    conn.rollback();
+                    throw new RecordNotFoundException("Utente non trovato per la cancellazione: " + email);
+                }
             }
-            
+
+            conn.commit();
+
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback(); // Rollback in caso di errore
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            throw new DAOException("Errore durante la cancellazione dell'utente", e);
         }
     }
 }

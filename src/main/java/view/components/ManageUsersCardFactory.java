@@ -14,6 +14,8 @@ import dao.BookDAO;
 import dao.LoanDAO;
 import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.RecordNotFoundException;
 import model.Book;
 import model.Loan;
 import model.Purchase;
@@ -34,7 +36,7 @@ public class ManageUsersCardFactory {
         this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();
     }
 
-    public HBox createUserCard(User user, Runnable onRemoveUser) {
+    public HBox createUserCard(User user, Runnable onRemoveUser) throws RecordNotFoundException, DAOException {
         
         // Informazioni utente (senza avatar)
         VBox infoBox = createUserInfo(user);
@@ -52,7 +54,7 @@ public class ManageUsersCardFactory {
         return card;
     }
 
-    private VBox createUserInfo(User user) {
+    private VBox createUserInfo(User user) throws RecordNotFoundException, DAOException {
         VBox infoBox = new VBox(8);
         infoBox.setPadding(new Insets(10));
         infoBox.setAlignment(Pos.TOP_LEFT);
@@ -109,7 +111,7 @@ public class ManageUsersCardFactory {
         return controlsBox;
     }
 
-    private Label createLastPurchaseLabel(String userEmail) {
+    private Label createLastPurchaseLabel(String userEmail) throws RecordNotFoundException, DAOException {
         List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
         
         if (purchases.isEmpty()) {
@@ -132,7 +134,7 @@ public class ManageUsersCardFactory {
         return new Label("Ultimo acquisto: " + bookTitle + " (" + dateText + ")");
     }
 
-    private Label createLastLoanLabel(String userEmail) {
+    private Label createLastLoanLabel(String userEmail) throws RecordNotFoundException, DAOException {
         List<Loan> loans = loanDAO.getLoansByUser(userEmail);
         
         if (loans.isEmpty()) {
@@ -160,7 +162,7 @@ public class ManageUsersCardFactory {
         return new Label("Ultimo prestito: " + bookTitle + " (" + dateText + ")");
     }
 
-    private Label createUserStatsLabel(String userEmail) {
+    private Label createUserStatsLabel(String userEmail) throws RecordNotFoundException, DAOException {
         List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
         List<Loan> loans = loanDAO.getLoansByUser(userEmail);
         
