@@ -8,13 +8,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@../../css/style.css" fx:id="root" prefWidth="1000.0" prefHeight="850.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainGuestControllerGUI">
+<BorderPane stylesheets="@../../css/style.css" fx:id="root" prefWidth="1480.0" prefHeight="832.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainGuestControllerGUI">
     
     <top>
         <VBox>
             <!-- Header con Logo e Login -->
             <HBox alignment="CENTER" styleClass="header-container">
-            <Label styleClass="logo-text" text="Library" />
+            <Label styleClass="logo-text" text="BiblioTech" />
                
                <!-- Navigation Bar Centrale con Sliding Selector -->
                <HBox alignment="CENTER" styleClass="nav-wrapper">
@@ -24,7 +24,9 @@
                            
                            <Button fx:id="cercaButton" onAction="#showCerca" styleClass="nav-button" text="Cerca" />
                            
-                           <Button fx:id="bachecaButton" onAction="#showBacheca" styleClass="nav-button" text="Bacheca">
+                           <Button fx:id="bachecaButton" onAction="#showBacheca" styleClass="nav-button" text="Bacheca" />
+                           
+                           <Button fx:id="infoButton" onAction="#showInfo" styleClass="nav-button" text="Info">
                         <opaqueInsets>
                            <Insets />
                         </opaqueInsets>

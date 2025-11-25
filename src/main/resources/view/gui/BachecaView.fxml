@@ -9,17 +9,17 @@
 <VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.BachecaControllerGUI">
    <children>
          <Label styleClass="page-subtitle" text="Ultime notizie dalla Library" />
-      <Separator prefWidth="200.0" styleClass="separator"/>
+      <Separator prefWidth="200.0" styleClass="separator" />
       <ScrollPane fitToWidth="true" minHeight="400.0" minWidth="600" styleClass="scroll-pane">
           
           <content>
-              <VBox spacing="25">
+              <VBox alignment="CENTER" spacing="25">
                   <padding>
                       <Insets bottom="10" left="10" right="10" top="10" />
                   </padding>
                   
                   <!-- Timeline post -->
-                  <VBox fx:id="postsContainer" maxWidth="900" spacing="25">
+                  <VBox fx:id="postsContainer" maxWidth="1200" spacing="25">
                       
                       
                       

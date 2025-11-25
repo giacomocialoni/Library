@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1000.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainAdminControllerGUI">
+<BorderPane fx:id="root" prefHeight="832" prefWidth="1480" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainAdminControllerGUI">
     
     <top>
         <VBox spacing="0">
             <!-- Header con Logo e Login -->
             <HBox alignment="CENTER" styleClass="header-container">
-                <Label styleClass="logo-text" text="Library" />
+                <Label styleClass="logo-text" text="BiblioTech" />
                
                <!-- Navigation Bar Centrale con Sliding Selector -->
                <HBox alignment="CENTER" styleClass="nav-wrapper">

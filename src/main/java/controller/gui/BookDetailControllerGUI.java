@@ -32,6 +32,7 @@ public class BookDetailControllerGUI {
     @FXML private Button backButton;
     @FXML private Button buyButton;
     @FXML private Button borrowButton;
+    @FXML private Button wishlistButton;
 
     private StateManager stateManager;
     private BookDetailController appController;
@@ -61,10 +62,19 @@ public class BookDetailControllerGUI {
         
         double total = book.getPrice() * quantitySpinner.getValue();
         buyButton.setText(String.format("Acquista - €%.2f", total));
+        
+        if (Session.getInstance().isLoggedIn() && appController.isInWishlist(bookId)) {
+            wishlistButton.setText("Rimuovi");
+            wishlistButton.getStyleClass().add("in-wishlist");
+        } else {
+            wishlistButton.setText("Aggiungi");
+            wishlistButton.getStyleClass().remove("in-wishlist");
+        }
     }
 
     @FXML
     public void initialize() {
+        // Spinner quantità
         SpinnerValueFactory<Integer> valueFactory =
             new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
         quantitySpinner.setValueFactory(valueFactory);
@@ -76,6 +86,40 @@ public class BookDetailControllerGUI {
                 buyButton.setText(String.format("Acquista - €%.2f", total));
             }
         });
+    }
+    
+    @FXML
+    public void handleWishlist() {
+        if (currentBook == null) return;
+
+        if (!Session.getInstance().isLoggedIn()) {
+            stateManager.setState(
+                new LoginState(stateManager, () -> toggleWishlist())
+            );
+            return;
+        }
+
+        toggleWishlist();
+    }
+
+    private void toggleWishlist() {
+        boolean inWishlist = appController.isInWishlist(currentBook.getId());
+
+        try {
+            if (inWishlist) {
+                appController.removeFromWishlist(currentBook.getId());
+                wishlistButton.setText("Aggiungi");
+                wishlistButton.getStyleClass().remove("in-wishlist");
+            } else {
+                appController.addToWishlist(currentBook.getId());
+                wishlistButton.setText("Rimuovi");
+                if (!wishlistButton.getStyleClass().contains("in-wishlist")) {
+                    wishlistButton.getStyleClass().add("in-wishlist");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateQuantitySpinner(int stock) {

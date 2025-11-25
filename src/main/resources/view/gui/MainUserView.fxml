@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1000.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainUserControllerGUI">
+<BorderPane fx:id="root" prefHeight="832" prefWidth="1480" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.MainUserControllerGUI">
     
     <top>
         <VBox spacing="0">
             <!-- Header con Logo e Login -->
             <HBox alignment="CENTER" styleClass="header-container">
-                <Label styleClass="logo-text" text="Library" />
+                <Label styleClass="logo-text" text="BiblioTech" />
                
                <!-- Navigation Bar Centrale con Sliding Selector -->
                <HBox alignment="CENTER" styleClass="nav-wrapper">
@@ -23,6 +23,8 @@
                            <Button fx:id="cercaButton" onAction="#showCerca" styleClass="nav-button" text="Cerca" />
                            <Button fx:id="bachecaButton" onAction="#showBacheca" styleClass="nav-button" text="Bacheca" />
                            <Button fx:id="profileButton" onAction="#showProfile" styleClass="nav-button" text="Profilo" />
+                           <Button fx:id="wishlistButton" onAction="#showWishlist" styleClass="nav-button" text="Wishlist" />
+                           <Button fx:id="infoButton" onAction="#showInfo" styleClass="nav-button" text="Info" />
                        </HBox>
                    </HBox>
                </HBox>

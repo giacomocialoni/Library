@@ -1,6 +1,5 @@
 package dao.factory;
 
-import dao.csv.CSVBookDAO;
 import dao.AccountDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
@@ -8,6 +7,8 @@ import dao.LoanDAO;
 import dao.PostDAO;
 import dao.PurchaseDAO;
 import dao.UserDAO;
+import dao.WishlistDAO;
+import dao.csv.CSVBookDAO;
 
 public class CSVDAOFactory extends DAOFactory {
 
@@ -48,6 +49,12 @@ public class CSVDAOFactory extends DAOFactory {
 
 	@Override
 	protected PurchaseDAO createPurchaseDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected WishlistDAO createWishlistDAO() {
 		// TODO Auto-generated method stub
 		return null;
 	}

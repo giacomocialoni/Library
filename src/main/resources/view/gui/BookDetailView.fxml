@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.BookDetailControllerGUI">
+<ScrollPane fitToWidth="true" styleClass="scroll-pane" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.BookDetailControllerGUI">
     
     <content>
         <VBox spacing="30">
@@ -22,13 +22,19 @@
             <HBox alignment="TOP_LEFT" maxWidth="1200" spacing="40">
                 
                 <!-- Copertina -->
-                <VBox alignment="TOP_CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" spacing="15">
+                <VBox alignment="TOP_CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" spacing="25.0">
                   
                     <!-- Pulsante indietro -->
                     <Button fx:id="backButton" onAction="#handleBack" styleClass="back-button" text="← Torna Indietro" />
                     <VBox alignment="CENTER" prefHeight="370" prefWidth="250" styleClass="book-cover">
                         <ImageView fx:id="coverImage" fitWidth="250" preserveRatio="true" />
                     </VBox>
+               <VBox alignment="CENTER" spacing="15.0">
+                  <children>
+                     <Label styleClass="wishlist-label" text="Aggiungi libro alla lista dei desideri per ricevere aggiornamenti sulla disponibilità" wrapText="true" />
+      						    <Button fx:id="wishlistButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleWishlist" styleClass="wishlist-button" text="Aggiungi" />
+                  </children>
+               </VBox>
                 </VBox>
                 
                 <!-- Informazioni libro -->
@@ -91,10 +97,10 @@
                         <Label styleClass="action-title" text="Prendi il libro" />
                         
                         <!-- Selezione quantità -->
-                        <HBox alignment="CENTER_LEFT" spacing="15">
-                            <Label styleClass="detail-label" text="Quantità:" />
-                            <Spinner fx:id="quantitySpinner" editable="true" initialValue="1" max="5" min="1" prefWidth="100" styleClass="spinner" />
-                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="butt">
+						    <Label styleClass="detail-label" text="Quantità:" />
+						    <Spinner fx:id="quantitySpinner" editable="true" initialValue="1" max="5" min="1" prefWidth="100" styleClass="spinner" />
+						</HBox>
                         
                         <!-- Pulsanti azione -->
                         <HBox spacing="15">

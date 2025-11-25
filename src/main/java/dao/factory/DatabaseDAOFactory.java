@@ -7,6 +7,7 @@ import dao.LoanDAO;
 import dao.PostDAO;
 import dao.PurchaseDAO;
 import dao.UserDAO;
+import dao.WishlistDAO;
 import dao.database.DBConnection;
 import dao.database.DatabaseAccountDAO;
 import dao.database.DatabaseBookDAO;
@@ -15,6 +16,7 @@ import dao.database.DatabaseLoanDAO;
 import dao.database.DatabasePostDAO;
 import dao.database.DatabasePurchaseDAO;
 import dao.database.DatabaseUserDAO;
+import dao.database.DatabaseWishlistDAO;
 
 public class DatabaseDAOFactory extends DAOFactory {
 
@@ -61,5 +63,10 @@ public class DatabaseDAOFactory extends DAOFactory {
 	@Override
 	protected PurchaseDAO createPurchaseDAO() {
 	    return new DatabasePurchaseDAO(dbConnection);
+	}
+	
+	@Override
+	protected WishlistDAO createWishlistDAO() {
+	    return new DatabaseWishlistDAO(dbConnection);
 	}
 }

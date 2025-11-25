@@ -7,6 +7,7 @@ import dao.LoanDAO;
 import dao.PostDAO;
 import dao.PurchaseDAO;
 import dao.UserDAO;
+import dao.WishlistDAO;
 import dao.database.DBConnection;
 
 public abstract class DAOFactory {
@@ -15,8 +16,9 @@ public abstract class DAOFactory {
     protected PostDAO postDAO;
     protected AccountDAO accountDAO;
     protected UserDAO userDAO;
-    protected abstract LoanDAO createLoanDAO();
-    protected abstract PurchaseDAO createPurchaseDAO();
+    private LoanDAO loanDAO;
+    private PurchaseDAO purchaseDAO;
+    protected WishlistDAO wishlistDAO;
 
     private static DAOFactory activeFactory;
     
@@ -26,8 +28,9 @@ public abstract class DAOFactory {
     protected abstract PostDAO createPostDAO();
     protected abstract AccountDAO createAccountDAO();
     protected abstract UserDAO createUserDAO();    
-    private LoanDAO loanDAO;
-    private PurchaseDAO purchaseDAO;
+    protected abstract LoanDAO createLoanDAO();
+    protected abstract PurchaseDAO createPurchaseDAO();
+    protected abstract WishlistDAO createWishlistDAO();
 
     // Gestione singleton
     public static void setActiveFactory(DAOFactory factory) {
@@ -82,6 +85,12 @@ public abstract class DAOFactory {
         if (purchaseDAO == null)
             purchaseDAO = createPurchaseDAO();
         return purchaseDAO;
+    }
+    
+    public WishlistDAO getWishlistDAO() {
+        if (wishlistDAO == null)
+            wishlistDAO = createWishlistDAO();
+        return wishlistDAO;
     }
     
     // Factory selector

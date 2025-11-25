@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.gui.WishlistControllerGUI"
+      spacing="10">
+
+    <children>
+
+        <!-- Titolo -->
+        <Label styleClass="page-subtitle" text="Wishlist" />
+        <Separator prefWidth="200" styleClass="separator" />
+
+        <!-- Contenuto -->
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <content>
+                <VBox alignment="CENTER" spacing="20">
+                    <children>
+
+                        <!-- Label descrittiva -->
+                        <Label fx:id="wishlistLabel"
+                               styleClass="profile-label"
+                               text="Libri presenti nella tua lista desideri" />
+
+                        <!-- Area card -->
+                        <ScrollPane fitToHeight="true"
+                                    hbarPolicy="AS_NEEDED"
+                                    vbarPolicy="NEVER"
+                                    styleClass="scroll-pane"
+                                    prefHeight="350">
+                            <content>
+                                <HBox fx:id="wishlistBox" spacing="15" />
+                            </content>
+                        </ScrollPane>
+
+                    </children>
+
+                    <padding>
+                        <Insets top="10" bottom="10" left="10" right="10" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+    </children>
+</VBox>

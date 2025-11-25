@@ -2,6 +2,7 @@ package controller.app;
 
 import app.Session;
 import dao.BookDAO;
+import dao.WishlistDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
 import exception.RecordNotFoundException;
@@ -19,11 +20,13 @@ public class BookDetailController {
     private final PurchaseController purchaseController;
     private final LoanController loanController;
     private final BookDAO bookDAO;
+    private final WishlistDAO wishlistDAO;
 
     public BookDetailController() {
         this.purchaseController = new PurchaseController();
         this.loanController = new LoanController();
         this.bookDAO = DAOFactory.getActiveFactory().getBookDAO();
+        this.wishlistDAO = DAOFactory.getActiveFactory().getWishlistDAO();
     }
 
     public Book getBookById(int bookId) {
@@ -63,5 +66,30 @@ public class BookDetailController {
 
         return !loanController.hasExpiredLoans(session.getLoggedUser().getEmail()) &&
 		       loanController.getActiveLoansCount(session.getLoggedUser().getEmail()) < Constants.MAX_ACTIVE_LOANS;
+    }
+    
+    public boolean isInWishlist(int bookId) {
+        try {
+            return wishlistDAO.isInWishlist(Session.getInstance().getLoggedUser().getEmail(), bookId);
+        } catch (DAOException e) {
+            logger.error("Errore nel controllo wishlist", e);
+            return false;
+        }
+    }
+
+    public void addToWishlist(int bookId) {
+        try {
+            wishlistDAO.addToWishlist(Session.getInstance().getLoggedUser().getEmail(), bookId);
+        } catch (DAOException e) {
+            logger.error("Errore nell'aggiunta alla wishlist", e);
+        }
+    }
+
+    public void removeFromWishlist(int bookId) {
+        try {
+            wishlistDAO.removeFromWishlist(Session.getInstance().getLoggedUser().getEmail(), bookId);
+        } catch (DAOException e) {
+            logger.error("Errore nella rimozione dalla wishlist", e);
+        }
     }
 }

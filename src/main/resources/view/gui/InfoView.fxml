@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.InfoControllerGUI">
+
+    <children>
+        <Label styleClass="page-subtitle" text="Informazioni &amp; Contatti BiblioTech" />
+        <Separator prefWidth="200.0" styleClass="separator" />
+
+        <ScrollPane fitToWidth="true" minHeight="400.0" minWidth="600" styleClass="scroll-pane">
+            <content>
+            <VBox alignment="CENTER" spacing="30.0">
+               <children>
+      
+                      <VBox maxWidth="1200.0" spacing="20" styleClass="search-panel">
+      
+                          <!-- INTRODUZIONE -->
+                          <Label styleClass="info-title" text="Come funziona la BiblioTech">
+                        <padding>
+                           <Insets left="20.0" />
+                        </padding></Label>
+      
+                          <TextFlow prefWidth="520" styleClass="info-text">
+                              <children>
+                                  <Text text="La BiblioTech è la versione digitale della biblioteca fisica. Attraverso questa applicazione puoi consultare i libri disponibili, prenotarli per l’acquisto oppure richiederli in prestito." />
+                                  <Text text="&#10;&#10;La prenotazione non prevede spedizione: per ritirare o acquistare un libro è necessario recarsi in biblioteca presso: Via Biblioteca 123." />
+                              </children>
+                          </TextFlow>
+      
+                          <!-- POLITICHE DEL SERVIZIO -->
+                          <Label styleClass="info-title" text="Politiche di prestito e prenotazione">
+                        <padding>
+                           <Insets left="20.0" />
+                        </padding></Label>
+      
+                          <TextFlow prefWidth="520" styleClass="info-text">
+                              <children>
+                                  <Text text="I libri possono essere prenotati sia per l’acquisto sia per il prestito. Ogni utente può avere fino a tre prestiti attivi contemporaneamente." />
+                                  <Text text="&#10;&#10;Se un prestito supera la data di scadenza e risulta non restituito, non sarà possibile richiedere nuovi prestiti né prenotare libri per l’acquisto." />
+                                  <Text text="&#10;&#10;Tutte le operazioni di ritiro, restituzione e pagamento vengono effettuate esclusivamente presso la biblioteca." />
+                              </children>
+                          </TextFlow>
+      
+                          <!-- USO DELL'APP -->
+                          <Label styleClass="info-title" text="Utilizzo dell’app">
+                        <padding>
+                           <Insets left="20.0" />
+                        </padding></Label>
+      
+                          <TextFlow prefWidth="520" styleClass="info-text">
+                              <children>
+                                  <Text text="Nella sezione Catalogo puoi scoprire l’intera collezione di libri disponibili in biblioteca e aprire la scheda di ciascun titolo per visualizzarne trama, dettagli e disponibilità." />
+                                  <Text text="&#10;&#10;Se sai già cosa stai cercando, la sezione Ricerca ti permette di filtrare i risultati per titolo, autore, categoria o anno, così da individuare rapidamente il libro desiderato." />
+                                  <Text text="&#10;&#10;La Bacheca raccoglie comunicazioni, annunci e aggiornamenti pubblicati dalla biblioteca, così da tenerti sempre informato sulle novità e sugli avvisi utili." />
+                                  <Text text="&#10;&#10;Per accedere alle prenotazioni e gestire le tue attività è necessario registrarsi o effettuare il login. Nella sezione Profilo puoi consultare le prenotazioni attive, i prestiti in corso e lo storico delle operazioni collegate al tuo account." />
+                              </children>
+                          </TextFlow>
+      
+                          <!-- CONTATTI -->
+                          <Label styleClass="info-title" text="Contatti">
+                        <padding>
+                           <Insets left="20.0" />
+                        </padding></Label>
+      
+                          <TextFlow prefWidth="520" styleClass="info-text">
+                              <children>
+                                  <Text text="Per informazioni o assistenza puoi contattare l'amministratore della biblioteca: " />
+                                  <Text style="-fx-font-weight: bold;" text="Admin1" />
+                                  <Text text=" — tel. 333-123-4567 • admin@gmail.com" />
+                              </children>
+                          </TextFlow>
+      
+                      </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

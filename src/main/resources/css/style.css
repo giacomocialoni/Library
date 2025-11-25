@@ -107,6 +107,35 @@
 	-fx-font-size: 12px;
 	-fx-text-fill: #8b7355;
 }
+/* INFO */
+.info-container {
+    -fx-background-color: transparent;
+    -fx-padding: 20 30;
+}
+
+.info-title {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+}
+
+.info-step {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6b5444;
+    -fx-padding: 10 0 0 0;
+}
+
+.info-text {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #4a4a4a;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 3;
+}
+
 /* === BOOK CARD === */
 .content-area {
     -fx-background-color: #faf8f5;
@@ -311,7 +340,9 @@
 /* === BACHECA POST MODERNI === */
 .post-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 15;
+    -fx-background-radius: 20;
+	-fx-pref-width: 1200px;
+	-fx-max-width: 1200px;
     -fx-padding: 25;
     -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.08), 12, 0, 0, 3);
     -fx-spacing: 15;
@@ -561,6 +592,51 @@
     -fx-underline: true;
 }
 
+/* Pulsante Wishlist base */
+/* Stato NORMALE (non in wishlist) */
+.wishlist-button {
+    -fx-background-color: #FAF8F5;
+    -fx-text-fill: #8B7355;
+    -fx-font-family: "Georgia", serif;
+
+    -fx-border-color: #8B7355;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+
+    -fx-padding: 12 30;
+    -fx-background-radius: 10;
+
+    -fx-cursor: hand;
+    -fx-min-width: 200px;
+
+    /* NESSUNA ombra: stato normale */
+}
+
+/* Etichetta sotto */
+.wishlist-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8B7355;
+}
+
+/* Stato IN WISHLIST (come se fosse stato premuto) */
+.wishlist-button.in-wishlist {
+    -fx-background-color: #F2EFEA; /* leggermente più spento */
+    
+    /* colore marrone che vira verso grigio chiaro */
+    -fx-text-fill: #B5A79A;      
+    -fx-border-color: #B5A79A;
+
+    /* effetto "pulsante premuto" */
+    -fx-effect: innershadow(gaussian, rgba(150,140,130,0.45), 8, 0.3, 0, 2);
+}
+
+/* Hover stato normale */
+.wishlist-button:hover {
+    -fx-border-color: #AA9780;
+}
 /* === SCROLL PANE === */
 .scroll-pane {
     -fx-background-color: transparent;
@@ -904,7 +980,4 @@
     -fx-padding: 10px;
 }
 
-.separator {
-    -fx-padding: 5px 0;
-}
 /* scss-lint:enable PseudoClassSelector, PropertySortOrder, UnknownProperty */

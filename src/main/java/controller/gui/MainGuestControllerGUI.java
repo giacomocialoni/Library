@@ -8,11 +8,12 @@ import java.util.Map;
 import app.state.BachecaState;
 import app.state.CatalogoState;
 import app.state.CercaState;
+import app.state.InfoState;
 import app.state.LoginState;
 
 public class MainGuestControllerGUI extends AbstractMainControllerGUI {
 
-    @FXML private Button catalogoButton, cercaButton, bachecaButton, loginButton;
+    @FXML private Button catalogoButton, cercaButton, bachecaButton, infoButton, loginButton;
 
     @FXML
     public void initialize() {
@@ -20,6 +21,7 @@ public class MainGuestControllerGUI extends AbstractMainControllerGUI {
             CatalogoState.class, catalogoButton,
             CercaState.class, cercaButton,
             BachecaState.class, bachecaButton,
+            InfoState.class, infoButton,
             LoginState.class, loginButton
         );
     }
@@ -38,6 +40,11 @@ public class MainGuestControllerGUI extends AbstractMainControllerGUI {
     private void showBacheca() {
         stateManager.setState(new BachecaState(stateManager));
     }
+
+	@FXML
+	private void showInfo() {
+		stateManager.setState(new InfoState(stateManager));
+	}
 
     @FXML
     private void showLogin() {
