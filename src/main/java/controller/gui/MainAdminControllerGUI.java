@@ -48,6 +48,6 @@ public class MainAdminControllerGUI extends AbstractMainControllerGUI {
     @FXML
     private void handleLogout() {
         Session.getInstance().logout();
-        stateManager.setState(new MainGuestState(stateManager));
+		stateManager.setState(new MainGuestState(stateManager));
     }
 }

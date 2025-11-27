@@ -55,7 +55,7 @@ public class LoginControllerGUI {
         try {
             String email = usernameField.getText();
             String password = passwordField.getText();
-
+        	
             Account account = loginController.login(email, password);
 
             if (account != null) {

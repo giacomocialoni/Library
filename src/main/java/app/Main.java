@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import controller.observer.WishlistEmailObserver;
+import controller.observer.WishlistObservable;
 import dao.database.DBConnection;
 import dao.factory.DAOFactory;
 import dao.factory.DatabaseDAOFactory;
@@ -51,8 +53,9 @@ public class Main {
         // Imposto la factory globale (se serve)
         DAOFactory.setActiveFactory(factory);
 
-        System.out.println("Data source: " + dataSourceType);
-        System.out.println("View type: " + viewType);
+        // Registrazione Observer
+        WishlistObservable wishlistObservable = new WishlistObservable();
+        wishlistObservable.addObserver(new WishlistEmailObserver());
 
         // --- Avvio interfaccia scelta ---
         if ("GUI".equalsIgnoreCase(viewType)) {

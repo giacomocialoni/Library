@@ -15,12 +15,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import controller.observer.WishlistObservable;
+
 public class DatabaseBookDAO implements BookDAO {
 
     private final DBConnection dbConnection;
+    private final WishlistObservable wishlistObservable;
 
     public DatabaseBookDAO(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
+		this.wishlistObservable = null;
+    }
+    
+    public DatabaseBookDAO(DBConnection dbConnection, WishlistObservable wishlistObservable) {
+        this.dbConnection = dbConnection;
+        this.wishlistObservable = wishlistObservable;
     }
     
     @Override
@@ -81,8 +90,9 @@ public class DatabaseBookDAO implements BookDAO {
 
     @Override
     public void updateBook(Book book) throws DAOException, RecordNotFoundException {
-        String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=?, price=? WHERE id=?";
+        int oldStock = getBookById(book.getId()).getStock();
 
+        String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=?, price=? WHERE id=?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -102,6 +112,11 @@ public class DatabaseBookDAO implements BookDAO {
             int rows = stmt.executeUpdate();
             if (rows == 0) {
                 throw new RecordNotFoundException("Impossibile aggiornare: nessun libro con ID " + book.getId());
+            }
+
+            // Notifica observer solo se presente
+            if (oldStock == 0 && book.getStock() > 0 && wishlistObservable != null) {
+                wishlistObservable.notifyBookAvailable(book);
             }
 
         } catch (SQLException e) {

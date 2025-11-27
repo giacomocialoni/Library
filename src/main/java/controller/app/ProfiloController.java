@@ -56,8 +56,6 @@ public class ProfiloController {
     public List<Loan> getActiveLoans(String email) {
         try {
             return loanDAO.getActiveLoansByUser(email);
-        } catch (RecordNotFoundException e) {
-            return List.of();
         } catch (DAOException e) {
             logger.error("Errore DAO durante il recupero prestiti attivi per utente: " + email, e);
             return List.of();

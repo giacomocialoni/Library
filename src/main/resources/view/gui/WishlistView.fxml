@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/25"
@@ -14,37 +14,41 @@
 
     <children>
 
-        <!-- Titolo -->
-        <Label styleClass="page-subtitle" text="Wishlist" />
-        <Separator prefWidth="200" styleClass="separator" />
+        <!-- Titolo pagina -->
+        <Label text="I libri nella tua Wishlist" styleClass="page-subtitle"/>
+        <Separator prefWidth="200" styleClass="separator"/>
 
-        <!-- Contenuto -->
+        <!-- ScrollPane principale -->
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
             <content>
-                <VBox alignment="CENTER" spacing="20">
-                    <children>
-
-                        <!-- Label descrittiva -->
-                        <Label fx:id="wishlistLabel"
-                               styleClass="profile-label"
-                               text="Libri presenti nella tua lista desideri" />
-
-                        <!-- Area card -->
-                        <ScrollPane fitToHeight="true"
-                                    hbarPolicy="AS_NEEDED"
-                                    vbarPolicy="NEVER"
-                                    styleClass="scroll-pane"
-                                    prefHeight="350">
-                            <content>
-                                <HBox fx:id="wishlistBox" spacing="15" />
-                            </content>
-                        </ScrollPane>
-
-                    </children>
-
+            
+            	<VBox spacing="10">
+				    <children>
+				        <Label fx:id="newAvailableBookLabel" styleClass="page-subtitle" text="Buone notizie i seguenti libri sono tornati disponibili!" />
+				        <!-- Griglia libri tornati disponibili -->
+	                    <FlowPane fx:id="newWishlistFlowPane"
+	                              hgap="20" vgap="20"
+	                              prefWrapLength="900">
+	                        <padding>
+	                            <Insets top="10" bottom="10" left="10" right="10"/>
+	                        </padding>
+	                    </FlowPane>
+				    </children>
+				</VBox>
+            
+                <VBox spacing="20">
                     <padding>
-                        <Insets top="10" bottom="10" left="10" right="10" />
+                        <Insets top="10" bottom="10" left="10" right="10"/>
                     </padding>
+
+                    <!-- Griglia libri -->
+                    <FlowPane fx:id="wishlistFlowPane"
+                              hgap="20" vgap="20"
+                              prefWrapLength="900">
+                        <padding>
+                            <Insets top="10" bottom="10" left="10" right="10"/>
+                        </padding>
+                    </FlowPane>
                 </VBox>
             </content>
         </ScrollPane>

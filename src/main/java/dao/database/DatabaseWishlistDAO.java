@@ -90,4 +90,27 @@ public class DatabaseWishlistDAO implements WishlistDAO {
 
         return wishlist;
     }
+
+    @Override
+    public List<String> getUsersWithBookInWishlist(int bookId) throws DAOException {
+        List<String> users = new ArrayList<>();
+        String sql = "SELECT user_email FROM wishlist WHERE book_id = ?";
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, bookId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    users.add(rs.getString("user_email"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero degli utenti che hanno il libro nella wishlist", e);
+        }
+
+        return users;
+    }
 }

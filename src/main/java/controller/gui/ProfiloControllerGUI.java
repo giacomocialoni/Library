@@ -151,6 +151,6 @@ public class ProfiloControllerGUI {
     @FXML
     private void handleLogout() {
         Session.getInstance().logout();
-        stateManager.setState(new MainGuestState(stateManager));
+		stateManager.setState(new MainGuestState(stateManager));
     }
 }

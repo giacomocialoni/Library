@@ -12,4 +12,5 @@ public interface WishlistDAO {
     void removeFromWishlist(String userEmail, int bookId) throws DAOException;
     boolean isInWishlist(String userEmail, int bookId) throws DAOException;
     List<Wishlist> getWishlistByUser(String userEmail) throws DAOException, RecordNotFoundException;
+    List<String> getUsersWithBookInWishlist(int bookId) throws DAOException;
 }

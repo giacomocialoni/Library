@@ -102,6 +102,7 @@ public class BookDetailControllerGUI {
         toggleWishlist();
     }
 
+    //TODO Sposta exception nel controller applicativo
     private void toggleWishlist() {
         boolean inWishlist = appController.isInWishlist(currentBook.getId());
 

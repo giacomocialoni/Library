@@ -70,6 +70,7 @@ public class StageManager {
             primaryStage.show();
 
             mainUserController = null;
+            mainAdminController = null;
 
         } catch (Exception e) {
             logger.error("Errore nel caricamento della view guest: {}", MAIN_GUEST_VIEW, e);
