@@ -3,6 +3,7 @@ package dao.database;
 import dao.WishlistDAO;
 import exception.DAOException;
 import exception.RecordNotFoundException;
+import model.User;
 import model.Wishlist;
 
 import java.sql.*;
@@ -92,9 +93,9 @@ public class DatabaseWishlistDAO implements WishlistDAO {
     }
 
     @Override
-    public List<String> getUsersWithBookInWishlist(int bookId) throws DAOException {
-        List<String> users = new ArrayList<>();
-        String sql = "SELECT user_email FROM wishlist WHERE book_id = ?";
+    public List<User> getUsersWithBookInWishlist(int bookId) throws DAOException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT a.* FROM wishlist w JOIN accounts a ON w.user_email = a.email WHERE w.book_id = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -103,7 +104,13 @@ public class DatabaseWishlistDAO implements WishlistDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    users.add(rs.getString("user_email"));
+                    User user = new User(
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name")
+                    );
+                    users.add(user);
                 }
             }
 

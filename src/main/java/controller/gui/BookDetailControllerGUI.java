@@ -106,20 +106,16 @@ public class BookDetailControllerGUI {
     private void toggleWishlist() {
         boolean inWishlist = appController.isInWishlist(currentBook.getId());
 
-        try {
-            if (inWishlist) {
-                appController.removeFromWishlist(currentBook.getId());
-                wishlistButton.setText("Aggiungi");
-                wishlistButton.getStyleClass().remove("in-wishlist");
-            } else {
-                appController.addToWishlist(currentBook.getId());
-                wishlistButton.setText("Rimuovi");
-                if (!wishlistButton.getStyleClass().contains("in-wishlist")) {
-                    wishlistButton.getStyleClass().add("in-wishlist");
-                }
+        if (inWishlist) {
+            appController.removeFromWishlist(currentBook.getId());
+            wishlistButton.setText("Aggiungi");
+            wishlistButton.getStyleClass().remove("in-wishlist");
+        } else {
+            appController.addToWishlist(currentBook.getId());
+            wishlistButton.setText("Rimuovi");
+            if (!wishlistButton.getStyleClass().contains("in-wishlist")) {
+                wishlistButton.getStyleClass().add("in-wishlist");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

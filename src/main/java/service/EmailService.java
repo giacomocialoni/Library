@@ -5,10 +5,14 @@ import jakarta.mail.internet.*;
 
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EmailService {
 
     private final String username = "giacomo.cialoni@gmail.com"; 
     private final String password = "dupuxetiertbjady"; 
+    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     private final Session session;
 
@@ -39,10 +43,9 @@ public class EmailService {
             message.setText(body);
 
             Transport.send(message);
-            System.out.println("Email inviata a " + to);
 
         } catch (MessagingException e) {
-            e.printStackTrace();
+            logger.error("Errore durante l'invio della mail destinata a: " + to, e);
         }
     }
 }

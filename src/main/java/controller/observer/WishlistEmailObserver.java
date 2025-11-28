@@ -4,6 +4,7 @@ import dao.WishlistDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
 import model.Book;
+import model.User;
 import service.EmailService;
 
 import org.slf4j.Logger;
@@ -33,17 +34,17 @@ public class WishlistEmailObserver implements WishlistObserver {
     public void onBookAvailable(Book book) {
         try {
             // prendi tutti gli utenti che hanno quel libro in wishlist
-            List<String> users = wishlistDAO.getUsersWithBookInWishlist(book.getId());
+            List<User> users = wishlistDAO.getUsersWithBookInWishlist(book.getId());
 
-            for (String email : users) {
+            for (User user : users) {
                 emailService.send(
-                        email,
-                        "Buone notizie da Bibliotech!",
-                        "Ciao " + email + ",\n"
-                        		+ "\nVolevamo avvisarti che il libro " + book.getTitle() + " - " + book.getAuthor()
-                        		+ " è tornato disponibile nel nostro store."
-                        		+ "\nPrenotalo o passa a trovarci prima che finisca di nuovo!\n"
-                        		+ "\nEmail automatica inviata da Bibliotech"
+                    user.getEmail(),
+                    "Buone notizie da Bibliotech!",
+                    "Ciao " + user.getFirstName() + ",\n"
+                        + "\nVolevamo avvisarti che il libro '" + book.getTitle() + "' di " + book.getAuthor()
+                        + " è tornato disponibile nel nostro store."
+                        + "\nPrenotalo o passa a trovarci prima che finisca di nuovo!\n"
+                        + "\nEmail automatica inviata da Bibliotech"
                 );
             }
         } catch (DAOException e) {
