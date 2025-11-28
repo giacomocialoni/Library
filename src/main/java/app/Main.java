@@ -7,7 +7,9 @@ import java.util.Properties;
 
 import controller.observer.WishlistEmailObserver;
 import controller.observer.WishlistObservable;
+import dao.BookDAO;
 import dao.database.DBConnection;
+import dao.database.DatabaseBookDAO;
 import dao.factory.DAOFactory;
 import dao.factory.DatabaseDAOFactory;
 
@@ -15,6 +17,7 @@ public class Main {
     public static void main(String[] args) {
         String viewType;
         String dataSourceType;
+        WishlistObservable wishlistObservable = new WishlistObservable();
 
         // --- Lettura del file start.properties ---
         try (InputStream input = new FileInputStream("src/main/resources/start.properties")) {
@@ -45,16 +48,20 @@ public class Main {
             String password = dbProps.getProperty("db.password");
 
             DBConnection dbConnection = new DBConnection(url, user, password);
-            factory = new DatabaseDAOFactory(dbConnection);
+            
+            // Crea il BookDAO con l'observable
+            DatabaseBookDAO bookDAO = new DatabaseBookDAO(dbConnection, wishlistObservable);
+            
+            // Crea una factory custom completa
+            factory = new CustomDatabaseDAOFactory(dbConnection, bookDAO);
         } else {
             factory = DAOFactory.getFactory("CSV", null);
         }
 
-        // Imposto la factory globale (se serve)
+        // Imposto la factory globale
         DAOFactory.setActiveFactory(factory);
 
-        // Registrazione Observer
-        WishlistObservable wishlistObservable = new WishlistObservable();
+        // Ora è sicuro creare l'Observer
         wishlistObservable.addObserver(new WishlistEmailObserver());
 
         // --- Avvio interfaccia scelta ---
@@ -66,6 +73,21 @@ public class Main {
             // ApplicationCLI.start();
         } else {
             throw new IllegalArgumentException("Tipo di view non valido: " + viewType);
+        }
+    }
+    
+    // Factory custom che estende DatabaseDAOFactory
+    static class CustomDatabaseDAOFactory extends DatabaseDAOFactory {
+        private final BookDAO customBookDAO;
+        
+        public CustomDatabaseDAOFactory(DBConnection dbConnection, BookDAO customBookDAO) {
+            super(dbConnection);
+            this.customBookDAO = customBookDAO;
+        }
+        
+        @Override
+        public BookDAO getBookDAO() {
+            return customBookDAO;  // Restituisce il BookDAO con l'observable
         }
     }
 }

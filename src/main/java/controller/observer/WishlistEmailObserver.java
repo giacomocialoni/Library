@@ -14,9 +14,20 @@ import java.util.List;
 public class WishlistEmailObserver implements WishlistObserver {
 
     private static final Logger logger = LoggerFactory.getLogger(WishlistEmailObserver.class);
+    private final WishlistDAO wishlistDAO;
+    private final EmailService emailService;
 
-    private final WishlistDAO wishlistDAO = DAOFactory.getActiveFactory().getWishlistDAO();
-    private final EmailService emailService = new EmailService();
+    // Costruttore usato nell'app
+    public WishlistEmailObserver() {
+        this.wishlistDAO = DAOFactory.getActiveFactory().getWishlistDAO();
+        this.emailService = new EmailService();
+    }
+
+    // Costruttore usato nei test
+    public WishlistEmailObserver(WishlistDAO wishlistDAO, EmailService emailService) {
+        this.wishlistDAO = wishlistDAO;
+        this.emailService = emailService;
+    }
 
     @Override
     public void onBookAvailable(Book book) {
@@ -28,7 +39,11 @@ public class WishlistEmailObserver implements WishlistObserver {
                 emailService.send(
                         email,
                         "Buone notizie da Bibliotech!",
-                        "Ciao " + email + ",\nVolevamo avvisarti che il libro \"" + book.getTitle() + "\" è tornato disponibile nel nostro store.\nPrenotalo o passa a trovarci prima che finisca di nuovo!"
+                        "Ciao " + email + ",\n"
+                        		+ "\nVolevamo avvisarti che il libro " + book.getTitle() + " - " + book.getAuthor()
+                        		+ " è tornato disponibile nel nostro store."
+                        		+ "\nPrenotalo o passa a trovarci prima che finisca di nuovo!\n"
+                        		+ "\nEmail automatica inviata da Bibliotech"
                 );
             }
         } catch (DAOException e) {

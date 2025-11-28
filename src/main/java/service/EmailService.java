@@ -1,13 +1,14 @@
 package service;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
+
 import java.util.Properties;
 
 public class EmailService {
 
-    private final String username = "tuaemail@gmail.com"; // la tua email
-    private final String password = "app_password"; // password o app password se Gmail
+    private final String username = "giacomo.cialoni@gmail.com"; 
+    private final String password = "dupuxetiertbjady"; 
 
     private final Session session;
 
@@ -15,10 +16,11 @@ public class EmailService {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com"); // per Gmail
+        props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
 
         session = Session.getInstance(props, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
