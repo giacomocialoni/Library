@@ -3,13 +3,17 @@ package dao.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DBConnection {
 
+    private static final Logger logger = LoggerFactory.getLogger(DBConnection.class);
+    
     private final String url;
     private final String user;
     private final String password;
-    private Connection connection; // connessione persistente
+    private Connection connection;
 
     public DBConnection(String url, String user, String password) {
         this.url = url;
@@ -29,7 +33,7 @@ public class DBConnection {
             if (connection != null && !connection.isClosed())
                 connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Errore durante la chiusura della connessione al database", e);
         }
     }
 }
