@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.PostControllerGUI">
+<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.PostControllerGUI">
    <children>
       <Label styleClass="page-subtitle" text="Gestione Post" />
       <Separator prefWidth="200.0" />
@@ -30,7 +30,7 @@
                         <VBox spacing="8">
                            <children>
                               <Label text="Contenuto:" />
-                              <TextArea fx:id="contentArea" prefWidth="700.0" prefHeight="100.0" promptText="Scrivi il contenuto del post..." styleClass="text-area" />
+                              <TextArea fx:id="contentArea" prefHeight="100.0" prefWidth="700.0" promptText="Scrivi il contenuto del post..." styleClass="text-area" />
                            </children>
                         </VBox>
                         <HBox alignment="CENTER_RIGHT">

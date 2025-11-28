@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.InfoControllerGUI">
+<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.InfoControllerGUI">
 
     <children>
         <Label styleClass="page-subtitle" text="Informazioni &amp; Contatti BiblioTech" />

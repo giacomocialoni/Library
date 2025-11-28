@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.CercaControllerGUI">
+<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.CercaControllerGUI">
    <children>
          <Label styleClass="page-subtitle" text="Trova il libro perfetto per te" />
       <Separator prefWidth="200.0" styleClass="separator" />

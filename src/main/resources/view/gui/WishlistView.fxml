@@ -7,16 +7,13 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.gui.WishlistControllerGUI"
-      spacing="10">
+<VBox spacing="10" xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.WishlistControllerGUI">
 
     <children>
 
         <!-- Titolo pagina -->
-        <Label text="I libri nella tua Wishlist" styleClass="page-subtitle"/>
-        <Separator prefWidth="200" styleClass="separator"/>
+        <Label styleClass="page-subtitle" text="I libri nella tua Wishlist" />
+        <Separator prefWidth="200" styleClass="separator" />
 
         <!-- ScrollPane principale -->
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
@@ -26,11 +23,9 @@
 				    <children>
 				        <Label fx:id="newAvailableBookLabel" styleClass="page-subtitle" text="Buone notizie i seguenti libri sono tornati disponibili!" />
 				        <!-- Griglia libri tornati disponibili -->
-	                    <FlowPane fx:id="newWishlistFlowPane"
-	                              hgap="20" vgap="20"
-	                              prefWrapLength="900">
+	                    <FlowPane fx:id="newWishlistFlowPane" hgap="20" prefWrapLength="900" vgap="20">
 	                        <padding>
-	                            <Insets top="10" bottom="10" left="10" right="10"/>
+	                            <Insets bottom="10" left="10" right="10" top="10" />
 	                        </padding>
 	                    </FlowPane>
 				    </children>
@@ -38,15 +33,13 @@
             
                 <VBox spacing="20">
                     <padding>
-                        <Insets top="10" bottom="10" left="10" right="10"/>
+                        <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
 
                     <!-- Griglia libri -->
-                    <FlowPane fx:id="wishlistFlowPane"
-                              hgap="20" vgap="20"
-                              prefWrapLength="900">
+                    <FlowPane fx:id="wishlistFlowPane" hgap="20" prefWrapLength="900" vgap="20">
                         <padding>
-                            <Insets top="10" bottom="10" left="10" right="10"/>
+                            <Insets bottom="10" left="10" right="10" top="10" />
                         </padding>
                     </FlowPane>
                 </VBox>

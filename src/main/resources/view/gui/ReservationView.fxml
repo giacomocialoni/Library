@@ -7,13 +7,12 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.ReservationControllerGUI">
+<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gui.ReservationControllerGUI">
    <children>
       <Label styleClass="page-subtitle" text="Gestione Prenotazioni" />
       <Separator prefWidth="200.0" />
@@ -70,7 +69,7 @@
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Label fx:id="resultsLabel" styleClass="page-subtitle" text="Risultati della Ricerca" />
-                        <VBox fx:id="resultsContainer" styleClass="reservations-container" spacing="15" VBox.vgrow="ALWAYS" />
+                        <VBox fx:id="resultsContainer" spacing="15" styleClass="reservations-container" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                </children>
