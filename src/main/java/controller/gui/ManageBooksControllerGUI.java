@@ -6,7 +6,7 @@ import app.state.SuccessState;
 import controller.app.ManageBooksController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 import model.Book;
 import view.components.ManageBooksCardFactory;
 
@@ -18,8 +18,8 @@ public class ManageBooksControllerGUI {
     @FXML private Button searchButton;
     @FXML private Button clearButton;
     @FXML private Button addBookButton;
-    @FXML private VBox resultsContainer;
     @FXML private Label resultsLabel;
+    @FXML private FlowPane resultsContainer;
 
     private StateManager stateManager;
     private final ManageBooksController appController = new ManageBooksController();

@@ -824,7 +824,6 @@
     -fx-background-color: #e8dad0;
 }
 /* === CARD PRENOTAZIONE MODIFICATA === */
-/* === CARD PRENOTAZIONE MODIFICATA === */
 .reservation-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 15;
@@ -979,5 +978,73 @@
 .users-container {
     -fx-padding: 10px;
 }
+/* === GESTIONE LIBRI - STILI MIGLIORATI === */
 
+/* Card per gestione libri */
+.manage-book-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(90, 74, 58, 0.08), 12, 0, 0, 3);
+    -fx-cursor: default;
+}
+
+.manage-books-flowpane {
+    -fx-hgap: 15;
+    -fx-vgap: 15;
+    -fx-padding: 15;
+    -fx-alignment: center;
+}
+
+/* Etichetta stock migliorata */
+.manage-stock-label {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+    -fx-background-color: #f0e8dc;
+    -fx-background-radius: 8;
+    -fx-padding: 4 10;
+    -fx-border-color: #8b7355;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+/* Etichetta stock migliorata */
+.manage-stock-label {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5a4a3a;
+    -fx-background-color: #f0e8dc;
+    -fx-background-radius: 8;
+    -fx-padding: 4 10;
+    -fx-border-color: #8b7355;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+/* Pulsante elimina libro - largo e importante */
+.manage-remove-button {
+    -fx-background-color: #9C3C32;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 30;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-min-width: 200px;
+}
+
+.manage-remove-button:hover {
+    -fx-background-color: #822E24;
+}
+
+/* Container FlowPane per disposizione a griglia */
+.books-container {
+    -fx-hgap: 20;
+    -fx-vgap: 20;
+    -fx-padding: 20;
+}
 /* scss-lint:enable PseudoClassSelector, PropertySortOrder, UnknownProperty */

@@ -11,17 +11,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import model.Book;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.util.function.Consumer;
 
 public class ManageBooksCardFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(ManageBooksCardFactory.class);
+
     public ManageBooksCardFactory() {}
 
-	public HBox createBookCard(Book book, Consumer<Integer> onIncreaseStock, 
+    public HBox createBookCard(Book book, Consumer<Integer> onIncreaseStock, 
                               Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
         
-        // Copertina del libro a sinistra
+        // Copertina del libro a sinistra (layout originale)
         ImageView coverImage = createBookCover(book);
         
         // Container per l'immagine
@@ -33,9 +38,10 @@ public class ManageBooksCardFactory {
         // Controlli stock
         VBox controlsBox = createStockControls(book, onIncreaseStock, onDecreaseStock, onRemoveBook);
         
-        // Card principale
-        HBox card = new HBox(20);
-        card.getStyleClass().add("book-card");
+        // Card principale - HBox come prima
+
+        HBox card = new HBox(20); // Spacing normale
+        card.getStyleClass().add("manage-book-card");
         card.setAlignment(Pos.CENTER_LEFT);
         card.setPadding(new Insets(15));
         card.getChildren().addAll(imageContainer, infoBox, controlsBox);
@@ -45,7 +51,7 @@ public class ManageBooksCardFactory {
 
     private ImageView createBookCover(Book book) {
         ImageView coverImage = new ImageView();
-        coverImage.setFitWidth(100);
+        coverImage.setFitWidth(100); // Ripristinato dimensione normale
         coverImage.setFitHeight(140);
         coverImage.setPreserveRatio(true);
         
@@ -70,7 +76,7 @@ public class ManageBooksCardFactory {
                 coverImage.setStyle("-fx-background-color: #e8dad0; -fx-border-color: #8b7355;");
             }
         } catch (Exception e) {
-            System.err.println("Errore nel caricamento dell'immagine: " + e.getMessage());
+            logger.error("Errore nel caricamento dell'immagine per il libro: {}", book.getTitle(), e);
             coverImage.setStyle("-fx-background-color: #e8dad0; -fx-border-color: #8b7355;");
         }
         
@@ -80,21 +86,16 @@ public class ManageBooksCardFactory {
     private VBox createImageContainer(ImageView coverImage) {
         VBox imageContainer = new VBox(coverImage);
         imageContainer.setAlignment(Pos.CENTER);
-        imageContainer.setPadding(new Insets(10));
-        imageContainer.setMinWidth(120);
+        imageContainer.setPadding(new Insets(10)); // Padding normale
+        imageContainer.setMinWidth(120); // Ripristinato dimensione normale
         imageContainer.setStyle("-fx-background-color: #faf8f5; -fx-background-radius: 10; -fx-border-radius: 10;");
-
-        Rectangle containerClip = new Rectangle(120, 160);
-        containerClip.setArcWidth(15);
-        containerClip.setArcHeight(15);
-        imageContainer.setClip(containerClip);
         
         return imageContainer;
     }
 
     private VBox createBookInfo(Book book) {
-        VBox infoBox = new VBox(8);
-        infoBox.setPadding(new Insets(10));
+    	VBox infoBox = new VBox(8); // Spacing normale
+        infoBox.setPadding(new Insets(10)); // Padding normale
         infoBox.setAlignment(Pos.TOP_LEFT);
         infoBox.setPrefWidth(300);
         
@@ -114,11 +115,12 @@ public class ManageBooksCardFactory {
         Label yearLabel = new Label("Anno: " + book.getYear());
         yearLabel.getStyleClass().add("book-detail");
         
-        Label stockLabel = new Label("Stock attuale: " + book.getStock());
-        stockLabel.getStyleClass().add("book-stock");
-        
         Label priceLabel = new Label("Prezzo: €" + String.format("%.2f", book.getPrice()));
         priceLabel.getStyleClass().add("book-price");
+        
+        // Stock migliorato - stile più evidente
+        Label stockLabel = new Label("Stock attuale: " + book.getStock());
+        stockLabel.getStyleClass().add("manage-stock-label");
         
         infoBox.getChildren().addAll(
             titleLabel, authorLabel, isbnLabel, 
@@ -128,11 +130,10 @@ public class ManageBooksCardFactory {
         return infoBox;
     }
 
-    private VBox createStockControls(Book book, Consumer<Integer> onIncreaseStock, 
-                                    Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
-        VBox controlsBox = new VBox(15);
+    private VBox createStockControls(Book book, Consumer<Integer> onIncreaseStock, Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
+    	VBox controlsBox = new VBox(15); // Spacing normale
         controlsBox.setAlignment(Pos.CENTER);
-        controlsBox.setPadding(new Insets(10));
+        controlsBox.setPadding(new Insets(10)); // Larghezza fissa per controlli
         
         // Spinner per quantità
         VBox quantityBox = new VBox(5);
@@ -147,19 +148,19 @@ public class ManageBooksCardFactory {
         
         quantityBox.getChildren().addAll(quantityLabel, quantitySpinner);
         
-        // Pulsanti azione stock
+        // Pulsanti azione stock (stile originale)
         HBox stockButtons = new HBox(10);
         stockButtons.setAlignment(Pos.CENTER);
         
         Button addButton = new Button("Aggiungi");
-        addButton.getStyleClass().add("add-button");
+        addButton.getStyleClass().add("buy-button");
         addButton.setOnAction(e -> {
             int quantity = quantitySpinner.getValue();
             onIncreaseStock.accept(quantity);
         });
         
         Button sellButton = new Button("Vendi");
-        sellButton.getStyleClass().add("sell-button");
+        sellButton.getStyleClass().add("borrow-button");
         sellButton.setOnAction(e -> {
             int quantity = quantitySpinner.getValue();
             onDecreaseStock.accept(quantity);
@@ -167,12 +168,17 @@ public class ManageBooksCardFactory {
         
         stockButtons.getChildren().addAll(addButton, sellButton);
         
-        // Pulsante rimuovi libro
-        Button removeButton = new Button("Rimuovi Libro");
-        removeButton.getStyleClass().add("remove-button");
+        javafx.scene.control.Separator separator = new javafx.scene.control.Separator();
+        separator.getStyleClass().add("separator");
+        separator.setPrefWidth(200);
+        
+        // Pulsante elimina libro - largo come i due bottoni insieme
+        Button removeButton = new Button("Elimina Libro");
+        removeButton.getStyleClass().add("manage-remove-button");
+        removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> onRemoveBook.run());
         
-        controlsBox.getChildren().addAll(quantityBox, stockButtons, removeButton);
+        controlsBox.getChildren().addAll(quantityBox, stockButtons, separator, removeButton);
         
         return controlsBox;
     }
