@@ -95,7 +95,7 @@ public class DatabaseWishlistDAO implements WishlistDAO {
     @Override
     public List<User> getUsersWithBookInWishlist(int bookId) throws DAOException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT a.* FROM wishlist w JOIN accounts a ON w.user_email = a.email WHERE w.book_id = ?";
+        String sql = "SELECT u.* FROM wishlist w JOIN users u ON w.user_email = u.email WHERE w.book_id = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
