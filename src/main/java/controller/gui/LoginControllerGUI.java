@@ -23,6 +23,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import model.Account;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginControllerGUI {
 
@@ -32,6 +34,8 @@ public class LoginControllerGUI {
     @FXML private VBox loginContainer;
     @FXML private Label errorLabel;
     private FadeTransition errorFade;
+    
+    private static final Logger logger = LoggerFactory.getLogger(LoginControllerGUI.class);
 
     private StateManager stateManager;
     private LoginController loginController;
@@ -82,7 +86,7 @@ public class LoginControllerGUI {
         } catch (IllegalArgumentException e) {
             showError("Campi mancanti!");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore durante il login per l'utente: {}", usernameField.getText(), e);
             showError("Errore durante il login.");
         }
     }

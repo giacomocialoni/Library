@@ -10,6 +10,8 @@ import model.Book;
 import view.components.BookCardFactory;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CercaControllerGUI {
 
@@ -32,7 +34,8 @@ public class CercaControllerGUI {
     private String searchMode = SEARCH_MODE_TITLE;
     private StateManager stateManager;
     private final CercaController appController = new CercaController();
-
+    private static final Logger logger = LoggerFactory.getLogger(CercaControllerGUI.class);
+    
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
     }
@@ -46,7 +49,7 @@ public class CercaControllerGUI {
             List<String> nomiCategorie = appController.getAllCategoryNames();
             genereCombo.getItems().addAll(nomiCategorie);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore durante il caricamento delle categorie", e);
         }
 
         selectSearchByTitle();
