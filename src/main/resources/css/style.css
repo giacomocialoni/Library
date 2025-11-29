@@ -1026,8 +1026,11 @@
 
 /* Pulsante elimina libro - largo e importante */
 .manage-remove-button {
-    -fx-background-color: #9C3C32;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #9C3C32;
+    -fx-border-color: #9C3C32;
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;
     -fx-font-family: "Georgia", serif;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
@@ -1038,7 +1041,7 @@
 }
 
 .manage-remove-button:hover {
-    -fx-background-color: #822E24;
+	-fx-background-color: #faf8f5;
 }
 
 /* Container FlowPane per disposizione a griglia */
@@ -1046,5 +1049,22 @@
     -fx-hgap: 20;
     -fx-vgap: 20;
     -fx-padding: 20;
+}
+
+.new-button {
+	-fx-border-color: #31661C;
+	-fx-background-color: #ffffff;
+	-fx-text-fill: #31661C;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	-fx-border-width: 2px;
+	-fx-font-size: 15px;
+	-fx-padding: 12 30;
+	-fx-cursor: hand;
+	-fx-pref-width: 500px;
+}
+
+.new-button:hover {
+	-fx-background-color: #faf8f5;
 }
 /* scss-lint:enable PseudoClassSelector, PropertySortOrder, UnknownProperty */

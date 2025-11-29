@@ -15,10 +15,11 @@ import dao.LoanDAO;
 import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
-import exception.RecordNotFoundException;
 import model.Book;
 import model.Loan;
 import model.Purchase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -26,6 +27,8 @@ import java.util.List;
 
 public class ManageUsersCardFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(ManageUsersCardFactory.class);
+    
     private final BookDAO bookDAO;
     private final PurchaseDAO purchaseDAO;
     private final LoanDAO loanDAO;
@@ -36,7 +39,7 @@ public class ManageUsersCardFactory {
         this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();
     }
 
-    public HBox createUserCard(User user, Runnable onRemoveUser) throws RecordNotFoundException, DAOException {
+    public HBox createUserCard(User user, Runnable onRemoveUser) {
         
         // Informazioni utente (senza avatar)
         VBox infoBox = createUserInfo(user);
@@ -54,7 +57,7 @@ public class ManageUsersCardFactory {
         return card;
     }
 
-    private VBox createUserInfo(User user) throws RecordNotFoundException, DAOException {
+    private VBox createUserInfo(User user) {
         VBox infoBox = new VBox(8);
         infoBox.setPadding(new Insets(10));
         infoBox.setAlignment(Pos.TOP_LEFT);
@@ -99,7 +102,7 @@ public class ManageUsersCardFactory {
         
         // Pulsante elimina utente
         Button removeButton = new Button("Elimina Utente");
-        removeButton.getStyleClass().add("remove-user-button");
+        removeButton.getStyleClass().add("manage-remove-button");
         removeButton.setOnAction(e -> {
             if (confirmUserDeletion(user)) {
                 onRemoveUser.run();
@@ -111,81 +114,108 @@ public class ManageUsersCardFactory {
         return controlsBox;
     }
 
-    private Label createLastPurchaseLabel(String userEmail) throws RecordNotFoundException, DAOException {
-        List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
-        
-        if (purchases.isEmpty()) {
-            return new Label("Ultimo acquisto: Nessun acquisto");
+    private Label createLastPurchaseLabel(String userEmail) {
+        try {
+            List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
+            
+            if (purchases.isEmpty()) {
+                return new Label("Ultimo acquisto: Nessun acquisto");
+            }
+            
+            // Trova l'acquisto più recente
+            Purchase lastPurchase = purchases.stream()
+                    .filter(p -> p.getPurchaseStatusDate() != null)
+                    .max(Comparator.comparing(Purchase::getPurchaseStatusDate))
+                    .orElse(purchases.get(0));
+            
+            Book book = bookDAO.getBookById(lastPurchase.getBookId());
+            String bookTitle = book != null ? book.getTitle() : "Libro sconosciuto";
+            
+            String dateText = lastPurchase.getPurchaseStatusDate() != null ?
+                    lastPurchase.getPurchaseStatusDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
+                    "Data non disponibile";
+            
+            return new Label("Ultimo acquisto: " + bookTitle + " (" + dateText + ")");
+            
+        } catch (DAOException e) {
+            logger.warn("Errore nel recupero acquisti per utente: " + userEmail, e);
+            return new Label("Nessun acuisto effettuato dall'utente");
+        } catch (Exception e) {
+            logger.error("Errore imprevisto nel recupero acquisti per utente: " + userEmail, e);
+            return new Label("Ultimo acquisto: Errore nel caricamento");
         }
-        
-        // Trova l'acquisto più recente
-        Purchase lastPurchase = purchases.stream()
-                .filter(p -> p.getPurchaseStatusDate() != null)
-                .max(Comparator.comparing(Purchase::getPurchaseStatusDate))
-                .orElse(purchases.get(0));
-        
-        Book book = bookDAO.getBookById(lastPurchase.getBookId());
-        String bookTitle = book != null ? book.getTitle() : "Libro sconosciuto";
-        
-        String dateText = lastPurchase.getPurchaseStatusDate() != null ?
-                lastPurchase.getPurchaseStatusDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
-                "Data non disponibile";
-        
-        return new Label("Ultimo acquisto: " + bookTitle + " (" + dateText + ")");
     }
 
-    private Label createLastLoanLabel(String userEmail) throws RecordNotFoundException, DAOException {
-        List<Loan> loans = loanDAO.getLoansByUser(userEmail);
-        
-        if (loans.isEmpty()) {
-            return new Label("Ultimo prestito: Nessun prestito");
+    private Label createLastLoanLabel(String userEmail) {
+        try {
+            List<Loan> loans = loanDAO.getLoansByUser(userEmail);
+            
+            if (loans.isEmpty()) {
+                return new Label("Ultimo prestito: Nessun prestito");
+            }
+            
+            // Trova il prestito più recente
+            Loan lastLoan = loans.stream()
+                    .filter(l -> l.getLoanedDate() != null)
+                    .max(Comparator.comparing(Loan::getLoanedDate))
+                    .orElse(loans.stream()
+                            .filter(l -> l.getReservedDate() != null)
+                            .max(Comparator.comparing(Loan::getReservedDate))
+                            .orElse(loans.get(0)));
+            
+            Book book = bookDAO.getBookById(lastLoan.getBookId());
+            String bookTitle = book != null ? book.getTitle() : "Libro sconosciuto";
+            
+            String dateText = lastLoan.getLoanedDate() != null ?
+                    lastLoan.getLoanedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
+                    (lastLoan.getReservedDate() != null ?
+                     lastLoan.getReservedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " (prenotato)" :
+                     "Data non disponibile");
+            
+            return new Label("Ultimo prestito: " + bookTitle + " (" + dateText + ")");
+            
+        } catch (DAOException e) {
+            logger.warn("Errore nel recupero prestiti per utente: " + userEmail, e);
+            return new Label("Nessun prestito effettuato dall'utente");
+        } catch (Exception e) {
+            logger.error("Errore imprevisto nel recupero prestiti per utente: " + userEmail, e);
+            return new Label("Ultimo prestito: Errore nel caricamento");
         }
-        
-        // Trova il prestito più recente
-        Loan lastLoan = loans.stream()
-                .filter(l -> l.getLoanedDate() != null)
-                .max(Comparator.comparing(Loan::getLoanedDate))
-                .orElse(loans.stream()
-                        .filter(l -> l.getReservedDate() != null)
-                        .max(Comparator.comparing(Loan::getReservedDate))
-                        .orElse(loans.get(0)));
-        
-        Book book = bookDAO.getBookById(lastLoan.getBookId());
-        String bookTitle = book != null ? book.getTitle() : "Libro sconosciuto";
-        
-        String dateText = lastLoan.getLoanedDate() != null ?
-                lastLoan.getLoanedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
-                (lastLoan.getReservedDate() != null ?
-                 lastLoan.getReservedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " (prenotato)" :
-                 "Data non disponibile");
-        
-        return new Label("Ultimo prestito: " + bookTitle + " (" + dateText + ")");
     }
 
-    private Label createUserStatsLabel(String userEmail) throws RecordNotFoundException, DAOException {
-        List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
-        List<Loan> loans = loanDAO.getLoansByUser(userEmail);
-        
-        long completedPurchases = purchases.stream()
-                .filter(p -> p.getPurchaseStatusDate() != null)
-                .count();
-        
-        long completedLoans = loans.stream()
-                .filter(l -> l.getLoanedDate() != null && l.getReturningDate() != null)
-                .count();
-        
-        long activeLoans = loans.stream()
-                .filter(l -> l.getLoanedDate() != null && l.getReturningDate() == null)
-                .count();
-        
-        long pendingReservations = loans.stream()
-                .filter(l -> l.getLoanedDate() == null && l.getReservedDate() != null)
-                .count();
-        
-        return new Label(String.format(
-            "Statistiche: %d acquisti, %d prestiti completati, %d prestiti attivi, %d prenotazioni in sospeso",
-            completedPurchases, completedLoans, activeLoans, pendingReservations
-        ));
+    private Label createUserStatsLabel(String userEmail) {
+        try {
+            List<Purchase> purchases = purchaseDAO.getPurchasesByUser(userEmail);
+            List<Loan> loans = loanDAO.getLoansByUser(userEmail);
+            
+            long completedPurchases = purchases.stream()
+                    .filter(p -> p.getPurchaseStatusDate() != null)
+                    .count();
+            
+            long completedLoans = loans.stream()
+                    .filter(l -> l.getLoanedDate() != null && l.getReturningDate() != null)
+                    .count();
+            
+            long activeLoans = loans.stream()
+                    .filter(l -> l.getLoanedDate() != null && l.getReturningDate() == null)
+                    .count();
+            
+            long pendingReservations = loans.stream()
+                    .filter(l -> l.getLoanedDate() == null && l.getReservedDate() != null)
+                    .count();
+            
+            return new Label(String.format(
+                "Statistiche: %d acquisti, %d prestiti completati, %d prestiti attivi, %d prenotazioni in sospeso",
+                completedPurchases, completedLoans, activeLoans, pendingReservations
+            ));
+            
+        } catch (DAOException e) {
+            logger.warn("Errore nel recupero statistiche per utente: " + userEmail, e);
+            return new Label("Statistiche non disponibili");
+        } catch (Exception e) {
+            logger.error("Errore imprevisto nel recupero statistiche per utente: " + userEmail, e);
+            return new Label("Statistiche: Errore nel caricamento");
+        }
     }
 
     private boolean confirmUserDeletion(User user) {

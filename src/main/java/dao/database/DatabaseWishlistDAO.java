@@ -83,7 +83,6 @@ public class DatabaseWishlistDAO implements WishlistDAO {
                 }
             }
 
-            if (wishlist.isEmpty()) throw new RecordNotFoundException("Wishlist vuota per l'utente: " + userEmail);
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero della wishlist", e);

@@ -25,7 +25,7 @@ public class ManageUsersController {
 
     public List<User> searchUsers(String searchText) {
         try {
-            List<User> allUsers = userDAO.getAllUsers();
+            List<User> allUsers = getLoggedUsers(); // USA getLoggedUsers() invece di userDAO.getAllUsers()
             if (searchText == null || searchText.trim().isEmpty()) {
                 return allUsers;
             }
@@ -38,8 +38,8 @@ public class ManageUsersController {
                             user.getLastName().toLowerCase().contains(finalSearchText))
                     .collect(Collectors.toList());
 
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca degli utenti", e);
+        } catch (Exception e) {
+            logger.error("Errore durante la ricerca degli utenti", e);
             return List.of();
         }
     }
@@ -73,12 +73,24 @@ public class ManageUsersController {
     public List<User> getAllUsers() {
         try {
             return userDAO.getAllUsers();
+        } catch (RecordNotFoundException e) {
+            logger.info("Nessun utente trovato - situazione normale");
+            return List.of();
         } catch (DAOException e) {
             logger.error("Errore DAO durante il recupero di tutti gli utenti", e);
             return List.of();
         }
     }
 
+	public List<User> getLoggedUsers() {
+	    try {
+	        return userDAO.getLoggedUsers();
+	    } catch (DAOException e) {
+	        logger.error("Errore DAO durante il recupero degli utenti loggati", e);
+	        return List.of();
+	    }
+	}
+	
     public User getUserByEmail(String email) {
         try {
             return userDAO.getUserByEmail(email);
@@ -100,31 +112,31 @@ public class ManageUsersController {
 
     public int getTotalUsersCount() {
         try {
-            return userDAO.getAllUsers().size();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio totale utenti", e);
+            return getLoggedUsers().size(); // USA getLoggedUsers()
+        } catch (Exception e) {
+            logger.error("Errore durante il conteggio totale utenti", e);
             return 0;
         }
     }
 
     public int getAdminUsersCount() {
         try {
-            return (int) userDAO.getAllUsers().stream()
+            return (int) getAllUsers().stream() // getAllUsers() include il filtro per ruolo
                     .filter(User::isAdmin)
                     .count();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio utenti admin", e);
+        } catch (Exception e) {
+            logger.error("Errore durante il conteggio utenti admin", e);
             return 0;
         }
     }
 
     public int getRegularUsersCount() {
         try {
-            return (int) userDAO.getAllUsers().stream()
+            return (int) getLoggedUsers().stream() // USA getLoggedUsers()
                     .filter(user -> !user.isAdmin())
                     .count();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio utenti normali", e);
+        } catch (Exception e) {
+            logger.error("Errore durante il conteggio utenti normali", e);
             return 0;
         }
     }

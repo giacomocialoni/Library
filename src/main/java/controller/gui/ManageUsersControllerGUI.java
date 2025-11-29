@@ -43,7 +43,24 @@ public class ManageUsersControllerGUI {
     }
 
     @FXML
-    public void handleSearch() throws RecordNotFoundException, DAOException {
+    public void handleClearFilters() {
+        searchField.clear();
+        loadUsers();
+    }
+
+    public void loadUsers() {
+        if (cardFactory == null) return;
+
+        try {
+            List<User> users = appController.getLoggedUsers(); // Usa getLoggedUsers invece di getAllUsers
+            displayUsers(users);
+        } catch (Exception e) {
+            showError("Errore", "Errore nel caricamento utenti: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleSearch() {
         if (cardFactory == null) {
             showError("Attenzione", "Sistema non ancora inizializzato");
             return;
@@ -53,7 +70,7 @@ public class ManageUsersControllerGUI {
         List<User> users;
 
         if (searchText.isEmpty()) {
-            users = appController.getAllUsers();
+            users = appController.getLoggedUsers(); // Usa getLoggedUsers
         } else {
             users = appController.searchUsers(searchText);
         }
@@ -61,20 +78,7 @@ public class ManageUsersControllerGUI {
         displayUsers(users);
     }
 
-    @FXML
-    public void handleClearFilters() throws RecordNotFoundException, DAOException {
-        searchField.clear();
-        loadUsers();
-    }
-
-    public void loadUsers() throws RecordNotFoundException, DAOException {
-        if (cardFactory == null) return;
-
-        List<User> users = appController.getAllUsers();
-        displayUsers(users);
-    }
-
-    private void displayUsers(List<User> users) throws RecordNotFoundException, DAOException {
+    private void displayUsers(List<User> users) {
         resultsContainer.getChildren().clear();
 
         for (User user : users) {

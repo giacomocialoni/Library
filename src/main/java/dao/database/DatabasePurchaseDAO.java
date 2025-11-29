@@ -35,7 +35,7 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
     }
 
     @Override
-    public List<Purchase> getPurchasesByUser(String userEmail) throws DAOException, RecordNotFoundException {
+    public List<Purchase> getPurchasesByUser(String userEmail) throws DAOException {
         List<Purchase> purchases = new ArrayList<>();
         String sql = "SELECT * FROM purchases WHERE user_email = ?";
 
@@ -45,10 +45,6 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
             stmt.setString(1, userEmail);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) purchases.add(extractPurchaseFromResultSet(rs));
-            }
-
-            if (purchases.isEmpty()) {
-                throw new RecordNotFoundException("Nessun acquisto trovato per l'utente: " + userEmail);
             }
 
         } catch (SQLException e) {
@@ -77,7 +73,7 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
     }
 
     @Override
-    public boolean hasUserPurchasedBook(String userEmail, int bookId) throws DAOException, RecordNotFoundException {
+    public boolean hasUserPurchasedBook(String userEmail, int bookId) throws DAOException {
         String sql = "SELECT 1 FROM purchases WHERE user_email = ? AND book_id = ? AND status = 'PURCHASED'";
 
         try (Connection conn = dbConnection.getConnection();

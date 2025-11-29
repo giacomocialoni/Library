@@ -43,27 +43,52 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     @Override
-    public List<User> getAllUsers() throws DAOException, RecordNotFoundException {
+    public List<User> getAllUsers() throws DAOException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT email, password, first_name, last_name FROM users ORDER BY email";
+        String sql = "SELECT email, password, first_name, last_name, role FROM users"; // Aggiungi role alla SELECT
 
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
+                String role = rs.getString("role");
+                if ("logged_user".equals(role)) {
+                    users.add(new User(
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name")
+                    ));
+                } else if ("admin".equals(role)) {
+                    // TODO if I want to manage admins too
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero di tutti gli utenti", e);
+        }
+        return users;
+    }
+
+    @Override
+    public List<User> getLoggedUsers() throws DAOException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT email, password, first_name, last_name FROM users WHERE role = 'logged_user' ORDER BY last_name, first_name";
+        
+        try (Connection conn = dbConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
                 users.add(new User(
                         rs.getString("email"),
                         rs.getString("password"),
                         rs.getString("first_name"),
                         rs.getString("last_name")
-                ));
+                        ));
             }
-
-            if (users.isEmpty()) {
-                throw new RecordNotFoundException("Nessun utente trovato nel database");
-            }
-
+            
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero di tutti gli utenti", e);
         }
@@ -110,6 +135,7 @@ public class DatabaseUserDAO implements UserDAO {
     public void deleteUser(String email) throws DAOException, RecordNotFoundException {
         String deletePurchasesSql = "DELETE FROM purchases WHERE user_email = ?";
         String deleteLoansSql = "DELETE FROM loans WHERE user_email = ?";
+        String deleteWishlistSql = "DELETE FROM wishlist WHERE user_email = ?";
         String deleteUserSql = "DELETE FROM users WHERE email = ?";
 
         try (Connection conn = dbConnection.getConnection()) {
@@ -121,6 +147,11 @@ public class DatabaseUserDAO implements UserDAO {
             }
 
             try (PreparedStatement stmt = conn.prepareStatement(deleteLoansSql)) {
+                stmt.setString(1, email);
+                stmt.executeUpdate();
+            }
+            
+            try (PreparedStatement stmt = conn.prepareStatement(deleteWishlistSql)) {
                 stmt.setString(1, email);
                 stmt.executeUpdate();
             }

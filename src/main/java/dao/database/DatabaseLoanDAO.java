@@ -38,7 +38,7 @@ public class DatabaseLoanDAO implements LoanDAO {
     }
 
     @Override
-    public List<Loan> getActiveLoansByUser(String userEmail) throws DAOException, RecordNotFoundException {
+    public List<Loan> getActiveLoansByUser(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
         String sql = "SELECT l.id as loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date, " +
                      "b.id as book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price " +
@@ -51,10 +51,6 @@ public class DatabaseLoanDAO implements LoanDAO {
             stmt.setString(1, userEmail);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
-            }
-
-            if (loans.isEmpty()) {
-                throw new RecordNotFoundException("Nessun prestito attivo trovato per l'utente: " + userEmail);
             }
 
         } catch (SQLException e) {
@@ -127,7 +123,7 @@ public class DatabaseLoanDAO implements LoanDAO {
     }
 
     @Override
-    public List<Loan> getLoansByUser(String userEmail) throws DAOException, RecordNotFoundException {
+    public List<Loan> getLoansByUser(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
         String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ?";
 
@@ -137,10 +133,6 @@ public class DatabaseLoanDAO implements LoanDAO {
             stmt.setString(1, userEmail);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
-            }
-
-            if (loans.isEmpty()) {
-                throw new RecordNotFoundException("Nessun prestito trovato per l'utente: " + userEmail);
             }
 
         } catch (SQLException e) {

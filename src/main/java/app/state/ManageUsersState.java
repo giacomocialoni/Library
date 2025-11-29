@@ -20,25 +20,17 @@ public class ManageUsersState implements AppState {
 
     @Override
     public void onEnter() {
-        ManageUsersControllerGUI manageUsersController =
-                stateManager.getStageManager().<ManageUsersControllerGUI>loadContent(StageManager.MANAGE_USERS_VIEW);
+        ManageUsersControllerGUI manageUsersController = stateManager.getStageManager().<ManageUsersControllerGUI>loadContent(StageManager.MANAGE_USERS_VIEW);
 
         if (manageUsersController != null) {
             // Gestione delle eccezioni senza stack trace sul terminale
             try {
                 manageUsersController.setStateManager(stateManager);
+                manageUsersController.loadUsers();
             } catch (RecordNotFoundException e) {
                 logger.info("Nessun utente trovato durante l'inizializzazione del controller GUI");
             } catch (DAOException e) {
                 logger.error("Errore DAO durante l'inizializzazione del controller ManageUsersControllerGUI", e);
-            }
-
-            try {
-                manageUsersController.loadUsers();
-            } catch (RecordNotFoundException e) {
-                logger.info("Nessun utente da caricare in ManageUsersControllerGUI");
-            } catch (DAOException e) {
-                logger.error("Errore DAO durante il caricamento utenti in ManageUsersControllerGUI", e);
             }
         }
 
