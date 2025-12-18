@@ -1,0 +1,100 @@
+package view.components;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import bean.BookBean;
+import bean.LoanBean;
+
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+public class ReturningLoanCardFactory {
+
+    public HBox createLoanCard(LoanBean loan, BookBean book, Runnable onReturn) {
+        // Copertina del libro
+        ImageView coverImage = new ImageView();
+        coverImage.setFitWidth(100);
+        coverImage.setFitHeight(140);
+        coverImage.setPreserveRatio(true);
+
+        try {
+            String imagePath = "/images/" + book.getImagePath();
+            InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                imageStream = getClass().getResourceAsStream("/images/default.jpg");
+            }
+            if (imageStream != null) {
+                coverImage.setImage(new Image(imageStream));
+                Rectangle clip = new Rectangle(coverImage.getFitWidth(), coverImage.getFitHeight());
+                clip.setArcWidth(15);
+                clip.setArcHeight(15);
+                coverImage.setClip(clip);
+                imageStream.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Errore caricamento immagine: " + e.getMessage());
+        }
+
+        VBox imageContainer = new VBox(coverImage);
+        imageContainer.setAlignment(Pos.CENTER);
+        imageContainer.setPadding(new Insets(10));
+        imageContainer.setMinWidth(120);
+        imageContainer.setStyle("-fx-background-color: #faf8f5; -fx-background-radius: 10; -fx-border-radius: 10;");
+
+        // Info a destra
+        VBox infoBox = new VBox(5);
+        infoBox.setPadding(new Insets(10, 15, 10, 15));
+        infoBox.setAlignment(Pos.TOP_LEFT);
+
+        Label userLabel = new Label("Utente: " + loan.getUserEmail());
+        userLabel.getStyleClass().add("reservation-user");
+
+        Label titleLabel = new Label(book.getTitle());
+        titleLabel.getStyleClass().add("reservation-title");
+
+        Label authorLabel = new Label("di " + book.getAuthor());
+        authorLabel.getStyleClass().add("reservation-author");
+
+        Label detail1Label = new Label("Prestito in corso");
+        detail1Label.getStyleClass().add("reservation-detail");
+
+        Label detail2Label = new Label("Data prestito: " + loan.getLoanedDate());
+        detail2Label.getStyleClass().add("reservation-detail");
+
+        // Calcolo giorni mancanti
+        String remainingText = "";
+        if (loan.getReturningDate() != null) {
+            long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), loan.getReturningDate());
+            if (daysRemaining < 0) remainingText = "In ritardo di " + Math.abs(daysRemaining) + " giorni";
+            else remainingText = "Giorni rimanenti: " + daysRemaining;
+        }
+        Label remainingLabel = new Label(remainingText);
+        remainingLabel.getStyleClass().add("remaining-time-loan");
+
+        // Pulsante Restituito
+        Button returnButton = new Button("Restituito");
+        returnButton.getStyleClass().add("buy-button");
+        returnButton.setOnAction(e -> onReturn.run());
+        returnButton.setMaxWidth(Double.MAX_VALUE);
+
+        infoBox.getChildren().addAll(
+            userLabel, titleLabel, authorLabel, detail1Label, detail2Label, remainingLabel, returnButton
+        );
+
+        // Card principale
+        HBox card = new HBox(10);
+        card.getStyleClass().add("loan-card-container");
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.getChildren().addAll(imageContainer, infoBox);
+
+        return card;
+    }
+}

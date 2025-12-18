@@ -16,4 +16,5 @@ public interface LoanDAO {
     List<Loan> getAllReservedLoans() throws DAOException;
     List<Loan> searchLoansByUser(String searchText) throws DAOException;
     List<Loan> searchLoansByBook(String searchText) throws DAOException;
+    List<Loan> getAllLoanedLoans() throws DAOException;
 }

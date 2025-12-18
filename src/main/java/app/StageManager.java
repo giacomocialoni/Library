@@ -47,6 +47,7 @@ public class StageManager {
     public static final String RESERVATION_VIEW = BASE_PATH + "ReservationView.fxml";
     public static final String MANAGE_BOOKS_VIEW = BASE_PATH + "ManageBooksView.fxml";
     public static final String MANAGE_USERS_VIEW = BASE_PATH + "ManageUsersView.fxml";
+    public static final String RETURN_LOANS_VIEW = BASE_PATH + "ReturnLoansView.fxml";
     public static final String POST_VIEW = BASE_PATH + "PostView.fxml";
 
     public StageManager(Stage stage, DAOFactory daoFactory) {
