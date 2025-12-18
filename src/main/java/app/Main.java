@@ -14,60 +14,67 @@ import dao.factory.DAOFactory;
 import dao.factory.DatabaseDAOFactory;
 
 public class Main {
+
     public static void main(String[] args) {
+
         String viewType;
         String dataSourceType;
+
         WishlistObservable wishlistObservable = new WishlistObservable();
 
-        // --- Lettura del file start.properties ---
+        // --- Lettura start.properties ---
+        Properties startProps = new Properties();
         try (InputStream input = new FileInputStream("src/main/resources/start.properties")) {
-            Properties properties = new Properties();
-            properties.load(input);
-
-            viewType = properties.getProperty("view.type");
-            dataSourceType = properties.getProperty("data.source");
-
+            startProps.load(input);
+            viewType = startProps.getProperty("view.type");
+            dataSourceType = startProps.getProperty("data.source");
         } catch (IOException e) {
-            throw new RuntimeException("Errore durante la lettura del file start.properties", e);
+            throw new RuntimeException("Errore durante la lettura di start.properties", e);
         }
 
-        // --- Configurazione del tipo di sorgente dati ---
+        // --- Configurazione DAOFactory ---
         DAOFactory factory;
 
         if ("DEMO".equalsIgnoreCase(dataSourceType)) {
-        	//TODO parte demo con memoria temporanea
-        	factory = DAOFactory.getFactory("DEMO", null);
+
+            factory = DAOFactory.getFactory("DEMO", null);
+
         } else if ("DB".equalsIgnoreCase(dataSourceType)) {
-            // Leggo i dati della connessione dal db.properties
+
             Properties dbProps = new Properties();
             try (InputStream dbInput = new FileInputStream("src/main/resources/db.properties")) {
                 dbProps.load(dbInput);
             } catch (IOException e) {
-                throw new RuntimeException("Errore durante la lettura del file db.properties", e);
+                throw new RuntimeException("Errore durante la lettura di db.properties", e);
             }
 
-            String url = dbProps.getProperty("db.url");
-            String user = dbProps.getProperty("db.user");
-            String password = dbProps.getProperty("db.password");
+            String url = resolveEnv(dbProps.getProperty("db.url"));
+            String user = resolveEnv(dbProps.getProperty("db.user"));
+            String password = resolveEnv(dbProps.getProperty("db.password"));
+
+            if (url == null || user == null) {
+                throw new IllegalStateException(
+                        "Variabili d'ambiente DB non configurate correttamente");
+            }
 
             DBConnection dbConnection = new DBConnection(url, user, password);
-            
-            // Crea il BookDAO con l'observable
-            DatabaseBookDAO bookDAO = new DatabaseBookDAO(dbConnection, wishlistObservable);
-            
-            // Crea una factory custom completa
+
+            DatabaseBookDAO bookDAO =
+                    new DatabaseBookDAO(dbConnection, wishlistObservable);
+
             factory = new CustomDatabaseDAOFactory(dbConnection, bookDAO);
+
         } else {
             factory = DAOFactory.getFactory("CSV", null);
         }
 
-        // Imposto la factory globale
+        // --- Impostazione factory globale ---
         DAOFactory.setActiveFactory(factory);
 
-        // Ora è sicuro creare l'Observer
+        // --- Registrazione observer ---
         wishlistObservable.addObserver(new WishlistEmailObserver());
 
-        // --- Avvio interfaccia scelta ---
+        // --- Avvio interfaccia ---
         if ("GUI".equalsIgnoreCase(viewType)) {
             ApplicationGUI.setDaoFactory(factory);
             ApplicationGUI.launchApp(args);
@@ -78,19 +85,34 @@ public class Main {
             throw new IllegalArgumentException("Tipo di view non valido: " + viewType);
         }
     }
-    
-    // Factory custom che estende DatabaseDAOFactory
+
+    /**
+     * Risolve un valore del tipo ${ENV_VAR} usando le variabili d'ambiente.
+     */
+    private static String resolveEnv(String value) {
+        if (value == null) {
+            return null;
+        }
+        if (value.startsWith("${") && value.endsWith("}")) {
+            String envKey = value.substring(2, value.length() - 1);
+            return System.getenv(envKey);
+        }
+        return value;
+    }
+
+    // --- Factory custom per iniettare BookDAO con observable ---
     static class CustomDatabaseDAOFactory extends DatabaseDAOFactory {
+
         private final BookDAO customBookDAO;
-        
+
         public CustomDatabaseDAOFactory(DBConnection dbConnection, BookDAO customBookDAO) {
             super(dbConnection);
             this.customBookDAO = customBookDAO;
         }
-        
+
         @Override
         public BookDAO getBookDAO() {
-            return customBookDAO;  // Restituisce il BookDAO con l'observable
+            return customBookDAO;
         }
     }
 }
