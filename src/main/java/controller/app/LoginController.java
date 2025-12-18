@@ -1,35 +1,78 @@
 package controller.app;
 
-import app.Session;
-import app.state.StateManager;
+import bean.AccountBean;
 import dao.AccountDAO;
+import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.IncorrectDataException;
+import exception.RecordNotFoundException;
 import model.Account;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import app.Session;
+
+import java.sql.SQLException;
 
 public class LoginController {
 
-    private final StateManager stateManager;
+    private final AccountDAO accountDAO;
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
-    public LoginController(StateManager stateManager) {
-        this.stateManager = stateManager;
+    public LoginController() {
+        this.accountDAO = DAOFactory.getActiveFactory().getAccountDAO();
     }
 
-    public Account login(String email, String password) throws Exception {
-        if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Email e password non possono essere vuoti.");
-        }
+    public AccountBean login(String email, String password) throws DAOException {
+        if (email == null || email.isBlank() || password == null || password.isBlank())
+            throw new IllegalArgumentException("Email e password obbligatorie");
 
-        AccountDAO accountDAO = stateManager.getDaoFactory().getAccountDAO();
-        Account account = accountDAO.login(email, password);
+        Account account;
+        try {
+            account = accountDAO.login(email, password);
+        } catch (RecordNotFoundException e) {
+            logger.warn("Login fallito per {}", email, e);
+            return null;
+        } catch (SQLException e) {
+            logger.warn("Errore nel DAO nel login per {}", email, e);
+            return null;
+		}
 
-        if (account != null) {
-            // Salva nella sessione globale
-            Session.getInstance().login(account);
-        }
+        if (account == null) return null;
 
-        return account;
+        // Aggiorna la session SOLO con MODEL
+        Session.getInstance().login(account);
+
+        return accountToBean(account);
     }
 
-    public void logout() {
-        Session.getInstance().logout();
+    public boolean isLoggedIn() {
+        return Session.getInstance().isLoggedIn();
+    }
+
+    public boolean isAdmin() {
+        Account account = Session.getInstance().getLoggedUser();
+        return account != null && account.isAdmin(); // oppure check ruolo
+    }
+
+    public AccountBean getLoggedUserBean() {
+        Account account = Session.getInstance().getLoggedUser();
+        if (account == null) return null;
+        return accountToBean(account);
+    }
+    
+    public static AccountBean accountToBean(Account account) {
+        try {
+            AccountBean bean = new AccountBean();
+            bean.setEmail(account.getEmail());
+            bean.setFirstName(account.getFirstName());
+            bean.setLastName(account.getLastName());
+            bean.setRole(account.getRole());
+            return bean;
+        } catch (IncorrectDataException e) {
+            LoggerFactory.getLogger(LoginController.class)
+                         .warn("Errore dati account: {}", account.getEmail(), e);
+            return null;
+        }
     }
 }

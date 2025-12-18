@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.User;
+import bean.UserBean;
 import dao.BookDAO;
 import dao.LoanDAO;
 import dao.PurchaseDAO;
@@ -39,7 +39,7 @@ public class ManageUsersCardFactory {
         this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();
     }
 
-    public HBox createUserCard(User user, Runnable onRemoveUser) {
+    public HBox createUserCard(UserBean user, Runnable onRemoveUser) {
         
         // Informazioni utente (senza avatar)
         VBox infoBox = createUserInfo(user);
@@ -57,7 +57,7 @@ public class ManageUsersCardFactory {
         return card;
     }
 
-    private VBox createUserInfo(User user) {
+    private VBox createUserInfo(UserBean user) {
         VBox infoBox = new VBox(8);
         infoBox.setPadding(new Insets(10));
         infoBox.setAlignment(Pos.TOP_LEFT);
@@ -95,7 +95,7 @@ public class ManageUsersCardFactory {
         return infoBox;
     }
 
-    private VBox createUserControls(User user, Runnable onRemoveUser) {
+    private VBox createUserControls(UserBean user, Runnable onRemoveUser) {
         VBox controlsBox = new VBox(15);
         controlsBox.setAlignment(Pos.CENTER);
         controlsBox.setPadding(new Insets(10));
@@ -124,15 +124,15 @@ public class ManageUsersCardFactory {
             
             // Trova l'acquisto più recente
             Purchase lastPurchase = purchases.stream()
-                    .filter(p -> p.getPurchaseStatusDate() != null)
-                    .max(Comparator.comparing(Purchase::getPurchaseStatusDate))
+                    .filter(p -> p.getStatusDate() != null)
+                    .max(Comparator.comparing(Purchase::getStatusDate))
                     .orElse(purchases.get(0));
             
             Book book = bookDAO.getBookById(lastPurchase.getBookId());
             String bookTitle = book != null ? book.getTitle() : "Libro sconosciuto";
             
-            String dateText = lastPurchase.getPurchaseStatusDate() != null ?
-                    lastPurchase.getPurchaseStatusDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
+            String dateText = lastPurchase.getStatusDate() != null ?
+                    lastPurchase.getStatusDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) :
                     "Data non disponibile";
             
             return new Label("Ultimo acquisto: " + bookTitle + " (" + dateText + ")");
@@ -189,7 +189,7 @@ public class ManageUsersCardFactory {
             List<Loan> loans = loanDAO.getLoansByUser(userEmail);
             
             long completedPurchases = purchases.stream()
-                    .filter(p -> p.getPurchaseStatusDate() != null)
+                    .filter(p -> p.getStatusDate() != null)
                     .count();
             
             long completedLoans = loans.stream()
@@ -218,7 +218,7 @@ public class ManageUsersCardFactory {
         }
     }
 
-    private boolean confirmUserDeletion(User user) {
+    private boolean confirmUserDeletion(UserBean user) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Conferma Eliminazione");
         alert.setHeaderText("Stai per eliminare: " + user.getFirstName() + " " + user.getLastName());

@@ -240,8 +240,8 @@ public class DatabaseBookDAO implements BookDAO {
             while (rs.next()) {
                 int loanId = rs.getInt("id");
                 String email = rs.getString("user_email");
-                Book book = extractBookFromResultSet(rs);
 
+                int bookId = rs.getInt("book_id");
                 LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
                 LocalDate reservedDate = rs.getDate("reserved_date") != null ?
                         rs.getDate("reserved_date").toLocalDate() : null;
@@ -250,7 +250,7 @@ public class DatabaseBookDAO implements BookDAO {
                 LocalDate returningDate = rs.getDate("returning_date") != null ?
                         rs.getDate("returning_date").toLocalDate() : null;
 
-                loans.add(new Loan(loanId, email, book, status, reservedDate, loanedDate, returningDate));
+                loans.add(new Loan(loanId, email, bookId, reservedDate, loanedDate, returningDate, status));
             }
 
             return loans;

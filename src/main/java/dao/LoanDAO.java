@@ -14,5 +14,6 @@ public interface LoanDAO {
     void acceptedLoan(int loanId) throws DAOException, RecordNotFoundException;
     List<Loan> getReservedLoansByUser(String userEmail) throws DAOException, RecordNotFoundException;
     List<Loan> getAllReservedLoans() throws DAOException;
-    List<Loan> searchLoans(String searchText) throws DAOException;
+    List<Loan> searchLoansByUser(String searchText) throws DAOException;
+    List<Loan> searchLoansByBook(String searchText) throws DAOException;
 }

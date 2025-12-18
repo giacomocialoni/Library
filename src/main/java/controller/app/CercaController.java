@@ -10,6 +10,7 @@ import model.Book;
 import model.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import bean.BookBean;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -40,15 +41,32 @@ public class CercaController {
         }
     }
 
-    public List<Book> searchBooks(String searchText, String searchMode, String category, String yearFrom, String yearTo, boolean includeUnavailable) {
+    public List<BookBean> searchBooks(String searchText, String searchMode, String category,
+                                      String yearFrom, String yearTo, boolean includeUnavailable) {
         try {
-            return bookDAO.getSearchedBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
+            List<Book> books = bookDAO.getSearchedBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
+
+            return books.stream().map(book -> {
+                BookBean bean = new BookBean();
+                try {
+                    bean.setId(book.getId());
+                    bean.setTitle(book.getTitle());
+                    bean.setAuthor(book.getAuthor());
+                    bean.setCategory(book.getCategory());
+                    bean.setImagePath(book.getImagePath());
+                    bean.setStock(book.getStock());
+                } catch (Exception e) {
+                    logger.warn("Dati libro non validi: " + book.getId(), e);
+                }
+                return bean;
+            }).collect(Collectors.toList());
+
         } catch (DAOException e) {
             logger.error("Errore durante la ricerca dei libri", e);
             return Collections.emptyList();
         }
     }
-    
+
     public boolean addCategory(Category category) {
         try {
             categoryDAO.addCategory(category);

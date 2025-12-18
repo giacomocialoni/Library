@@ -5,6 +5,7 @@ import dao.factory.DAOFactory;
 import exception.DAOException;
 import exception.RecordNotFoundException;
 import model.User;
+import bean.UserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,58 +24,58 @@ public class ManageUsersController {
 
     // ===== RICERCHE UTENTI =====
 
-    public List<User> searchUsers(String searchText) {
+    public List<UserBean> searchUsers(String searchText) {
         try {
-            List<User> allUsers = getLoggedUsers(); // USA getLoggedUsers() invece di userDAO.getAllUsers()
-            if (searchText == null || searchText.trim().isEmpty()) {
-                return allUsers;
+            List<User> allUsers = userDAO.getLoggedUsers();
+            if (searchText != null && !searchText.trim().isEmpty()) {
+                String lower = searchText.toLowerCase();
+                allUsers = allUsers.stream()
+                        .filter(u -> u.getEmail().toLowerCase().contains(lower)
+                                || u.getFirstName().toLowerCase().contains(lower)
+                                || u.getLastName().toLowerCase().contains(lower))
+                        .collect(Collectors.toList());
             }
-
-            String finalSearchText = searchText.toLowerCase();
-            return allUsers.stream()
-                    .filter(user ->
-                            user.getEmail().toLowerCase().contains(finalSearchText) ||
-                            user.getFirstName().toLowerCase().contains(finalSearchText) ||
-                            user.getLastName().toLowerCase().contains(finalSearchText))
-                    .collect(Collectors.toList());
-
-        } catch (Exception e) {
-            logger.error("Errore durante la ricerca degli utenti", e);
-            return List.of();
-        }
-    }
-
-    public List<User> searchUsersByEmail(String searchText) {
-        try {
-            return userDAO.getAllUsers().stream()
-                    .filter(user -> user.getEmail().toLowerCase().contains(searchText.toLowerCase()))
-                    .collect(Collectors.toList());
+            return mapUsersToBeans(allUsers);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca utenti per email", e);
+            logger.error("Errore DAO durante la ricerca utenti", e);
             return List.of();
         }
     }
 
-    public List<User> searchUsersByName(String searchText) {
+    public List<UserBean> searchUsersByEmail(String searchText) {
         try {
-            return userDAO.getAllUsers().stream()
-                    .filter(user ->
-                            user.getFirstName().toLowerCase().contains(searchText.toLowerCase()) ||
-                            user.getLastName().toLowerCase().contains(searchText.toLowerCase()))
+            List<User> allUsers = userDAO.getAllUsers();
+            allUsers = allUsers.stream()
+                    .filter(u -> u.getEmail().toLowerCase().contains(searchText.toLowerCase()))
                     .collect(Collectors.toList());
+            return mapUsersToBeans(allUsers);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca utenti per nome", e);
+            logger.error("Errore DAO ricerca utenti per email", e);
             return List.of();
         }
     }
 
-    // ===== OPERAZIONI CRUD =====
-
-    public List<User> getAllUsers() {
+    public List<UserBean> searchUsersByName(String searchText) {
         try {
-            return userDAO.getAllUsers();
+            List<User> allUsers = userDAO.getAllUsers();
+            allUsers = allUsers.stream()
+                    .filter(u -> u.getFirstName().toLowerCase().contains(searchText.toLowerCase())
+                              || u.getLastName().toLowerCase().contains(searchText.toLowerCase()))
+                    .collect(Collectors.toList());
+            return mapUsersToBeans(allUsers);
+        } catch (DAOException e) {
+            logger.error("Errore DAO ricerca utenti per nome", e);
+            return List.of();
+        }
+    }
+
+    // ===== CRUD UTENTI =====
+
+    public List<UserBean> getAllUsers() {
+        try {
+            return mapUsersToBeans(userDAO.getAllUsers());
         } catch (RecordNotFoundException e) {
-            logger.info("Nessun utente trovato - situazione normale");
+            logger.info("Nessun utente trovato");
             return List.of();
         } catch (DAOException e) {
             logger.error("Errore DAO durante il recupero di tutti gli utenti", e);
@@ -82,69 +83,81 @@ public class ManageUsersController {
         }
     }
 
-	public List<User> getLoggedUsers() {
-	    try {
-	        return userDAO.getLoggedUsers();
-	    } catch (DAOException e) {
-	        logger.error("Errore DAO durante il recupero degli utenti loggati", e);
-	        return List.of();
-	    }
-	}
-	
-    public User getUserByEmail(String email) {
+    public List<UserBean> getLoggedUsers() {
         try {
-            return userDAO.getUserByEmail(email);
+            return mapUsersToBeans(userDAO.getLoggedUsers());
+        } catch (DAOException e) {
+            logger.error("Errore DAO recupero utenti loggati", e);
+            return List.of();
+        }
+    }
+
+    public UserBean getUserByEmail(String email) {
+        try {
+            User user = userDAO.getUserByEmail(email);
+            return mapUserToBean(user);
         } catch (RecordNotFoundException e) {
-            logger.warn("Utente non trovato: " + email, e);
+            logger.warn("Utente non trovato: {}", email, e);
             return null;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero utente: " + email, e);
+            logger.error("Errore DAO recupero utente: {}", email, e);
             return null;
         }
     }
 
     public boolean deleteUser(String email) {
-        //TODO Impementa eliminazione utente
-    	return false;
+        try {
+            userDAO.deleteUser(email);
+            return true;
+        } catch (RecordNotFoundException e) {
+            logger.warn("Utente da eliminare non trovato: {}", email, e);
+            return false;
+        } catch (DAOException e) {
+            logger.error("Errore DAO durante la cancellazione dell'utente: {}", email, e);
+            return false;
+        }
     }
 
     // ===== METODI UTILI =====
 
     public int getTotalUsersCount() {
+        return getLoggedUsers().size();
+    }
+
+    public int getRegularUsersCount() {
         try {
-            return getLoggedUsers().size(); // USA getLoggedUsers()
-        } catch (Exception e) {
-            logger.error("Errore durante il conteggio totale utenti", e);
+            return (int) userDAO.getLoggedUsers().stream().count();
+        } catch (DAOException e) {
+            logger.error("Errore conteggio utenti normali", e);
             return 0;
         }
     }
 
     public int getAdminUsersCount() {
         try {
-            return (int) getAllUsers().stream() // getAllUsers() include il filtro per ruolo
-                    .filter(User::isAdmin)
+            return (int) userDAO.getAllUsers().stream()
+                    .filter(u -> u.getRole().equalsIgnoreCase("admin"))
                     .count();
-        } catch (Exception e) {
-            logger.error("Errore durante il conteggio utenti admin", e);
+        } catch (DAOException e) {
+            logger.error("Errore conteggio utenti admin", e);
             return 0;
         }
     }
 
-    public int getRegularUsersCount() {
-        try {
-            return (int) getLoggedUsers().stream() // USA getLoggedUsers()
-                    .filter(user -> !user.isAdmin())
-                    .count();
-        } catch (Exception e) {
-            logger.error("Errore durante il conteggio utenti normali", e);
-            return 0;
-        }
+    // ===== MAPPING User → UserBean =====
+
+    private List<UserBean> mapUsersToBeans(List<User> users) {
+        return users.stream()
+                .map(this::mapUserToBean)
+                .collect(Collectors.toList());
     }
 
-    // ===== METODI PER ATTIVITÀ UTENTE =====
-
-    public String getUserActivitySummary(String userEmail) {
-        // Metodo placeholder per eventuali informazioni aggiuntive
-        return "Attività utente: " + userEmail;
+    private UserBean mapUserToBean(User user) {
+        UserBean bean = new UserBean();
+        bean.setEmail(user.getEmail());
+        bean.setFirstName(user.getFirstName());
+        bean.setLastName(user.getLastName());
+        bean.setPassword(user.getPassword());
+        return bean;
     }
 }

@@ -8,8 +8,8 @@ import controller.app.WishlistController;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import model.Book;
-import model.User;
+import bean.UserBean;
+import bean.BookBean;
 import view.components.BookCardFactory;
 import view.components.WishlistBookCardFactory;
 
@@ -17,7 +17,7 @@ public class WishlistControllerGUI {
 
     private StateManager stateManager;
     private final WishlistController appController = new WishlistController();
-    private User user;
+    private UserBean user;
 
     @FXML
     private VBox mainVBox;
@@ -27,8 +27,9 @@ public class WishlistControllerGUI {
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.user = (User) Session.getInstance().getLoggedUser();
 
+        String email = Session.getInstance().getLoggedUser().getEmail();
+        this.user = appController.getUser(email);
         if (user != null) {
             populateWishlist();
         }
@@ -38,13 +39,14 @@ public class WishlistControllerGUI {
     public void populateWishlist() {
         wishlistFlowPane.getChildren().clear();
 
-        List<Book> books = appController.getWishlistBooks(user.getEmail());
+        List<BookBean> bookBeans = appController.getWishlistBooks(user.getEmail());
+
         BookCardFactory baseFactory = new BookCardFactory(stateManager);
         WishlistBookCardFactory wishlistCardFactory =
-                new WishlistBookCardFactory(baseFactory, appController, user);
+                new WishlistBookCardFactory(baseFactory, appController, user.getEmail());
 
-        for (Book b : books) {
-            wishlistFlowPane.getChildren().add(wishlistCardFactory.createWishlistCard(b));
+        for (BookBean bookBean : bookBeans) {
+            wishlistFlowPane.getChildren().add(wishlistCardFactory.createWishlistCard(bookBean));
         }
     }
 }

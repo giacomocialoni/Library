@@ -1,12 +1,12 @@
 package controller.gui;
 
 import app.state.StateManager;
+import bean.BookBean;
 import controller.app.CatalogoController;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
-import model.Book;
 import view.components.BookCardFactory;
 
 public class CatalogoControllerGUI {
@@ -23,10 +23,10 @@ public class CatalogoControllerGUI {
     private void loadBooks() {
         booksFlowPane.getChildren().clear();
 
-        List<Book> books = appController.getAllBooks();
+        List<BookBean> books = appController.getAllBooks();
         BookCardFactory cardFactory = new BookCardFactory(stateManager);
 
-        for (Book book : books) {
+        for (BookBean book : books) {
             StackPane bookBox = cardFactory.createBookCard(book);
             booksFlowPane.getChildren().add(bookBox);
         }

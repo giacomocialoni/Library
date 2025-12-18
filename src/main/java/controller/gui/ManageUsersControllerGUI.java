@@ -9,8 +9,8 @@ import exception.RecordNotFoundException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import model.User;
 import view.components.ManageUsersCardFactory;
+import bean.UserBean;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class ManageUsersControllerGUI {
         if (cardFactory == null) return;
 
         try {
-            List<User> users = appController.getLoggedUsers(); // Usa getLoggedUsers invece di getAllUsers
+            List<UserBean> users = appController.getLoggedUsers(); // Usa getLoggedUsers invece di getAllUsers
             displayUsers(users);
         } catch (Exception e) {
             showError("Errore", "Errore nel caricamento utenti: " + e.getMessage());
@@ -67,7 +67,7 @@ public class ManageUsersControllerGUI {
         }
 
         String searchText = searchField.getText().trim();
-        List<User> users;
+        List<UserBean> users;
 
         if (searchText.isEmpty()) {
             users = appController.getLoggedUsers(); // Usa getLoggedUsers
@@ -78,10 +78,10 @@ public class ManageUsersControllerGUI {
         displayUsers(users);
     }
 
-    private void displayUsers(List<User> users) {
+    private void displayUsers(List<UserBean> users) {
         resultsContainer.getChildren().clear();
 
-        for (User user : users) {
+        for (UserBean user : users) {
             var userCard = cardFactory.createUserCard(
                 user,
                 () -> handleRemoveUser(user.getEmail())

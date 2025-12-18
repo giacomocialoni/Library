@@ -9,11 +9,12 @@ import app.state.ConfirmPurchaseState;
 import app.state.ErrorState;
 import app.state.LoginState;
 import app.state.StateManager;
+import bean.BookBean;
 import controller.app.BookDetailController;
+import controller.app.LoginController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import model.Book;
 import view.components.BookDetailFactory;
 
 public class BookDetailControllerGUI {
@@ -36,17 +37,19 @@ public class BookDetailControllerGUI {
 
     private StateManager stateManager;
     private BookDetailController appController;
-    private Book currentBook;
+    private LoginController loginController;
+    private BookBean currentBook;
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
         this.appController = new BookDetailController();
+        this.loginController = new LoginController();
     }
 
     public void loadBook(int bookId) {
         updateBackButtonText();
 
-        Book book = appController.getBookById(bookId);
+        BookBean book = appController.getBookById(bookId);
         this.currentBook = book;
         
         if (book == null) {
@@ -105,17 +108,29 @@ public class BookDetailControllerGUI {
     //TODO Sposta exception nel controller applicativo
     private void toggleWishlist() {
         boolean inWishlist = appController.isInWishlist(currentBook.getId());
+        boolean success;
 
         if (inWishlist) {
-            appController.removeFromWishlist(currentBook.getId());
-            wishlistButton.setText("Aggiungi");
-            wishlistButton.getStyleClass().remove("in-wishlist");
-        } else {
-            appController.addToWishlist(currentBook.getId());
-            wishlistButton.setText("Rimuovi");
-            if (!wishlistButton.getStyleClass().contains("in-wishlist")) {
-                wishlistButton.getStyleClass().add("in-wishlist");
+            success = appController.removeFromWishlist(currentBook.getId());
+            if (success) {
+                wishlistButton.setText("Aggiungi");
+                wishlistButton.getStyleClass().remove("in-wishlist");
             }
+        } else {
+            success = appController.addToWishlist(currentBook.getId());
+            if (success) {
+                wishlistButton.setText("Rimuovi");
+                if (!wishlistButton.getStyleClass().contains("in-wishlist")) {
+                    wishlistButton.getStyleClass().add("in-wishlist");
+                }
+            }
+        }
+
+        if (!success) {
+            stateManager.setState(new ErrorState(
+                stateManager,
+                "Errore durante l'aggiornamento della wishlist"
+            ));
         }
     }
 
@@ -127,33 +142,19 @@ public class BookDetailControllerGUI {
 
     @FXML
     public void handleBuy() {
-        // NUOVO: controlla se l'utente è loggato
-        if (!Session.getInstance().isLoggedIn()) {
-            // Vai allo stato di login con callback per l'acquisto
-            stateManager.setState(new LoginState(stateManager, () -> {
-                // Callback chiamata dopo il login riuscito
-                if (currentBook != null) {
-                    int quantity = quantitySpinner.getValue();
-                    stateManager.setState(new ConfirmPurchaseState(
-                        stateManager, 
-                        currentBook, 
-                        quantity
-                    ));
-                }
-            }));
+        if (!loginController.isLoggedIn()) {
+            stateManager.setState(new LoginState(stateManager, () -> proceedToBuy()));
         } else {
-            // Utente già loggato, procedi normalmente
-            int quantity = quantitySpinner.getValue();
-            if (currentBook != null) {
-                stateManager.setState(new ConfirmPurchaseState(
-                    stateManager, 
-                    currentBook, 
-                    quantity
-                ));
-            }
+            proceedToBuy();
         }
     }
-
+    private void proceedToBuy() {
+        if (currentBook != null) {
+            int quantity = quantitySpinner.getValue();
+            stateManager.setState(new ConfirmPurchaseState(stateManager, currentBook, quantity));
+        }
+    }
+    
     @FXML
     public void handleBorrow() {
         // NUOVO: controlla se l'utente è loggato

@@ -1,68 +1,131 @@
 package controller.app;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import bean.BookBean;
+import bean.UserBean;
 import dao.BookDAO;
 import dao.UserDAO;
 import dao.WishlistDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
+import exception.IncorrectDataException;
 import exception.RecordNotFoundException;
 import model.Book;
 import model.User;
 import model.Wishlist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WishlistController {
-	private static final Logger logger = LoggerFactory.getLogger(WishlistController.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(WishlistController.class);
+
     private final UserDAO userDAO;
     private final WishlistDAO wishlistDAO;
     private final BookDAO bookDAO;
-    
-	public WishlistController() {
-		this.wishlistDAO = DAOFactory.getActiveFactory().getWishlistDAO();
-        this.userDAO = DAOFactory.getActiveFactory().getUserDAO();
-        this.bookDAO = DAOFactory.getActiveFactory().getBookDAO();
-	}
 
-    public User getUser(String email) {
+    public WishlistController() {
+        DAOFactory factory = DAOFactory.getActiveFactory();
+        this.userDAO = factory.getUserDAO();
+        this.wishlistDAO = factory.getWishlistDAO();
+        this.bookDAO = factory.getBookDAO();
+    }
+
+    /* =====================
+       USER (BEAN)
+       ===================== */
+    public UserBean getUser(String email) {
         try {
-            return userDAO.getUserByEmail(email);
+            User user = userDAO.getUserByEmail(email);
+            return toUserBean(user);
         } catch (RecordNotFoundException e) {
-            logger.warn("Utente non trovato: " + email);
+            logger.warn("Utente non trovato: {}", email);
             return null;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero utente: " + email, e);
+            logger.error("Errore DAO recupero utente {}", email, e);
             return null;
         }
     }
 
-    public List<Book> getWishlistBooks(String email) {
+    /* =====================
+       WISHLIST (BEAN)
+       ===================== */
+    public List<BookBean> getWishlistBooks(String email) {
+        List<BookBean> beans = new ArrayList<>();
+
         try {
             List<Wishlist> wishlist = wishlistDAO.getWishlistByUser(email);
-            List<Book> books = new ArrayList<>();
 
             for (Wishlist w : wishlist) {
-                Book b = bookDAO.getBookById(w.getBookId());
-                if (b != null) books.add(b);
+                try {
+                    Book book = bookDAO.getBookById(w.getBookId());
+                    BookBean bean = toBookBean(book);
+                    if (bean != null) beans.add(bean);
+
+                } catch (RecordNotFoundException e) {
+                    logger.warn("Libro non trovato id={}", w.getBookId());
+                } catch (DAOException e) {
+                    logger.error("Errore DAO recupero libro id={}", w.getBookId(), e);
+                }
             }
 
-            return books;
+        } catch (DAOException e) {
+            logger.error("Errore DAO recupero wishlist utente {}", email, e);
+        }
 
-        } catch (Exception e) {
-            logger.error("Errore durante il recupero dei libri in wishlist", e);
-            return List.of();
+        return beans;
+    }
+
+    /* =====================
+       COMMANDS
+       ===================== */
+    public boolean addToWishlist(String email, int bookId) {
+        try {
+            wishlistDAO.addToWishlist(email, bookId);
+            return true;
+        } catch (DAOException e) {
+            logger.error("Errore DAO aggiunta libro id={} wishlist {}", bookId, email, e);
+            return false;
         }
     }
-    
-    public void addToWishlist(String email, int bookId) throws DAOException {
-        wishlistDAO.addToWishlist(email, bookId);
+
+    public boolean removeFromWishlist(String email, int bookId) {
+        try {
+            wishlistDAO.removeFromWishlist(email, bookId);
+            return true;
+        } catch (DAOException e) {
+            logger.error("Errore DAO rimozione libro id={} wishlist {}", bookId, email, e);
+            return false;
+        }
     }
 
-    public void removeFromWishlist(String email, int bookId) throws DAOException {
-        wishlistDAO.removeFromWishlist(email, bookId);
+    /* =====================
+       MAPPING PRIVATO
+       ===================== */
+    private UserBean toUserBean(User user) {
+        UserBean bean = new UserBean();
+        bean.setEmail(user.getEmail());
+        bean.setPassword(user.getPassword());
+        bean.setFirstName(user.getFirstName());
+        bean.setLastName(user.getLastName());
+        return bean;
+    }
+
+    private BookBean toBookBean(Book book) {
+        BookBean bean = new BookBean();
+        try {
+			bean.setId(book.getId());
+			bean.setTitle(book.getTitle());
+			bean.setAuthor(book.getAuthor());
+			bean.setCategory(book.getCategory());
+			bean.setImagePath(book.getImagePath());
+			bean.setStock(book.getStock());
+			bean.setPrice(book.getPrice());
+		} catch (IncorrectDataException e) {
+            logger.error("Errore nella trasformazione di book bean.", e);
+		}
+        return bean;
     }
 }

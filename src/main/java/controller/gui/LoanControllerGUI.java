@@ -2,12 +2,12 @@ package controller.gui;
 
 import app.state.ErrorState;
 import app.state.SuccessState;
+import bean.BookBean;
 import app.state.StateManager;
 import controller.app.LoanController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import model.Book;
 import utils.LoanResult;
 
 public class LoanControllerGUI {
@@ -20,7 +20,7 @@ public class LoanControllerGUI {
     @FXML private Button cancelButton;
 
     private StateManager stateManager;
-    private Book book;
+    private BookBean book;
     private LoanController borrowController;
 
     public void setStateManager(StateManager stateManager) {
@@ -29,7 +29,7 @@ public class LoanControllerGUI {
     }
 
     // MODIFICATO: rimuovi il parametro previousState
-    public void setBorrowData(Book book) {
+    public void setBorrowData(BookBean book) {
         this.book = book;
         updateUI();
     }

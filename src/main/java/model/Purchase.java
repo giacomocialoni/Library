@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDate;
-
 import utils.PurchaseStatus;
 
 public class Purchase {
@@ -19,19 +18,13 @@ public class Purchase {
         this.status = status;
     }
 
-    // GETTER
     public int getId() { return id; }
     public String getUserEmail() { return userEmail; }
     public int getBookId() { return bookId; }
-    public LocalDate getPurchaseStatusDate() { return statusDate; }
+    public LocalDate getStatusDate() { return statusDate; }
     public PurchaseStatus getStatus() { return status; }
 
     // Metodi utility
-    public boolean isPurchased() {
-        return status == PurchaseStatus.PURCHASED;
-    }
-
-    public boolean isReserved() {
-        return status == PurchaseStatus.RESERVED;
-    }
+    public boolean isPurchased() { return status == PurchaseStatus.PURCHASED; }
+    public boolean isReserved() { return status == PurchaseStatus.RESERVED; }
 }

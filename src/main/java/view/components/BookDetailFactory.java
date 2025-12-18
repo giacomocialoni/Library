@@ -2,13 +2,13 @@ package view.components;
 
 import controller.gui.BookDetailControllerGUI;
 import javafx.scene.image.Image;
-import model.Book;
+import bean.BookBean;
 
 import java.io.InputStream;
 
 public class BookDetailFactory {
 
-    public static void populateBookDetails(BookDetailControllerGUI controller, Book book) {
+    public static void populateBookDetails(BookDetailControllerGUI controller, BookBean book) {
         controller.getTitleLabel().setText(book.getTitle());
         controller.getAuthorLabel().setText("di " + book.getAuthor());
         controller.getGenreLabel().setText(book.getCategory());

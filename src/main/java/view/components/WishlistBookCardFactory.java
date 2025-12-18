@@ -1,64 +1,58 @@
 package view.components;
 
+import bean.BookBean;
 import controller.app.WishlistController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import model.Book;
-import model.User;
 
 public class WishlistBookCardFactory {
 
     private final BookCardFactory bookCardFactory;
     private final WishlistController wishlistController;
-    private final User user;
+    private final String userEmail;
 
     private static final String IN_WISHLIST_STYLE_CLASS = "in-wishlist";
 
     public WishlistBookCardFactory(BookCardFactory bookCardFactory,
                                    WishlistController wishlistController,
-                                   User user) {
+                                   String userEmail) {
         this.bookCardFactory = bookCardFactory;
         this.wishlistController = wishlistController;
-        this.user = user;
+        this.userEmail = userEmail;
     }
 
-    public VBox createWishlistCard(Book book) {
-        // --- Card principale dal BookCardFactory ---
-        VBox cardBox = new VBox();
-        cardBox.setAlignment(Pos.CENTER);
+    public VBox createWishlistCard(BookBean bookBean) {
 
-        // La card vera e propria
-        var bookCard = bookCardFactory.createBookCard(book);
+        // --- Card principale dal BookCardFactory ---
+        var bookCard = bookCardFactory.createBookCard(bookBean);
 
         // --- Bottone toggle wishlist ---
         Button wishlistButton = new Button();
         wishlistButton.getStyleClass().add("wishlist-button");
 
-        // Stato iniziale
-        boolean inWishlist = wishlistController.getWishlistBooks(user.getEmail())
-                .stream().anyMatch(b -> b.getId() == book.getId());
-        updateButton(wishlistButton, inWishlist);
+        boolean inWishlist = wishlistController
+		        .getWishlistBooks(userEmail)
+		        .stream()
+		        .anyMatch(b -> b.getId() == bookBean.getId());
 
-        // Toggle cliccando
+		updateButton(wishlistButton, inWishlist);
+
         wishlistButton.setOnAction(evt -> {
-            try {
-                boolean currentlyInWishlist = wishlistController.getWishlistBooks(user.getEmail())
-                        .stream().anyMatch(b -> b.getId() == book.getId());
+            boolean currentlyInWishlist = wishlistController
+			        .getWishlistBooks(userEmail)
+			        .stream()
+			        .anyMatch(b -> b.getId() == bookBean.getId());
 
-                if (currentlyInWishlist) {
-                    wishlistController.removeFromWishlist(user.getEmail(), book.getId());
-                    updateButton(wishlistButton, false);
-                } else {
-                    wishlistController.addToWishlist(user.getEmail(), book.getId());
-                    updateButton(wishlistButton, true);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+			if (currentlyInWishlist) {
+			    wishlistController.removeFromWishlist(userEmail, bookBean.getId());
+			    updateButton(wishlistButton, false);
+			} else {
+			    wishlistController.addToWishlist(userEmail, bookBean.getId());
+			    updateButton(wishlistButton, true);
+			}
         });
 
-        // --- Contenitore finale ---
         VBox container = new VBox(10, bookCard, wishlistButton);
         container.setAlignment(Pos.CENTER);
 

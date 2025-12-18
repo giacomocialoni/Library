@@ -1,15 +1,16 @@
 package controller.app;
 
+import bean.BookBean;
+import bean.LoanBean;
+import bean.UserBean;
 import dao.BookDAO;
 import dao.LoanDAO;
-import dao.PurchaseDAO;
 import dao.UserDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
-import exception.RecordNotFoundException;
+import exception.IncorrectDataException;
 import model.Book;
 import model.Loan;
-import model.Purchase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,56 +19,96 @@ import java.util.List;
 
 public class ProfiloController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProfiloController.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(ProfiloController.class);
 
     private final BookDAO bookDAO;
     private final UserDAO userDAO;
     private final LoanDAO loanDAO;
-    private final PurchaseDAO purchaseDAO;
 
     public ProfiloController() {
         this.bookDAO = DAOFactory.getActiveFactory().getBookDAO();
         this.userDAO = DAOFactory.getActiveFactory().getUserDAO();
         this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();
-        this.purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
     }
 
-    public User getUser(String email) {
+    public UserBean getUser(String email) {
         try {
-            return userDAO.getUserByEmail(email);
-        } catch (RecordNotFoundException e) {
-            logger.warn("Utente non trovato: " + email);
+            User user = userDAO.getUserByEmail(email);
+
+            UserBean bean = new UserBean();
+            bean.setEmail(user.getEmail());
+            bean.setPassword(user.getPassword());
+            bean.setFirstName(user.getFirstName());
+            bean.setLastName(user.getLastName());
+            return bean;
+
+        } catch (DAOException e) {
+            logger.error("Errore recupero utente", e);
             return null;
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero utente: " + email, e);
-            return null;
         }
     }
 
-    public List<Book> getPurchasedBooks(String email) {
+    public List<BookBean> getPurchasedBooks(String email) {
         try {
-            return bookDAO.getPurchasedBooks(email);
+            return bookDAO.getPurchasedBooks(email)
+                    .stream()
+                    .map(this::toBookBean)
+                    .toList();
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero libri acquistati per utente: " + email, e);
+            logger.error("Errore libri acquistati", e);
             return List.of();
         }
     }
 
-    public List<Loan> getActiveLoans(String email) {
+    public List<LoanBean> getActiveLoans(String email) {
         try {
-            return loanDAO.getActiveLoansByUser(email);
+            return loanDAO.getActiveLoansByUser(email)
+                    .stream()
+                    .map(this::toLoanBean)
+                    .toList();
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero prestiti attivi per utente: " + email, e);
+            logger.error("Errore prestiti", e);
             return List.of();
         }
     }
 
-    public List<Purchase> getUserPurchases(String email) {
+    /* =====================
+       MAPPING PRIVATO
+       ===================== */
+
+    private BookBean toBookBean(Book book) {
         try {
-            return purchaseDAO.getPurchasesByUser(email);
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero acquisti per utente: " + email, e);
-            return List.of();
+            BookBean bean = new BookBean();
+            bean.setId(book.getId());
+            bean.setTitle(book.getTitle());
+            bean.setAuthor(book.getAuthor());
+            bean.setCategory(book.getCategory());
+            bean.setImagePath(book.getImagePath());
+            bean.setStock(book.getStock());
+            return bean;
+        } catch (IncorrectDataException e) {
+            throw new RuntimeException("Dati libro non validi", e);
         }
+    }
+
+    private LoanBean toLoanBean(Loan loan) {
+        LoanBean bean = new LoanBean();
+        bean.setId(loan.getId());
+        bean.setUserEmail(loan.getUserEmail());
+        bean.setStatus(loan.getStatus());
+        bean.setReservedDate(loan.getReservedDate());
+        bean.setLoanedDate(loan.getLoanedDate());
+        bean.setReturningDate(loan.getReturningDate());
+
+        int bookId = loan.getBookId();
+        try {
+            Book book = bookDAO.getBookById(bookId);
+            BookBean bookBean = toBookBean(book);
+            bean.setBook(bookBean);
+        } catch (DAOException e) {
+            logger.warn("Impossibile recuperare il libro per prestito id={}", loan.getId(), e);
+        }
+        return bean;
     }
 }

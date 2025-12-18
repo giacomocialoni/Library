@@ -5,6 +5,7 @@ import dao.factory.DAOFactory;
 import exception.DAOException;
 import exception.RecordNotFoundException;
 import model.Book;
+import bean.BookBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,6 @@ import java.util.stream.Collectors;
 public class ManageBooksController {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageBooksController.class);
-
     private final BookDAO bookDAO;
 
     public ManageBooksController() {
@@ -23,66 +23,56 @@ public class ManageBooksController {
 
     // ===== RICERCHE LIBRI =====
 
-    public List<Book> searchBooks(String searchText) {
+    public List<BookBean> searchBooks(String searchText) {
         try {
             List<Book> allBooks = bookDAO.getAllBooks();
-            if (searchText == null || searchText.trim().isEmpty()) {
-                return allBooks;
+            if (searchText != null && !searchText.trim().isEmpty()) {
+                String lower = searchText.toLowerCase();
+                allBooks = allBooks.stream()
+                        .filter(book -> book.getTitle().toLowerCase().contains(lower) ||
+                                        book.getAuthor().toLowerCase().contains(lower) ||
+                                        book.getIsbn().toLowerCase().contains(lower) ||
+                                        book.getCategory().toLowerCase().contains(lower))
+                        .collect(Collectors.toList());
             }
-
-            String finalSearchText = searchText.toLowerCase();
-            return allBooks.stream()
-                    .filter(book ->
-                            book.getTitle().toLowerCase().contains(finalSearchText) ||
-                            book.getAuthor().toLowerCase().contains(finalSearchText) ||
-                            book.getIsbn().toLowerCase().contains(finalSearchText) ||
-                            book.getCategory().toLowerCase().contains(finalSearchText))
-                    .collect(Collectors.toList());
-
+            return mapBooks(allBooks);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca dei libri", e);
+            logger.error("Errore DAO durante la ricerca libri", e);
             return List.of();
         }
     }
 
-    public List<Book> searchBooksByTitle(String searchText) {
+    public List<BookBean> getAllBooks() {
         try {
-            return bookDAO.getAllBooks().stream()
-                    .filter(book -> book.getTitle().toLowerCase().contains(searchText.toLowerCase()))
-                    .collect(Collectors.toList());
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca libri per titolo", e);
-            return List.of();
-        }
-    }
-
-    public List<Book> searchBooksByAuthor(String searchText) {
-        try {
-            return bookDAO.getAllBooks().stream()
-                    .filter(book -> book.getAuthor().toLowerCase().contains(searchText.toLowerCase()))
-                    .collect(Collectors.toList());
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante la ricerca libri per autore", e);
-            return List.of();
-        }
-    }
-
-    // ===== OPERAZIONI CRUD =====
-
-    public List<Book> getAllBooks() {
-        try {
-            return bookDAO.getAllBooks();
+            List<Book> allBooks = bookDAO.getAllBooks();
+            return mapBooks(allBooks);
         } catch (DAOException e) {
             logger.error("Errore DAO durante il recupero di tutti i libri", e);
             return List.of();
         }
     }
 
+    public BookBean getBookById(int bookId) {
+        try {
+            Book book = bookDAO.getBookById(bookId);
+            return mapBook(book);
+        } catch (RecordNotFoundException e) {
+            logger.warn("Libro non trovato: {}", bookId, e);
+            return null;
+        } catch (DAOException e) {
+            logger.error("Errore DAO durante il recupero libro: {}", bookId, e);
+            return null;
+        }
+    }
+
+    // ===== OPERAZIONI CRUD / STOCK =====
+    // Questi rimangono simili perché scrivono direttamente nel DB con Book
+
     public void addBook(Book book) {
         try {
             bookDAO.addBook(book);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'aggiunta del libro: " + book.getTitle(), e);
+            logger.error("Errore DAO durante l'aggiunta del libro: {}", book.getTitle(), e);
         }
     }
 
@@ -90,9 +80,9 @@ public class ManageBooksController {
         try {
             bookDAO.updateBook(book);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro da aggiornare non trovato: " + book.getId(), e);
+            logger.warn("Libro da aggiornare non trovato: {}", book.getId(), e);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'aggiornamento del libro: " + book.getId(), e);
+            logger.error("Errore DAO durante l'aggiornamento del libro: {}", book.getId(), e);
         }
     }
 
@@ -100,13 +90,11 @@ public class ManageBooksController {
         try {
             bookDAO.deleteBook(bookId);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro da eliminare non trovato: " + bookId, e);
+            logger.warn("Libro da eliminare non trovato: {}", bookId, e);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'eliminazione del libro: " + bookId, e);
+            logger.error("Errore DAO durante l'eliminazione del libro: {}", bookId, e);
         }
     }
-
-    // ===== GESTIONE STOCK =====
 
     public void increaseStock(int bookId, int quantity) {
         try {
@@ -114,9 +102,9 @@ public class ManageBooksController {
             book.setStock(book.getStock() + quantity);
             bookDAO.updateBook(book);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro da aumentare stock non trovato: " + bookId, e);
+            logger.warn("Libro da aumentare stock non trovato: {}", bookId, e);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'aumento stock libro: " + bookId, e);
+            logger.error("Errore DAO durante aumento stock libro: {}", bookId, e);
         }
     }
 
@@ -127,9 +115,9 @@ public class ManageBooksController {
             book.setStock(newStock);
             bookDAO.updateBook(book);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro da diminuire stock non trovato: " + bookId, e);
+            logger.warn("Libro da diminuire stock non trovato: {}", bookId, e);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante la diminuzione stock libro: " + bookId, e);
+            logger.error("Errore DAO durante diminuzione stock libro: {}", bookId, e);
         }
     }
 
@@ -139,43 +127,33 @@ public class ManageBooksController {
             book.setStock(Math.max(0, newStock));
             bookDAO.updateBook(book);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro da impostare stock non trovato: " + bookId, e);
+            logger.warn("Libro da impostare stock non trovato: {}", bookId, e);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'impostazione stock libro: " + bookId, e);
+            logger.error("Errore DAO durante impostazione stock libro: {}", bookId, e);
         }
     }
 
-    // ===== METODI UTILI =====
+    // ===== METODI PRIVATI DI MAPPING =====
 
-    public Book getBookById(int bookId) {
-        try {
-            return bookDAO.getBookById(bookId);
-        } catch (RecordNotFoundException e) {
-            logger.warn("Libro non trovato: " + bookId, e);
-            return null;
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero libro: " + bookId, e);
-            return null;
-        }
+    private List<BookBean> mapBooks(List<Book> books) {
+        return books.stream()
+                .map(this::mapBook)
+                .collect(Collectors.toList());
     }
 
-    public int getTotalBooksCount() {
+    private BookBean mapBook(Book book) {
+        BookBean bean = new BookBean();
         try {
-            return bookDAO.getAllBooks().size();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio totale libri", e);
-            return 0;
+            bean.setId(book.getId());
+            bean.setTitle(book.getTitle());
+            bean.setAuthor(book.getAuthor());
+            bean.setCategory(book.getCategory());
+            bean.setImagePath(book.getImagePath());
+            bean.setStock(book.getStock());
+            bean.setPrice(book.getPrice());
+        } catch (Exception e) {
+            logger.warn("Dati libro non validi id={}", book.getId(), e);
         }
-    }
-
-    public int getAvailableBooksCount() {
-        try {
-            return (int) bookDAO.getAllBooks().stream()
-                    .filter(book -> book.getStock() > 0)
-                    .count();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio libri disponibili", e);
-            return 0;
-        }
+        return bean;
     }
 }

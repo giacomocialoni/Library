@@ -1,14 +1,7 @@
 package controller.gui;
 
-import app.Session;
-import app.state.AppState;
-import app.state.BachecaState;
-import app.state.CatalogoState;
-import app.state.CercaState;
-import app.state.MainUserState;
-import app.state.MainAdminState;
-import app.state.SignInState;
-import app.state.StateManager;
+import app.state.*;
+import bean.AccountBean;
 import controller.app.LoginController;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -16,13 +9,9 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import model.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,74 +23,62 @@ public class LoginControllerGUI {
     @FXML private VBox loginContainer;
     @FXML private Label errorLabel;
     private FadeTransition errorFade;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(LoginControllerGUI.class);
 
     private StateManager stateManager;
     private LoginController loginController;
     private Runnable onLoginSuccessCallback;
-    
+
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.loginController = new LoginController(stateManager);
-        // Aggiorna il testo del pulsante dopo che FXML ha caricato i nodi
-        if (backButton != null) {
-            updateBackButtonText();
-        }
+        this.loginController = new LoginController();
+        if (backButton != null) updateBackButtonText();
     }
 
     public void setOnLoginSuccessCallback(Runnable callback) {
         this.onLoginSuccessCallback = callback;
     }
-    
+
     @FXML
     private void handleLogin() {
         try {
             String email = usernameField.getText();
             String password = passwordField.getText();
-        	
-            Account account = loginController.login(email, password);
 
-            if (account != null) {
-                // Salva l'utente loggato nella sessione
-                Session.getInstance().login(account);
+            AccountBean accountBean = loginController.login(email, password);
 
-                // Comportamento normale: vai alla main user view
-                if (account.isAdmin()) {
-                    stateManager.setState(new MainAdminState(stateManager));
-                    // NON chiamare il callback per l'admin
-                } else {
-                    stateManager.setState(new MainUserState(stateManager));
-                    if (onLoginSuccessCallback != null) {
-                        onLoginSuccessCallback.run();
-                    }
-                }
-                
-            } else {
+            if (accountBean == null) {
                 showError("Credenziali errate!");
-                usernameField.setText("");
-                passwordField.setText("");
+                usernameField.clear();
+                passwordField.clear();
+                return;
+            }
+
+            // NAVIGAZIONE
+            if (loginController.isAdmin()) {
+                stateManager.setState(new MainAdminState(stateManager));
+            } else {
+                stateManager.setState(new MainUserState(stateManager));
+                if (onLoginSuccessCallback != null) onLoginSuccessCallback.run();
             }
 
         } catch (IllegalArgumentException e) {
-            showError("Campi mancanti!");
+            showError("Compila tutti i campi!");
         } catch (Exception e) {
-            logger.error("Errore durante il login per l'utente: {}", usernameField.getText(), e);
-            showError("Errore durante il login.");
+            logger.error("Errore login", e);
+            showError("Errore durante il login");
         }
     }
-    
+
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setOpacity(1.0);
         errorLabel.setVisible(true);
-
         shakeNode(usernameField);
         shakeNode(passwordField);
 
-        if (errorFade != null) {
-            errorFade.stop();
-        }
+        if (errorFade != null) errorFade.stop();
 
         errorFade = new FadeTransition(Duration.seconds(0.5), errorLabel);
         errorFade.setFromValue(1.0);
@@ -110,7 +87,7 @@ public class LoginControllerGUI {
         errorFade.setOnFinished(e -> errorLabel.setVisible(false));
         errorFade.play();
     }
-    
+
     private void shakeNode(Node node) {
         Timeline timeline = new Timeline(
             new KeyFrame(Duration.millis(0), new KeyValue(node.translateXProperty(), 0)),

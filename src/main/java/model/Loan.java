@@ -2,73 +2,41 @@ package model;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
 import utils.LoanStatus;
 
 public class Loan {
-    private final int id; // AGGIUNTO
-    private final String userEmail; // AGGIUNTO  
-    private final Book book;
-    private LoanStatus status; // AGGIUNTO - corrisponde al DB
+    private final int id;
+    private final String userEmail;
+    private final int bookId; // solo FK nel modello
     private final LocalDate reservedDate;
     private final LocalDate loanedDate;
     private final LocalDate returningDate;
+    private final LoanStatus status;
 
-    // Costruttore aggiornato
-    public Loan(int id, String userEmail, Book book, LoanStatus status, LocalDate reservedDate, LocalDate loanedDate, LocalDate returningDate) {
+    public Loan(int id, String userEmail, int bookId, LocalDate reservedDate, LocalDate loanedDate, LocalDate returningDate, LoanStatus status) {
         this.id = id;
         this.userEmail = userEmail;
-        this.book = book;
-        this.status = status;
+        this.bookId = bookId;
         this.reservedDate = reservedDate;
         this.loanedDate = loanedDate;
         this.returningDate = returningDate;
+        this.status = status;
     }
 
-    // NUOVI GETTER
     public int getId() { return id; }
     public String getUserEmail() { return userEmail; }
+    public int getBookId() { return bookId; }
+    public LocalDate getReservedDate() { return reservedDate; }
+    public LocalDate getLoanedDate() { return loanedDate; }
+    public LocalDate getReturningDate() { return returningDate; }
     public LoanStatus getStatus() { return status; }
-    
-    public boolean isReturned() {
-        return status == LoanStatus.RETURNED;
-    }
 
-    public Book getBook() {
-        return book;
-    }
-    
-    public int getBookId() {
-    	return book.getId();
-    }
-    
-    public LoanStatus getLoanStatus() {
-    	return status;
-    }
-
-    public LocalDate getReservedDate() {
-        return reservedDate;
-    }
-
-    public LocalDate getLoanedDate() {
-        return loanedDate;
-    }
-
-    public LocalDate getReturningDate() {
-        return returningDate;
-    }
-
+    // Metodi utility
+    public boolean isReturned() { return status == LoanStatus.RETURNED; }
     public boolean isExpired() {
-    	if (returningDate == null) {
-            return false; // o un valore di default appropriato
-        }
-        return LocalDate.now().isAfter(returningDate);
+        return returningDate != null && LocalDate.now().isAfter(returningDate);
     }
-
     public long daysRemaining() {
-    	if (returningDate == null) {
-            return -1; // o un valore di default appropriato
-        }
-        return ChronoUnit.DAYS.between(LocalDate.now(), returningDate);
+        return returningDate != null ? ChronoUnit.DAYS.between(LocalDate.now(), returningDate) : -1;
     }
 }

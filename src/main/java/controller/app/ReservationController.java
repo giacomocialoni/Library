@@ -1,11 +1,17 @@
 package controller.app;
 
+import bean.BookBean;
+import bean.LoanBean;
+import bean.PurchaseBean;
+import bean.UserBean;
 import dao.BookDAO;
 import dao.LoanDAO;
 import dao.PurchaseDAO;
 import dao.UserDAO;
-import dao.database.DatabaseUserDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
+import exception.IncorrectDataException;
+import exception.RecordNotFoundException;
 import model.Book;
 import model.Loan;
 import model.Purchase;
@@ -14,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReservationController {
@@ -26,215 +33,231 @@ public class ReservationController {
     private final BookDAO bookDAO;
 
     public ReservationController() {
-        this.purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
-        this.loanDAO = DAOFactory.getActiveFactory().getLoanDAO();
-        this.userDAO = DAOFactory.getActiveFactory().getUserDAO();
-        this.bookDAO = DAOFactory.getActiveFactory().getBookDAO();
+        DAOFactory factory = DAOFactory.getActiveFactory();
+        this.purchaseDAO = factory.getPurchaseDAO();
+        this.loanDAO = factory.getLoanDAO();
+        this.userDAO = factory.getUserDAO();
+        this.bookDAO = factory.getBookDAO();
     }
 
-    // ===== RICERCHE PER UTENTE =====
+    // ===================== GET =====================
 
-    public List<User> searchUsers(String searchText) {
-        try {
-            if (userDAO instanceof DatabaseUserDAO) {
-                return ((DatabaseUserDAO) userDAO).searchUsers(searchText);
-            }
-            String lowerSearch = searchText.toLowerCase();
-            return userDAO.getAllUsers().stream()
-                    .filter(u -> u.getEmail().toLowerCase().contains(lowerSearch) ||
-                                 u.getFirstName().toLowerCase().contains(lowerSearch) ||
-                                 u.getLastName().toLowerCase().contains(lowerSearch))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Errore durante la ricerca utenti con testo '{}'", searchText, e);
-            return List.of();
-        }
-    }
-
-    public List<Purchase> searchPurchasesByUser(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedPurchases().stream()
-                .filter(p -> {
-                    try {
-                        User user = userDAO.getUserByEmail(p.getUserEmail());
-                        return user != null &&
-                               (user.getEmail().toLowerCase().contains(lowerSearch) ||
-                                user.getFirstName().toLowerCase().contains(lowerSearch) ||
-                                user.getLastName().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    public List<Loan> searchLoansByUser(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedLoans().stream()
-                .filter(l -> {
-                    try {
-                        User user = userDAO.getUserByEmail(l.getUserEmail());
-                        return user != null &&
-                               (user.getEmail().toLowerCase().contains(lowerSearch) ||
-                                user.getFirstName().toLowerCase().contains(lowerSearch) ||
-                                user.getLastName().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    // ===== RICERCHE PER LIBRO =====
-
-    public List<Purchase> searchPurchasesByBook(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedPurchases().stream()
-                .filter(p -> {
-                    try {
-                        Book book = bookDAO.getBookById(p.getBookId());
-                        return book != null &&
-                               (book.getTitle().toLowerCase().contains(lowerSearch) ||
-                                book.getAuthor().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    public List<Loan> searchLoansByBook(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedLoans().stream()
-                .filter(l -> {
-                    try {
-                        Book book = bookDAO.getBookById(l.getBookId());
-                        return book != null &&
-                               (book.getTitle().toLowerCase().contains(lowerSearch) ||
-                                book.getAuthor().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    // ===== RICERCHE GENERICHE =====
-
-    public List<Purchase> searchPurchases(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedPurchases().stream()
-                .filter(p -> {
-                    try {
-                        Book book = bookDAO.getBookById(p.getBookId());
-                        User user = userDAO.getUserByEmail(p.getUserEmail());
-                        return book != null && user != null &&
-                               (book.getTitle().toLowerCase().contains(lowerSearch) ||
-                                book.getAuthor().toLowerCase().contains(lowerSearch) ||
-                                user.getEmail().toLowerCase().contains(lowerSearch) ||
-                                user.getFirstName().toLowerCase().contains(lowerSearch) ||
-                                user.getLastName().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    public List<Loan> searchLoans(String searchText) {
-        String lowerSearch = searchText.toLowerCase();
-        return getAllReservedLoans().stream()
-                .filter(l -> {
-                    try {
-                        Book book = bookDAO.getBookById(l.getBookId());
-                        User user = userDAO.getUserByEmail(l.getUserEmail());
-                        return book != null && user != null &&
-                               (book.getTitle().toLowerCase().contains(lowerSearch) ||
-                                book.getAuthor().toLowerCase().contains(lowerSearch) ||
-                                user.getEmail().toLowerCase().contains(lowerSearch) ||
-                                user.getFirstName().toLowerCase().contains(lowerSearch) ||
-                                user.getLastName().toLowerCase().contains(lowerSearch));
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    // ===== METODI DI ACCESSO AI DATI =====
-
-    public List<Purchase> getReservedPurchasesByUser(String email) {
-        try {
-            return purchaseDAO.getPurchasesByUser(email).stream()
-                    .filter(Purchase::isReserved)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Errore nel recupero acquisti riservati per utente '{}'", email, e);
-            return List.of();
-        }
-    }
-
-    public List<Purchase> getAllReservedPurchases() {
+    public List<PurchaseBean> getAllReservedPurchases() {
         try {
             return purchaseDAO.getAllPurchases().stream()
                     .filter(Purchase::isReserved)
+                    .map(this::toPurchaseBean)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Errore nel recupero di tutti gli acquisti riservati", e);
+        } catch (DAOException e) {
+            logger.error("Errore DAO recupero acquisti riservati", e);
             return List.of();
         }
     }
 
-    public List<Loan> getReservedLoansByUser(String email) {
+    public List<LoanBean> getAllReservedLoans() {
         try {
-            return loanDAO.getReservedLoansByUser(email);
-        } catch (Exception e) {
-            logger.error("Errore nel recupero prestiti riservati per utente '{}'", email, e);
+            return loanDAO.getAllReservedLoans().stream()
+                    .map(this::toLoanBean)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (DAOException e) {
+            logger.error("Errore DAO recupero prestiti riservati", e);
             return List.of();
         }
     }
 
-    public List<Loan> getAllReservedLoans() {
+    public BookBean getBookBeanById(int id) {
         try {
-            return loanDAO.getAllReservedLoans();
-        } catch (Exception e) {
-            logger.error("Errore nel recupero di tutti i prestiti riservati", e);
+            Book book = bookDAO.getBookById(id);
+            if (book == null) return null;
+            return mapBookToBean(book);
+        } catch (RecordNotFoundException e) {
+            logger.warn("Libro non trovato id={}", id);
+        } catch (DAOException e) {
+            logger.warn("Errore DAO per libro non trovato id={}", id);
+        }
+        return null;
+    }
+
+    // ===================== SEARCH =====================
+
+    public List<UserBean> searchUsers(String text) {
+        String search = text.toLowerCase();
+        try {
+            return userDAO.getAllUsers().stream()
+                    .filter(u -> u.getEmail().toLowerCase().contains(search)
+                            || u.getFirstName().toLowerCase().contains(search)
+                            || u.getLastName().toLowerCase().contains(search))
+                    .map(this::toUserBean)
+                    .collect(Collectors.toList());
+        } catch (DAOException e) {
+            logger.error("Errore DAO ricerca utenti", e);
             return List.of();
         }
     }
 
-    // ===== METODI DI GESTIONE =====
+    public List<PurchaseBean> searchPurchasesByUser(String text) {
+        try {
+            return purchaseDAO.searchReservedPurchasesByUser(text).stream()
+                    .map(this::toPurchaseBean)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } catch (DAOException e) {
+            logger.error("Errore ricerca acquisti per utente", e);
+            return List.of();
+        }
+    }
 
-    public void acceptPurchase(int purchaseId) {
+    public List<PurchaseBean> searchPurchasesByBook(String text) {
+        try {
+            return purchaseDAO.searchReservedPurchasesByBook(text).stream()
+                    .map(this::toPurchaseBean)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } catch (DAOException e) {
+            logger.error("Errore ricerca acquisti per libro", e);
+            return List.of();
+        }
+    }
+
+    public List<LoanBean> searchLoansByUser(String text) {
+        try {
+            return loanDAO.searchLoansByUser(text).stream()
+                    .map(this::toLoanBean)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } catch (DAOException e) {
+            logger.error("Errore DAO ricerca prestiti per utente '{}'", text, e);
+            return List.of();
+        }
+    }
+
+    public List<LoanBean> searchLoansByBook(String text) {
+        try {
+            return loanDAO.searchLoansByBook(text).stream()
+                    .map(this::toLoanBean)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } catch (DAOException e) {
+            logger.error("Errore ricerca prestiti per libro", e);
+            return List.of();
+        }
+    }
+
+    // ===================== ACTIONS =====================
+
+    public boolean acceptPurchase(int purchaseId) {
         try {
             purchaseDAO.acceptPurchase(purchaseId);
-        } catch (Exception e) {
-            logger.error("Errore nell'accettare acquisto '{}'", purchaseId, e);
+            return true;
+        } catch (RecordNotFoundException e) {
+            logger.warn("Acquisto non trovato id={}", purchaseId);
+            return false;
+        } catch (DAOException e) {
+            logger.error("Errore DAO accettazione acquisto id={}", purchaseId, e);
+            return false;
         }
     }
 
-    public void acceptLoan(int loanId) {
+    public boolean acceptLoan(int loanId) {
         try {
             loanDAO.acceptedLoan(loanId);
-        } catch (Exception e) {
-            logger.error("Errore nell'accettare prestito '{}'", loanId, e);
+            return true;
+        } catch (RecordNotFoundException e) {
+            logger.warn("Prestito non trovato id={}", loanId);
+            return false;
+        } catch (DAOException e) {
+            logger.error("Errore DAO accettazione prestito id={}", loanId, e);
+            return false;
         }
     }
 
     public void updateBookStock(int bookId, int quantityChange) {
         try {
             Book book = bookDAO.getBookById(bookId);
-            if (book == null) return;
-
+            if (book == null) {
+                logger.warn("Libro non trovato per aggiornamento stock id={}", bookId);
+                return;
+            }
             int newStock = Math.max(0, book.getStock() + quantityChange);
             book.setStock(newStock);
             bookDAO.updateBook(book);
-        } catch (Exception e) {
-            logger.error("Errore nell'aggiornare lo stock del libro '{}'", bookId, e);
+        } catch (RecordNotFoundException e) {
+            logger.warn("Libro non trovato durante update stock id={}", bookId);
+        } catch (DAOException e) {
+            logger.warn("Errore DAO durante update stock id={}", bookId);
         }
     }
 
-    // ===== METODI AGGIUNTIVI =====
+    // ===================== MAPPING =====================
 
-    public List<Object> getAllReservationsForUser(String userEmail) {
-        return List.of(getReservedPurchasesByUser(userEmail), getReservedLoansByUser(userEmail));
+    private UserBean toUserBean(User user) {
+        UserBean bean = new UserBean();
+        bean.setEmail(user.getEmail());
+        bean.setFirstName(user.getFirstName());
+        bean.setLastName(user.getLastName());
+        return bean;
     }
 
-    public int getTotalPendingReservations() {
-        return getAllReservedPurchases().size() + getAllReservedLoans().size();
+    private BookBean mapBookToBean(Book book) {
+        if (book == null) return null;
+        BookBean bean = new BookBean();
+        try {
+        	bean.setId(book.getId());
+			bean.setTitle(book.getTitle());
+			bean.setAuthor(book.getAuthor());
+			bean.setPrice(book.getPrice());
+			bean.setImagePath(book.getImagePath());
+		} catch (IncorrectDataException e) {
+            logger.warn("Errore mapping book", e);
+            return null;
+		}
+        return bean;
+    }
+
+    private PurchaseBean toPurchaseBean(Purchase purchase) {
+        if (purchase == null) return null;
+
+        try {
+            PurchaseBean bean = new PurchaseBean();
+            bean.setId(purchase.getId());
+            bean.setUserEmail(purchase.getUserEmail());
+            bean.setBookId(purchase.getBookId());
+            bean.setStatus(purchase.getStatus());
+            bean.setStatusDate(purchase.getStatusDate());
+
+            // Recupera il Book dal DAO e mappa
+            Book bookModel = bookDAO.getBookById(purchase.getBookId());
+            bean.setBook(mapBookToBean(bookModel));
+
+            return bean;
+        } catch (IncorrectDataException | DAOException e) {
+            logger.warn("Errore mapping acquisto id={}", purchase.getId(), e);
+            return null;
+        }
+    }
+
+    private LoanBean toLoanBean(Loan loan) {
+        if (loan == null) return null;
+
+        try {
+            LoanBean bean = new LoanBean();
+            bean.setId(loan.getId());
+            bean.setUserEmail(loan.getUserEmail());
+            bean.setStatus(loan.getStatus());
+            bean.setReservedDate(loan.getReservedDate());
+            bean.setLoanedDate(loan.getLoanedDate());
+            bean.setReturningDate(loan.getReturningDate());
+
+            // Recupera il Book dal DAO e mappa
+            Book bookModel = bookDAO.getBookById(loan.getBookId());
+            bean.setBook(mapBookToBean(bookModel));
+
+            return bean;
+        } catch (DAOException e) {
+            logger.warn("Errore mapping prestito id={}", loan.getId(), e);
+            return null;
+        }
     }
 }

@@ -13,5 +13,6 @@ public interface PurchaseDAO {
     boolean hasUserPurchasedBook(String userEmail, int bookId) throws DAOException, RecordNotFoundException;
     void acceptPurchase(int purchaseId) throws DAOException, RecordNotFoundException;
     List<Purchase> getAllPurchases() throws DAOException;
-    List<Purchase> searchPurchases(String searchText) throws DAOException;
+    List<Purchase> searchReservedPurchasesByUser(String searchText) throws DAOException;
+    List<Purchase> searchReservedPurchasesByBook(String searchText) throws DAOException;
 }

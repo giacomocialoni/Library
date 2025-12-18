@@ -1,7 +1,6 @@
 package dao.database;
 
 import dao.LoanDAO;
-import model.Book;
 import model.Loan;
 import utils.Constants;
 import utils.LoanStatus;
@@ -159,49 +158,70 @@ public class DatabaseLoanDAO implements LoanDAO {
     }
 
     @Override
-    public List<Loan> searchLoans(String searchText) throws DAOException {
+    public List<Loan> searchLoansByUser(String searchText) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id " +
-                     "JOIN users u ON l.user_email = u.email " +
-                     "WHERE LOWER(u.email) LIKE ? OR LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ? OR LOWER(b.title) LIKE ?";
+        String sql =
+            "SELECT l.*, b.* FROM loans l " +
+            "JOIN books b ON l.book_id = b.id " +
+            "JOIN users u ON l.user_email = u.email " +
+            "WHERE l.status = 'RESERVED' AND (" +
+            "LOWER(u.email) LIKE ? " +
+            "OR LOWER(u.first_name) LIKE ? " +
+            "OR LOWER(u.last_name) LIKE ? )";
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String pattern = "%" + (searchText == null ? "" : searchText.toLowerCase()) + "%";
+
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+            stmt.setString(3, pattern);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    loans.add(extractLoanFromResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante la ricerca dei prestiti riservati per utente", e);
+        }
+
+        return loans;
+    }
+
+    @Override
+    public List<Loan> searchLoansByBook(String searchText) throws DAOException {
+        List<Loan> loans = new ArrayList<>();
+        String sql =
+            "SELECT l.*, b.* FROM loans l " +
+            "JOIN books b ON l.book_id = b.id " +
+            "WHERE l.status = 'RESERVED' AND LOWER(b.title) LIKE ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String pattern = "%" + (searchText == null ? "" : searchText.toLowerCase()) + "%";
             stmt.setString(1, pattern);
-            stmt.setString(2, pattern);
-            stmt.setString(3, pattern);
-            stmt.setString(4, pattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) loans.add(extractLoanFromResultSet(rs));
+                while (rs.next()) {
+                    loans.add(extractLoanFromResultSet(rs));
+                }
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Errore durante la ricerca dei prestiti", e);
+            throw new DAOException("Errore durante la ricerca dei prestiti riservati per libro", e);
         }
+
         return loans;
     }
 
     private Loan extractLoanFromResultSet(ResultSet rs) throws SQLException {
-        int loanId = rs.getInt("id");
+        int loanId = rs.getInt("loan_id");
         String userEmail = rs.getString("user_email");
-
-        Book book = new Book(
-            rs.getInt("book_id"),
-            rs.getString("title"),
-            rs.getString("author"),
-            rs.getString("category"),
-            rs.getInt("year"),
-            rs.getString("publisher"),
-            rs.getInt("pages"),
-            rs.getString("isbn"),
-            rs.getInt("stock"),
-            rs.getString("plot"),
-            rs.getString("image_path"),
-            rs.getDouble("price")
-        );
+        int bookId = rs.getInt("book_id");
 
         LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
 
@@ -209,6 +229,6 @@ public class DatabaseLoanDAO implements LoanDAO {
         LocalDate loanedDate = rs.getDate("loaned_date") != null ? rs.getDate("loaned_date").toLocalDate() : null;
         LocalDate returningDate = rs.getDate("returning_date") != null ? rs.getDate("returning_date").toLocalDate() : null;
 
-        return new Loan(loanId, userEmail, book, status, reservedDate, loanedDate, returningDate);
+        return new Loan(loanId, userEmail, bookId, reservedDate, loanedDate, returningDate, status);
     }
 }

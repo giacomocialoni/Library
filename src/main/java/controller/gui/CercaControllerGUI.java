@@ -6,8 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
-import model.Book;
 import view.components.BookCardFactory;
+import bean.BookBean;
 
 import java.util.List;
 import org.slf4j.Logger;
@@ -15,11 +15,10 @@ import org.slf4j.LoggerFactory;
 
 public class CercaControllerGUI {
 
-    // Costanti per le modalità di ricerca
     private static final String SEARCH_MODE_TITLE = "title";
     private static final String SEARCH_MODE_AUTHOR = "author";
     private static final String ACTIVE_STYLE_CLASS = "active";
-    
+
     @FXML private Button searchByTitleButton;
     @FXML private Button searchByAuthorButton;
     @FXML private Label searchLabel;
@@ -35,7 +34,7 @@ public class CercaControllerGUI {
     private StateManager stateManager;
     private final CercaController appController = new CercaController();
     private static final Logger logger = LoggerFactory.getLogger(CercaControllerGUI.class);
-    
+
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
     }
@@ -46,8 +45,7 @@ public class CercaControllerGUI {
         genereCombo.getItems().add(null);
 
         try {
-            List<String> nomiCategorie = appController.getAllCategoryNames();
-            genereCombo.getItems().addAll(nomiCategorie);
+            genereCombo.getItems().addAll(appController.getAllCategoryNames());
         } catch (Exception e) {
             logger.error("Errore durante il caricamento delle categorie", e);
         }
@@ -91,13 +89,13 @@ public class CercaControllerGUI {
         String yearTo = annoToField.getText();
         boolean includeUnavailable = showUnavailableCheckbox.isSelected();
 
-        List<Book> books = appController.searchBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
+        List<BookBean> books = appController.searchBooks(searchText, searchMode, category, yearFrom, yearTo, includeUnavailable);
 
         BookCardFactory cardFactory = new BookCardFactory(stateManager);
 
-        for (Book book : books) {
-            StackPane bookBox = cardFactory.createBookCard(book);
-            resultsFlowPane.getChildren().add(bookBox);
+        for (BookBean book : books) {
+            StackPane card = cardFactory.createBookCard(book);
+            resultsFlowPane.getChildren().add(card);
         }
 
         resultsLabel.setText("Risultati: " + books.size());

@@ -2,16 +2,16 @@ package app.state;
 
 import app.StageManager;
 import controller.gui.LoanControllerGUI;
-import model.Book;
+import bean.BookBean;
 
 public class ConfirmLoanState implements AppState {
 
     private final StateManager stateManager;
     private final StageManager stageManager;
-    private final Book book;
+    private final BookBean book;
 
     // MODIFICATO: rimuovi previousState dal costruttore
-    public ConfirmLoanState(StateManager stateManager, Book book) {
+    public ConfirmLoanState(StateManager stateManager, BookBean book) {
         this.stateManager = stateManager;
         this.stageManager = stateManager.getStageManager();
         this.book = book;

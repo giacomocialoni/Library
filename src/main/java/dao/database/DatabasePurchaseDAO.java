@@ -131,11 +131,17 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
     }
 
     @Override
-    public List<Purchase> searchPurchases(String searchText) throws DAOException {
+    public List<Purchase> searchReservedPurchasesByUser(String searchText) throws DAOException {
         List<Purchase> res = new ArrayList<>();
-        String sql = "SELECT * FROM purchases p JOIN users u ON p.user_email = u.email " +
-                     "JOIN books b ON p.book_id = b.id " +
-                     "WHERE LOWER(u.email) LIKE ? OR LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ? OR LOWER(b.title) LIKE ?";
+        String sql = """
+            SELECT p.*
+            FROM purchases p
+            JOIN users u ON p.user_email = u.email
+            WHERE p.status = 'RESERVED'
+              AND (LOWER(u.email) LIKE ?
+                   OR LOWER(u.first_name) LIKE ?
+                   OR LOWER(u.last_name) LIKE ?)
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -144,15 +150,48 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
             stmt.setString(1, pattern);
             stmt.setString(2, pattern);
             stmt.setString(3, pattern);
-            stmt.setString(4, pattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) res.add(extractPurchaseFromResultSet(rs));
+                while (rs.next()) {
+                    res.add(extractPurchaseFromResultSet(rs));
+                }
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Errore durante la ricerca delle purchases", e);
+            throw new DAOException("Errore durante la ricerca delle purchases riservate per utente", e);
         }
+
+        return res;
+    }
+
+    @Override
+    public List<Purchase> searchReservedPurchasesByBook(String searchText) throws DAOException {
+        List<Purchase> res = new ArrayList<>();
+        String sql = """
+            SELECT p.*
+            FROM purchases p
+            JOIN books b ON p.book_id = b.id
+            WHERE p.status = 'RESERVED'
+              AND (LOWER(b.title) LIKE ? OR LOWER(b.author) LIKE ?)
+        """;
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String pattern = "%" + (searchText == null ? "" : searchText.toLowerCase()) + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    res.add(extractPurchaseFromResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante la ricerca delle purchases riservate per libro", e);
+        }
+
         return res;
     }
 

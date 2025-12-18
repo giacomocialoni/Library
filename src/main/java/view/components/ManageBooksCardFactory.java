@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import model.Book;
+import bean.BookBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class ManageBooksCardFactory {
 
     public ManageBooksCardFactory() {}
 
-    public HBox createBookCard(Book book, Consumer<Integer> onIncreaseStock, 
+    public HBox createBookCard(BookBean book, Consumer<Integer> onIncreaseStock, 
                               Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
         
         // Copertina del libro a sinistra (layout originale)
@@ -49,7 +49,7 @@ public class ManageBooksCardFactory {
         return card;
     }
 
-    private ImageView createBookCover(Book book) {
+    private ImageView createBookCover(BookBean book) {
         ImageView coverImage = new ImageView();
         coverImage.setFitWidth(100); // Ripristinato dimensione normale
         coverImage.setFitHeight(140);
@@ -93,7 +93,7 @@ public class ManageBooksCardFactory {
         return imageContainer;
     }
 
-    private VBox createBookInfo(Book book) {
+    private VBox createBookInfo(BookBean book) {
     	VBox infoBox = new VBox(8); // Spacing normale
         infoBox.setPadding(new Insets(10)); // Padding normale
         infoBox.setAlignment(Pos.TOP_LEFT);
@@ -130,7 +130,7 @@ public class ManageBooksCardFactory {
         return infoBox;
     }
 
-    private VBox createStockControls(Book book, Consumer<Integer> onIncreaseStock, Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
+    private VBox createStockControls(BookBean book, Consumer<Integer> onIncreaseStock, Consumer<Integer> onDecreaseStock, Runnable onRemoveBook) {
     	VBox controlsBox = new VBox(15); // Spacing normale
         controlsBox.setAlignment(Pos.CENTER);
         controlsBox.setPadding(new Insets(10)); // Larghezza fissa per controlli

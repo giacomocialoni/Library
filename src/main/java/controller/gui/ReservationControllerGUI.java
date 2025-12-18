@@ -4,16 +4,14 @@ import app.state.StateManager;
 import app.state.ErrorState;
 import app.state.SuccessState;
 import controller.app.ReservationController;
-import dao.BookDAO;
-import dao.factory.DAOFactory;
 import exception.DAOException;
 import exception.RecordNotFoundException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import model.Book;
-import model.Loan;
-import model.Purchase;
+import bean.BookBean;
+import bean.LoanBean;
+import bean.PurchaseBean;
 import view.components.ReservationCardFactory;
 
 import java.util.List;
@@ -35,7 +33,6 @@ public class ReservationControllerGUI {
 
     private StateManager stateManager;
     private final ReservationController appController = new ReservationController();
-    private final BookDAO bookDAO = DAOFactory.getActiveFactory().getBookDAO();
     private ReservationCardFactory cardFactory;
     
     private boolean initialized = false;
@@ -86,7 +83,7 @@ public class ReservationControllerGUI {
     }
 
     @FXML
-    public void handleSearch() throws RecordNotFoundException, DAOException {
+    public void handleSearch() {
         if (cardFactory == null) {
             showError("Attenzione", "Sistema non ancora inizializzato");
             return;
@@ -103,19 +100,19 @@ public class ReservationControllerGUI {
             return;
         }
 
-        List<Purchase> purchases = List.of();
-        List<Loan> loans = List.of();
+        List<PurchaseBean> purchases = List.of();
+        List<LoanBean> loans = List.of();
 
         if (includeSales) {
-            purchases = "user".equals(searchMode) ? 
-                appController.searchPurchasesByUser(searchText) : 
-                appController.searchPurchasesByBook(searchText);
+            purchases = "user".equals(searchMode)
+                ? appController.searchPurchasesByUser(searchText)
+                : appController.searchPurchasesByBook(searchText);
         }
 
         if (includeLoans) {
-            loans = "user".equals(searchMode) ? 
-                appController.searchLoansByUser(searchText) : 
-                appController.searchLoansByBook(searchText);
+            loans = "user".equals(searchMode)
+                ? appController.searchLoansByUser(searchText)
+                : appController.searchLoansByBook(searchText);
         }
 
         displayReservations(purchases, loans);
@@ -141,54 +138,71 @@ public class ReservationControllerGUI {
         }
     }
 
-    private void loadAllReservations() throws RecordNotFoundException, DAOException {
-        if (cardFactory == null) return;
+    private void loadAllReservations() {
+        try {
+            if (cardFactory == null) return;
 
-        resultsContainer.getChildren().clear();
+            resultsContainer.getChildren().clear();
 
-        boolean includeSales = showSalesCheckbox.isSelected();
-        boolean includeLoans = showLoansCheckbox.isSelected();
+            boolean includeSales = showSalesCheckbox.isSelected();
+            boolean includeLoans = showLoansCheckbox.isSelected();
 
-        List<Purchase> purchases = includeSales ? appController.getAllReservedPurchases() : List.of();
-        List<Loan> loans = includeLoans ? appController.getAllReservedLoans() : List.of();
+            List<PurchaseBean> purchases =
+                includeSales ? appController.getAllReservedPurchases() : List.of();
 
-        displayReservations(purchases, loans);
+            List<LoanBean> loans =
+                includeLoans ? appController.getAllReservedLoans() : List.of();
+
+            displayReservations(purchases, loans);
+
+        } catch (Exception e) {
+            showError("Errore", "Errore nel caricamento delle prenotazioni");
+        }
     }
 
-    private void displayReservations(List<Purchase> purchases, List<Loan> loans) throws RecordNotFoundException, DAOException {
-        resultsContainer.getChildren().clear();
+    private void displayReservations(
+            List<PurchaseBean> purchases,
+            List<LoanBean> loans
+    ) {
+        try {
+            resultsContainer.getChildren().clear();
+            int count = 0;
 
-        int count = 0;
-
-        for (Purchase purchase : purchases) {
-            Book book = bookDAO.getBookById(purchase.getBookId());
-            if (book != null) {
-                var purchaseCard = cardFactory.createPurchaseCard(
-                    purchase, 
-                    book,
-                    () -> handleAcceptPurchase(purchase.getId(), book.getId()),
-                    () -> handleRejectPurchase(purchase.getId())
-                );
-                resultsContainer.getChildren().add(purchaseCard);
-                count++;
+            for (PurchaseBean purchase : purchases) {
+                BookBean book = appController.getBookBeanById(purchase.getBookId());
+                if (book != null) {
+                    resultsContainer.getChildren().add(
+                        cardFactory.createPurchaseCard(
+                            purchase,
+                            book,
+                            () -> handleAcceptPurchase(purchase.getId(), book.getId()),
+                            () -> handleRejectPurchase(purchase.getId())
+                        )
+                    );
+                    count++;
+                }
             }
-        }
 
-        for (Loan loan : loans) {
-            Book book = bookDAO.getBookById(loan.getBookId());
-            if (book != null) {
-                var loanCard = cardFactory.createLoanCard(
-                    loan, 
-                    book,
-                    () -> handleAcceptLoan(loan.getId(), book.getId()),
-                    () -> handleRejectLoan(loan.getId())
-                );
-                resultsContainer.getChildren().add(loanCard);
-                count++;
+            for (LoanBean loan : loans) {
+                BookBean book = loan.getBook();
+                if (book != null) {
+                    resultsContainer.getChildren().add(
+                        cardFactory.createLoanCard(
+                            loan,
+                            book,
+                            () -> handleAcceptLoan(loan.getId(), book.getId()),
+                            () -> handleRejectLoan(loan.getId())
+                        )
+                    );
+                    count++;
+                }
             }
-        }
 
-        updateResultsLabel(count, purchases.size(), loans.size());
+            updateResultsLabel(count, purchases.size(), loans.size());
+
+        } catch (Exception e) {
+            showError("Errore", "Errore nella visualizzazione dei risultati");
+        }
     }
 
     private void updateResultsLabel(int total, int salesCount, int loansCount) {

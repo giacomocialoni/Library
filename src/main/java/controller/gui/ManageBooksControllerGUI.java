@@ -3,11 +3,11 @@ package controller.gui;
 import app.state.StateManager;
 import app.state.ErrorState;
 import app.state.SuccessState;
+import bean.BookBean;
 import controller.app.ManageBooksController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import model.Book;
 import view.components.ManageBooksCardFactory;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class ManageBooksControllerGUI {
         }
 
         String searchText = searchField.getText().trim();
-        List<Book> books;
+        List<BookBean> books;
 
         if (searchText.isEmpty()) {
             books = appController.getAllBooks();
@@ -75,14 +75,14 @@ public class ManageBooksControllerGUI {
     public void loadBooks() {
         if (cardFactory == null) return;
 
-        List<Book> books = appController.getAllBooks();
+        List<BookBean> books = appController.getAllBooks();
         displayBooks(books);
     }
 
-    private void displayBooks(List<Book> books) {
+    private void displayBooks(List<BookBean> books) {
         resultsContainer.getChildren().clear();
 
-        for (Book book : books) {
+        for (BookBean book : books) {
             var bookCard = cardFactory.createBookCard(
                 book,
                 (quantity) -> handleIncreaseStock(book.getId(), quantity),
@@ -119,7 +119,7 @@ public class ManageBooksControllerGUI {
 
     private void handleDecreaseStock(int bookId, int quantity) {
         try {
-            Book book = appController.getBookById(bookId);
+        	BookBean book = appController.getBookById(bookId);
             if (book != null && book.getStock() >= quantity) {
                 appController.decreaseStock(bookId, quantity);
                 loadBooks(); // Ricarica la lista

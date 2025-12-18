@@ -3,11 +3,11 @@ package controller.gui;
 import app.state.ErrorState;
 import app.state.StateManager;
 import app.state.SuccessState;
+import bean.BookBean;
 import controller.app.PurchaseController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import model.Book;
 import utils.BuyResult;
 
 public class PurchaseControllerGUI {
@@ -20,7 +20,7 @@ public class PurchaseControllerGUI {
     @FXML private Button cancelButton;
 
     private StateManager stateManager;
-    private Book book;
+    private BookBean book;
     private int quantity;
     private PurchaseController purchaseController;
 
@@ -29,7 +29,7 @@ public class PurchaseControllerGUI {
         this.purchaseController = new PurchaseController();
     }
 
-    public void setPurchaseData(Book book, int quantity) {
+    public void setPurchaseData(BookBean book, int quantity) {
         this.book = book;
         this.quantity = quantity;
         updateUI();

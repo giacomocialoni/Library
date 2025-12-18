@@ -11,9 +11,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import model.Book;
 import app.state.BookDetailState;
 import app.state.StateManager;
+import bean.BookBean;
 
 import java.io.InputStream;
 
@@ -29,7 +29,7 @@ public class BookCardFactory {
         this.stateManager = stateManager;
     }
 
-    public StackPane createBookCard(Book book) {
+    public StackPane createBookCard(BookBean book) {
         // Contenuto principale della card
         VBox contentBox = new VBox(8);
         contentBox.getStyleClass().add("book-card");

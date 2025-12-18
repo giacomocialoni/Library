@@ -14,7 +14,8 @@ import utils.BuyResult;
 
 public class PurchaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PurchaseController.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(PurchaseController.class);
 
     private final BookDAO bookDAO;
     private final PurchaseDAO purchaseDAO;
@@ -25,51 +26,80 @@ public class PurchaseController {
         this.purchaseDAO = factory.getPurchaseDAO();
     }
 
+    // ===================== PURCHASE =====================
+
     public BuyResult buyBook(int bookId, int quantity) {
         Session session = Session.getInstance();
-        if (!session.isLoggedIn()) {
+
+        if (!session.isLoggedIn())
             return BuyResult.NOT_LOGGED;
-        }
+
+        if (quantity <= 0)
+            return BuyResult.ERROR;
 
         Account user = session.getLoggedUser();
+        Book book;
 
+        // Recupero libro
         try {
-            Book book = bookDAO.getBookById(bookId);
+            book = bookDAO.getBookById(bookId);
+        } catch (RecordNotFoundException e) {
+            logger.warn("Libro non trovato id={}", bookId);
+            return BuyResult.ERROR;
+        } catch (DAOException e) {
+            logger.error("Errore DAO nel recupero libro id={}", bookId, e);
+            return BuyResult.ERROR;
+        }
 
-            if (book.getStock() < quantity) {
-                return BuyResult.INSUFFICIENT_STOCK;
-            }
+        // Controlli di dominio
+        if (book.getStock() < quantity)
+            return BuyResult.INSUFFICIENT_STOCK;
 
-            // Aggiorna lo stock
+        // Operazione di acquisto
+        try {
             book.setStock(book.getStock() - quantity);
             bookDAO.updateBook(book);
 
-            // Registra l'acquisto
-            purchaseDAO.addReservedPurchase(user.getEmail(), bookId);
+            purchaseDAO.addReservedPurchase(
+                    user.getEmail(),
+                    bookId
+            );
 
             return BuyResult.SUCCESS;
 
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro non trovato id=" + bookId);
+            logger.warn("Libro non trovato durante update id={}", bookId);
             return BuyResult.ERROR;
+
         } catch (DAOException e) {
-            logger.error("Errore DAO durante l'acquisto del libro id=" + bookId + " per utente=" + user.getEmail(), e);
+            logger.error(
+                    "Errore DAO durante acquisto libro id={} user={}",
+                    bookId, user.getEmail(), e
+            );
             return BuyResult.ERROR;
         }
     }
 
+    // ===================== CHECK =====================
+
     public boolean hasPurchasedBook(int bookId) {
         Session session = Session.getInstance();
-        if (!session.isLoggedIn()) {
+
+        if (!session.isLoggedIn())
             return false;
-        }
 
         Account user = session.getLoggedUser();
 
         try {
-            return purchaseDAO.hasUserPurchasedBook(user.getEmail(), bookId);
+            return purchaseDAO.hasUserPurchasedBook(
+                    user.getEmail(),
+                    bookId
+            );
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il controllo acquisto del libro id=" + bookId + " per utente=" + user.getEmail(), e);
+            logger.error(
+                    "Errore DAO controllo acquisto libro id={} user={}",
+                    bookId, user.getEmail(), e
+            );
             return false;
         }
     }

@@ -9,14 +9,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import model.Book;
-import model.Purchase;
-import model.Loan;
+import bean.BookBean;
+import bean.PurchaseBean;
+import bean.LoanBean;
 import java.io.InputStream;
 
 public class ReservationCardFactory {
 
-    public HBox createPurchaseCard(Purchase purchase, Book book, Runnable onAccept, Runnable onReject) {
+    public HBox createPurchaseCard(PurchaseBean purchase, BookBean book, Runnable onAccept, Runnable onReject) {
         return createReservationCard(
             book,
             purchase.getUserEmail(),
@@ -28,7 +28,7 @@ public class ReservationCardFactory {
         );
     }
 
-    public HBox createLoanCard(Loan loan, Book book, Runnable onAccept, Runnable onReject) {
+    public HBox createLoanCard(LoanBean loan, BookBean book, Runnable onAccept, Runnable onReject) {
         return createReservationCard(
             book,
             loan.getUserEmail(),
@@ -40,7 +40,7 @@ public class ReservationCardFactory {
         );
     }
 
-    private HBox createReservationCard(Book book, String userEmail, String type, String detail1, String detail2, Runnable onAccept, Runnable onReject) {
+    private HBox createReservationCard(BookBean book, String userEmail, String type, String detail1, String detail2, Runnable onAccept, Runnable onReject) {
 		// Copertina del libro a sinistra
 		ImageView coverImage = new ImageView();
 		coverImage.setFitWidth(120);

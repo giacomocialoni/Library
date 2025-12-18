@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class Book {
 
     private int id;
@@ -15,10 +17,22 @@ public class Book {
     private String imagePath;
     private double price;
 
-    // --- COSTRUTTORI ---
     public Book() {}
 
-    public Book(int id, String title, String author, String category, int year, String publisher, int pages, String isbn, int stock, String plot, String imagePath, double price) {
+    public Book(
+            int id,
+            String title,
+            String author,
+            String category,
+            int year,
+            String publisher,
+            int pages,
+            String isbn,
+            int stock,
+            String plot,
+            String imagePath,
+            double price
+    ) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -33,7 +47,7 @@ public class Book {
         this.price = price;
     }
 
-    // --- GETTER E SETTER ---
+    // --- GETTER & SETTER ---
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -42,19 +56,19 @@ public class Book {
 
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
-    
-    public int getYear() { return year; }
-    public void setYear(int year) { this.year = year; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public int getPages() { return pages; }
-    public void setPages(int pages) { this.pages = pages; }
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
 
     public String getPublisher() { return publisher; }
     public void setPublisher(String publisher) { this.publisher = publisher; }
-    
+
+    public int getPages() { return pages; }
+    public void setPages(int pages) { this.pages = pages; }
+
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
 
@@ -70,23 +84,17 @@ public class Book {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-
+    // --- EQUALITY ---
     @Override
-    public String toString() {
-        return String.format("%s (%d) - %s", title, year, author);
-    }
-
-    // Per confronti e liste
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Book)) return false;
-        Book other = (Book) obj;
-        return id == other.id;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book)) return false;
+        Book book = (Book) o;
+        return id == book.id;
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return Objects.hash(id);
     }
 }

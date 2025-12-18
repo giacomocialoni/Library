@@ -1,10 +1,13 @@
 package controller.app;
 
 import app.Session;
+import bean.BookBean;
+import bean.LoanBean;
 import dao.BookDAO;
 import dao.LoanDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
+import exception.IncorrectDataException;
 import exception.RecordNotFoundException;
 import model.Account;
 import model.Book;
@@ -15,10 +18,12 @@ import utils.Constants;
 import utils.LoanResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoanController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(LoanController.class);
 
     private final BookDAO bookDAO;
     private final LoanDAO loanDAO;
@@ -29,46 +34,50 @@ public class LoanController {
         this.loanDAO = factory.getLoanDAO();
     }
 
+    // Loan
+
     public LoanResult loanBook(int bookId) {
         Session session = Session.getInstance();
-        if (!session.isLoggedIn()) {
+
+        if (!session.isLoggedIn())
             return LoanResult.NOT_LOGGED;
-        }
 
         Account user = session.getLoggedUser();
         Book book;
+
         try {
             book = bookDAO.getBookById(bookId);
         } catch (RecordNotFoundException e) {
-            logger.warn("Libro non trovato con id=" + bookId);
+            logger.warn("Libro non trovato id={}", bookId);
             return LoanResult.ERROR;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero del libro id=" + bookId, e);
+            logger.error("Errore DAO nel recupero libro id={}", bookId, e);
             return LoanResult.ERROR;
         }
 
-        if (hasExpiredLoans(user.getEmail())) {
+        if (hasExpiredLoans(user.getEmail()))
             return LoanResult.EXPIRED_LOAN_EXISTS;
-        }
 
-        if (getActiveLoansCount(user.getEmail()) >= Constants.MAX_ACTIVE_LOANS) {
+        if (getActiveLoansCount(user.getEmail()) >= Constants.MAX_ACTIVE_LOANS)
             return LoanResult.MAX_LOANS_REACHED;
-        }
 
-        if (book.getStock() <= 0) {
+        if (book.getStock() <= 0)
             return LoanResult.INSUFFICIENT_STOCK;
-        }
 
         try {
             book.setStock(book.getStock() - 1);
             bookDAO.updateBook(book);
             loanDAO.addLoan(user.getEmail(), bookId);
             return LoanResult.SUCCESS;
+
         } catch (RecordNotFoundException e) {
-            logger.warn("Errore: libro da aggiornare non trovato id=" + bookId, e);
+            logger.warn("Libro non trovato durante update id={}", bookId);
             return LoanResult.ERROR;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il prestito libro id=" + bookId + " per utente=" + user.getEmail(), e);
+            logger.error(
+                "Errore DAO durante prestito libro id={} user={}",
+                bookId, user.getEmail(), e
+            );
             return LoanResult.ERROR;
         }
     }
@@ -78,23 +87,76 @@ public class LoanController {
             loanDAO.returnLoan(loanId);
             return true;
         } catch (RecordNotFoundException e) {
-            logger.warn("Prestito non trovato con id=" + loanId, e);
+            logger.warn("Prestito non trovato id={}", loanId);
             return false;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il reso del prestito id=" + loanId, e);
+            logger.error("Errore DAO durante reso prestito id={}", loanId, e);
             return false;
         }
     }
 
+    // Bean
+
+    public List<LoanBean> getUserActiveLoans() {
+        Session session = Session.getInstance();
+        if (!session.isLoggedIn())
+            return List.of();
+
+        try {
+            return loanDAO
+                    .getActiveLoansByUser(session.getLoggedUser().getEmail())
+                    .stream()
+                    .map(this::toLoanBean)
+                    .collect(Collectors.toList());
+
+        } catch (RecordNotFoundException e) {
+            return List.of();
+        } catch (DAOException e) {
+            logger.error(
+                "Errore DAO nel recupero prestiti attivi user={}",
+                session.getLoggedUser().getEmail(), e
+            );
+            return List.of();
+        }
+    }
+
+    public List<LoanBean> getUserAllLoans() {
+        Session session = Session.getInstance();
+        if (!session.isLoggedIn())
+            return List.of();
+
+        try {
+            return loanDAO
+                    .getLoansByUser(session.getLoggedUser().getEmail())
+                    .stream()
+                    .map(this::toLoanBean)
+                    .collect(Collectors.toList());
+
+        } catch (RecordNotFoundException e) {
+            return List.of();
+        } catch (DAOException e) {
+            logger.error(
+                "Errore DAO nel recupero prestiti user={}",
+                session.getLoggedUser().getEmail(), e
+            );
+            return List.of();
+        }
+    }
+
+    // Logic
+
     boolean hasExpiredLoans(String userEmail) {
         try {
-            List<Loan> activeLoans = loanDAO.getActiveLoansByUser(userEmail);
-            return activeLoans.stream().anyMatch(Loan::isExpired);
+            return loanDAO.getActiveLoansByUser(userEmail)
+                    .stream()
+                    .anyMatch(Loan::isExpired);
         } catch (RecordNotFoundException e) {
-            // Nessun prestito attivo => nessun prestito scaduto
             return false;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il controllo prestiti scaduti per user=" + userEmail, e);
+            logger.error(
+                "Errore DAO nel controllo prestiti scaduti user={}",
+                userEmail, e
+            );
             return false;
         }
     }
@@ -103,39 +165,51 @@ public class LoanController {
         try {
             return loanDAO.getActiveLoansByUser(userEmail).size();
         } catch (RecordNotFoundException e) {
-            // Nessun prestito attivo
             return 0;
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il conteggio prestiti attivi per user=" + userEmail, e);
+            logger.error(
+                "Errore DAO nel conteggio prestiti attivi user={}",
+                userEmail, e
+            );
             return 0;
         }
     }
 
-    public List<Loan> getUserActiveLoans() {
-        Session session = Session.getInstance();
-        if (!session.isLoggedIn()) return List.of();
+    // Mapping
 
+    private LoanBean toLoanBean(Loan loan) {
+        LoanBean bean = new LoanBean();
+        bean.setId(loan.getId());
+        bean.setUserEmail(loan.getUserEmail());
+        bean.setStatus(loan.getStatus());
+        bean.setReservedDate(loan.getReservedDate());
+        bean.setLoanedDate(loan.getLoanedDate());
+        bean.setReturningDate(loan.getReturningDate());
+
+        int bookId = loan.getBookId();
         try {
-            return loanDAO.getActiveLoansByUser(session.getLoggedUser().getEmail());
-        } catch (RecordNotFoundException e) {
-            return List.of();
+            Book book = bookDAO.getBookById(bookId);
+            BookBean bookBean = toBookBean(book);
+            bean.setBook(bookBean);
         } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero prestiti attivi per user=" + session.getLoggedUser().getEmail(), e);
-            return List.of();
+            logger.warn("Impossibile recuperare il libro per prestito id={}", loan.getId(), e);
         }
+
+        return bean;
     }
-
-    public List<Loan> getUserAllLoans() {
-        Session session = Session.getInstance();
-        if (!session.isLoggedIn()) return List.of();
-
+    
+    private BookBean toBookBean(Book book) {
+        BookBean bean = new BookBean();
         try {
-            return loanDAO.getLoansByUser(session.getLoggedUser().getEmail());
-        } catch (RecordNotFoundException e) {
-            return List.of();
-        } catch (DAOException e) {
-            logger.error("Errore DAO durante il recupero di tutti i prestiti per user=" + session.getLoggedUser().getEmail(), e);
-            return List.of();
-        }
+			bean.setId(book.getId());
+			bean.setTitle(book.getTitle());
+			bean.setAuthor(book.getAuthor());
+			bean.setStock(book.getStock());
+			bean.setCategory(book.getCategory());
+		} catch (IncorrectDataException e) {
+			logger.warn("Error Incorrect Data for mapping book.", e);
+			return null;
+		}
+        return bean;
     }
 }

@@ -34,7 +34,10 @@ public class Main {
         // --- Configurazione del tipo di sorgente dati ---
         DAOFactory factory;
 
-        if ("DB".equalsIgnoreCase(dataSourceType)) {
+        if ("DEMO".equalsIgnoreCase(dataSourceType)) {
+        	//TODO parte demo con memoria temporanea
+        	factory = DAOFactory.getFactory("DEMO", null);
+        } else if ("DB".equalsIgnoreCase(dataSourceType)) {
             // Leggo i dati della connessione dal db.properties
             Properties dbProps = new Properties();
             try (InputStream dbInput = new FileInputStream("src/main/resources/db.properties")) {

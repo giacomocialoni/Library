@@ -57,12 +57,6 @@ public class BookTest {
     }
 
     @Test
-    void testToString() {
-        Book b = new Book(1, "Dune", "Herbert", "Sci-Fi", 1965, "", 0, "", 0, "", "", 0);
-        assertEquals("Dune (1965) - Herbert", b.toString());
-    }
-
-    @Test
     void testEqualsAndHashCode() {
         Book b1 = new Book(1, "A", "B", "", 0, "", 0, "", 0, "", "", 0);
         Book b2 = new Book(1, "X", "Y", "", 0, "", 0, "", 0, "", "", 0);

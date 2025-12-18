@@ -1,17 +1,17 @@
 package app.state;
 
 import app.StageManager;
+import bean.BookBean;
 import controller.gui.PurchaseControllerGUI;
-import model.Book;
 
 public class ConfirmPurchaseState implements AppState {
 
     private final StateManager stateManager;
     private final StageManager stageManager;
-    private final Book book;
+    private final BookBean book;
     private final int quantity;
 
-    public ConfirmPurchaseState(StateManager stateManager, Book book, int quantity) {
+    public ConfirmPurchaseState(StateManager stateManager, BookBean book, int quantity) {
         this.stateManager = stateManager;
         this.stageManager = stateManager.getStageManager();
         this.book = book;

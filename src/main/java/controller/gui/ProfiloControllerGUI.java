@@ -6,20 +6,18 @@ import app.state.StateManager;
 import controller.app.ProfiloController;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
-import model.Book;
-import model.Loan;
-import model.User;
 import view.components.BookCardFactory;
 import view.components.LoanBookCardFactory;
+
+import bean.BookBean;
+import bean.LoanBean;
+import bean.UserBean;
 
 import java.util.List;
 
@@ -34,15 +32,14 @@ public class ProfiloControllerGUI {
     @FXML private HBox loansBox;
     @FXML private ScrollPane loansPane;
     @FXML private ScrollPane purchasesPane;
-    @FXML private Button logoutButton;
     @FXML private Label LoansLabel;
-    @FXML private Label PurchasesLabel; // Aggiungi questa label nel FXML
+    @FXML private Label PurchasesLabel;
 
     private StateManager stateManager;
     private final ProfiloController appController = new ProfiloController();
-    private BookCardFactory cardFactory;
+    private BookCardFactory bookCardFactory;
     private boolean passwordVisible = false;
-    private User user;
+    private UserBean user;
 
     private Image visibleIcon;
     private Image invisibleIcon;
@@ -50,11 +47,9 @@ public class ProfiloControllerGUI {
 
     @FXML
     private void initialize() {
-        // Carica le icone (dal percorso resources)
         visibleIcon = new Image(getClass().getResource("/images/utils/view.png").toExternalForm());
         invisibleIcon = new Image(getClass().getResource("/images/utils/hide.png").toExternalForm());
 
-        // Crea ImageView per il bottone
         eyeView = new ImageView(invisibleIcon);
         eyeView.setFitWidth(18);
         eyeView.setFitHeight(18);
@@ -63,16 +58,17 @@ public class ProfiloControllerGUI {
 
         showPasswordButton.setOnMouseEntered(e -> showPasswordButton.setCursor(Cursor.HAND));
         showPasswordButton.setOnMouseExited(e -> showPasswordButton.setCursor(Cursor.DEFAULT));
-        
         showPasswordButton.setOnAction(e -> togglePasswordVisibility());
     }
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.user = (User) Session.getInstance().getLoggedUser();
+
+        String email = Session.getInstance().getLoggedUser().getEmail();
+        this.user = appController.getUser(email);
         if (user == null) return;
 
-        this.cardFactory = new BookCardFactory(stateManager);
+        this.bookCardFactory = new BookCardFactory(stateManager);
 
         populateProfile();
         populateRecentPurchases();
@@ -89,68 +85,59 @@ public class ProfiloControllerGUI {
     private void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
         updatePasswordField();
-        if (passwordVisible) {
-            eyeView.setImage(visibleIcon);
-        } else {
-            eyeView.setImage(invisibleIcon);
-        }
+        eyeView.setImage(passwordVisible ? visibleIcon : invisibleIcon);
     }
 
     private void updatePasswordField() {
-        if (passwordVisible) {
-            passwordField.setText(user.getPassword());
-        } else {
-            // Mostra pallini al posto della password
-            passwordField.setText("••••••••");
-        }
+        passwordField.setText(passwordVisible ? user.getPassword() : "••••••••");
     }
 
     private void populateRecentPurchases() {
         recentPurchasesBox.getChildren().clear();
-        List<Book> purchasedBooks = appController.getPurchasedBooks(user.getEmail());
+        List<BookBean> books = appController.getPurchasedBooks(user.getEmail());
 
-        if (purchasedBooks.isEmpty()) {
-            // Mostra messaggio "Nessun libro acquistato"
+        if (books.isEmpty()) {
             PurchasesLabel.setText("Non hai ancora acquistato libri");
             purchasesPane.setVisible(false);
             purchasesPane.setManaged(false);
             return;
         }
-        
+
         purchasesPane.setVisible(true);
         purchasesPane.setManaged(true);
 
-        for (Book book : purchasedBooks) {
-            StackPane card = cardFactory.createBookCard(book);
+        for (BookBean book : books) {
+            StackPane card = bookCardFactory.createBookCard(book);
             recentPurchasesBox.getChildren().add(card);
         }
     }
 
     private void populateLoans() {
         loansBox.getChildren().clear();
-        List<Loan> loans = appController.getActiveLoans(user.getEmail());
+        List<LoanBean> loans = appController.getActiveLoans(user.getEmail());
 
         if (loans.isEmpty()) {
-            // Mostra messaggio "Nessun prestito"
             LoansLabel.setText("Non hai prestiti attivi");
             loansPane.setVisible(false);
             loansPane.setManaged(false);
             return;
         }
+
         loansPane.setVisible(true);
         loansPane.setManaged(true);
 
-        LoanBookCardFactory loanCardFactory = new LoanBookCardFactory(cardFactory);
+        LoanBookCardFactory loanCardFactory =
+                new LoanBookCardFactory(bookCardFactory);
 
-        for (Loan loan : loans) {
-            VBox loanCard = loanCardFactory.createLoanCard(loan);
-            loansBox.getChildren().add(loanCard);
+        for (LoanBean loan : loans) {
+            VBox card = loanCardFactory.createLoanCard(loan);
+            loansBox.getChildren().add(card);
         }
     }
 
     @FXML
     private void handleLogout() {
         Session.getInstance().logout();
-		stateManager.setState(new MainGuestState(stateManager));
+        stateManager.setState(new MainGuestState(stateManager));
     }
 }
