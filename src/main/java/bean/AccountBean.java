@@ -9,8 +9,6 @@ public class AccountBean {
     protected String lastName;
     protected String role; // "admin" o "logged_user"
 
-    public AccountBean() {}
-
     // ================== GETTER ==================
     public String getEmail() { return email; }
     public String getPassword() { return password; }

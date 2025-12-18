@@ -17,8 +17,6 @@ public class BookBean {
     private String imagePath;
     private double price;
 
-    public BookBean() {}
-
     // ================== GETTER & SETTER ==================
 
     public int getId() {

@@ -9,8 +9,6 @@ public class AdminBean {
     private String lastName;
     private String role;
 
-    public AdminBean() {}
-
     // ================== GETTER & SETTER ==================
 
     public String getEmail() {

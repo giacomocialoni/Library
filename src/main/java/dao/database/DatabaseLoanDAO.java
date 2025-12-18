@@ -39,10 +39,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> getActiveLoansByUser(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.id as loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date, " +
-                     "b.id as book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price " +
-                     "FROM loans l JOIN books b ON l.book_id = b.id " +
-                     "WHERE l.user_email = ? AND l.status IN ('LOANED', 'EXPIRED')";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            WHERE l.user_email = ? AND l.status IN ('LOANED', 'EXPIRED')
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -61,7 +65,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> getReservedLoansByUser(String userEmail) throws DAOException, RecordNotFoundException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ? AND l.status = 'RESERVED'";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            WHERE l.user_email = ? AND l.status = 'RESERVED'
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -124,7 +135,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> getLoansByUser(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ?";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            WHERE l.user_email = ?
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -143,7 +161,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> getAllReservedLoans() throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.status = 'RESERVED'";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            WHERE l.status = 'RESERVED'
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -160,28 +185,28 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> searchLoansByUser(String searchText) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql =
-            "SELECT l.*, b.* FROM loans l " +
-            "JOIN books b ON l.book_id = b.id " +
-            "JOIN users u ON l.user_email = u.email " +
-            "WHERE l.status = 'RESERVED' AND (" +
-            "LOWER(u.email) LIKE ? " +
-            "OR LOWER(u.first_name) LIKE ? " +
-            "OR LOWER(u.last_name) LIKE ? )";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            JOIN users u ON l.user_email = u.email
+            WHERE l.status = 'RESERVED' AND (
+                LOWER(u.email) LIKE ? OR LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ?
+            )
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String pattern = "%" + (searchText == null ? "" : searchText.toLowerCase()) + "%";
-
             stmt.setString(1, pattern);
             stmt.setString(2, pattern);
             stmt.setString(3, pattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    loans.add(extractLoanFromResultSet(rs));
-                }
+                while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -194,10 +219,14 @@ public class DatabaseLoanDAO implements LoanDAO {
     @Override
     public List<Loan> searchLoansByBook(String searchText) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql =
-            "SELECT l.*, b.* FROM loans l " +
-            "JOIN books b ON l.book_id = b.id " +
-            "WHERE l.status = 'RESERVED' AND LOWER(b.title) LIKE ?";
+        String sql = """
+            SELECT 
+                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
+                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+            FROM loans l
+            JOIN books b ON l.book_id = b.id
+            WHERE l.status = 'RESERVED' AND LOWER(b.title) LIKE ?
+        """;
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -206,9 +235,7 @@ public class DatabaseLoanDAO implements LoanDAO {
             stmt.setString(1, pattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    loans.add(extractLoanFromResultSet(rs));
-                }
+                while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
         } catch (SQLException e) {

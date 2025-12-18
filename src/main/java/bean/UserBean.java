@@ -7,8 +7,6 @@ public class UserBean {
     private String firstName;
     private String lastName;
 
-    public UserBean() {}
-
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 

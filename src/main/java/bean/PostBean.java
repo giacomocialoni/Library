@@ -10,22 +10,6 @@ public class PostBean {
     private String content;
     private LocalDateTime postDate;
 
-    public PostBean() {
-        // costruttore vuoto per JavaFX / binding
-    }
-
-    public PostBean(String authorName,
-                    String role,
-                    String title,
-                    String content,
-                    LocalDateTime postDate) {
-        this.authorName = authorName;
-        this.role = role;
-        this.title = title;
-        this.content = content;
-        this.postDate = postDate;
-    }
-
     // ===== GETTERS =====
 
     public String getAuthorName() {
