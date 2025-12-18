@@ -286,7 +286,7 @@ public class DatabaseLoanDAO implements LoanDAO {
                 b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
             FROM loans l
             JOIN books b ON l.book_id = b.id
-            WHERE l.status = 'LOANED'
+            WHERE l.status IN ('LOANED', 'EXPIRED')
         """;
 
         try (Connection conn = dbConnection.getConnection();
