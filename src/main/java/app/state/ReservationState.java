@@ -1,23 +1,20 @@
 package app.state;
 
 import app.StageManager;
-import controller.gui.MainControllerGUI;
 import controller.gui.ReservationControllerGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReservationState implements AppState {
+public class ReservationState extends PrimaryState {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationState.class);
 
-    private final StateManager stateManager;
-
     public ReservationState(StateManager stateManager) {
-        this.stateManager = stateManager;
+        super(stateManager);
     }
 
     @Override
-    public void onEnter() {
+    protected void loadContent() {
         ReservationControllerGUI controllerReservation =
                 stateManager.getStageManager().<ReservationControllerGUI>loadContent(StageManager.RESERVATION_VIEW);
 
@@ -30,21 +27,5 @@ public class ReservationState implements AppState {
         } else {
             logger.warn("ReservationControllerGUI è null - impossibile caricare la vista");
         }
-
-        // aggiorna bottone attivo nella main view attiva
-        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
-        if (controllerMain != null) {
-            controllerMain.updateActiveButtonByState();
-        }
-    }
-
-    @Override
-    public void onExit() {
-        // Cleanup se necessario
-    }
-
-    @Override
-    public void goBack() {
-        stateManager.goBack();
     }
 }

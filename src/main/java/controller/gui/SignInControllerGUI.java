@@ -34,7 +34,6 @@ public class SignInControllerGUI {
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
         this.signInController = new SignInController();
-        if (backButton != null) updateBackButtonText();
     }
 
     @FXML
@@ -71,7 +70,6 @@ public class SignInControllerGUI {
             );
 
             if (accountBean != null) {
-                // Navigazione post-registrazione
                 stateManager.setState(new MainUserState(stateManager));
             }
 
@@ -82,7 +80,6 @@ public class SignInControllerGUI {
         }
     }
 
-    // ================== VALIDAZIONE ==================
     private boolean validateAllFields() {
         if (firstNameField.getText().trim().isEmpty() || lastNameField.getText().trim().isEmpty() ||
             emailField.getText().trim().isEmpty() || passwordField.getText().isEmpty()) {
@@ -156,18 +153,6 @@ public class SignInControllerGUI {
 
     @FXML
     private void handleBack() {
-        stateManager.goBack();
-    }
-
-    private void updateBackButtonText() {
-        AppState previous = stateManager.getPreviousState();
-        if (previous instanceof CatalogoState)
-            backButton.setText("← Torna al Catalogo");
-        else if (previous instanceof CercaState)
-            backButton.setText("← Torna a Cerca");
-        else if (previous instanceof BachecaState)
-            backButton.setText("← Torna a Bacheca");
-        else
-            backButton.setText("← Torna indietro");
+        stateManager.goBack(); // Standard back per Auth states
     }
 }

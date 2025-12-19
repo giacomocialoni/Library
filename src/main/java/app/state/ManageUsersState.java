@@ -1,29 +1,26 @@
 package app.state;
 
 import app.StageManager;
-import controller.gui.MainControllerGUI;
 import controller.gui.ManageUsersControllerGUI;
 import exception.DAOException;
 import exception.RecordNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ManageUsersState implements AppState {
+public class ManageUsersState extends PrimaryState {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageUsersState.class);
 
-    private final StateManager stateManager;
-
     public ManageUsersState(StateManager stateManager) {
-        this.stateManager = stateManager;
+        super(stateManager);
     }
 
     @Override
-    public void onEnter() {
-        ManageUsersControllerGUI manageUsersController = stateManager.getStageManager().<ManageUsersControllerGUI>loadContent(StageManager.MANAGE_USERS_VIEW);
+    protected void loadContent() {
+        ManageUsersControllerGUI manageUsersController = 
+            stateManager.getStageManager().<ManageUsersControllerGUI>loadContent(StageManager.MANAGE_USERS_VIEW);
 
         if (manageUsersController != null) {
-            // Gestione delle eccezioni senza stack trace sul terminale
             try {
                 manageUsersController.setStateManager(stateManager);
                 manageUsersController.loadUsers();
@@ -33,21 +30,5 @@ public class ManageUsersState implements AppState {
                 logger.error("Errore DAO durante l'inizializzazione del controller ManageUsersControllerGUI", e);
             }
         }
-
-        // aggiorna bottone attivo nella main view attiva
-        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
-        if (controllerMain != null) {
-            controllerMain.updateActiveButtonByState();
-        }
-    }
-
-    @Override
-    public void onExit() {
-        // Cleanup se necessario
-    }
-
-    @Override
-    public void goBack() {
-        stateManager.goBack();
     }
 }

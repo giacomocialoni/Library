@@ -34,6 +34,6 @@ public class CatalogoControllerGUI {
 
     @FXML
     private void initialize() {
-        // lascia vuoto o solo layout-related
+        // OK
     }
 }

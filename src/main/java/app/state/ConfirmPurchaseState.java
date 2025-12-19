@@ -4,37 +4,24 @@ import app.StageManager;
 import bean.BookBean;
 import controller.gui.PurchaseControllerGUI;
 
-public class ConfirmPurchaseState implements AppState {
+public class ConfirmPurchaseState extends SecondaryState {
 
-    private final StateManager stateManager;
-    private final StageManager stageManager;
     private final BookBean book;
     private final int quantity;
 
     public ConfirmPurchaseState(StateManager stateManager, BookBean book, int quantity) {
-        this.stateManager = stateManager;
-        this.stageManager = stateManager.getStageManager();
+        super(stateManager);
         this.book = book;
         this.quantity = quantity;
     }
 
     @Override
     public void onEnter() {
-        // Carica la vista di conferma acquisto
-        PurchaseControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_PURCHASE_VIEW);
+        PurchaseControllerGUI controller = stateManager.getStageManager()
+            .<PurchaseControllerGUI>loadContent(StageManager.CONFIRM_PURCHASE_VIEW);
         if (controller != null) {
             controller.setStateManager(stateManager);
             controller.setPurchaseData(book, quantity);
         }
-    }
-
-    @Override
-    public void onExit() {
-        // Cleanup se necessario
-    }
-
-    @Override
-    public void goBack() {
-        stateManager.goBack();
     }
 }

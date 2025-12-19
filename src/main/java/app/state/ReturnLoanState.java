@@ -1,53 +1,31 @@
 package app.state;
 
+import app.StageManager;
+import controller.gui.ReturnLoanControllerGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.StageManager;
-import controller.gui.MainControllerGUI;
-import controller.gui.ReturnLoanControllerGUI;
+public class ReturnLoanState extends PrimaryState {
 
-public class ReturnLoanState implements AppState {
-
-	private static final Logger logger = LoggerFactory.getLogger(ReturnLoanState.class);
-
-    private final StateManager stateManager;
+    private static final Logger logger = LoggerFactory.getLogger(ReturnLoanState.class);
 
     public ReturnLoanState(StateManager stateManager) {
-        this.stateManager = stateManager;
+        super(stateManager);
     }
     
-	@Override
-	public void onEnter() {
-		ReturnLoanControllerGUI controllerReturnLoan =
+    @Override
+    protected void loadContent() {
+        ReturnLoanControllerGUI controllerReturnLoan =
                 stateManager.getStageManager().<ReturnLoanControllerGUI>loadContent(StageManager.RETURN_LOANS_VIEW);
 
         if (controllerReturnLoan != null) {
             try {
-            	controllerReturnLoan.setStateManager(stateManager);
+                controllerReturnLoan.setStateManager(stateManager);
             } catch (Exception e) {
-                logger.error("Errore durante l'inizializzazione di ReservationControllerGUI", e);
+                logger.error("Errore durante l'inizializzazione di ReturnLoanControllerGUI", e);
             }
         } else {
-            logger.warn("ReservationControllerGUI è null - impossibile caricare la vista");
+            logger.warn("ReturnLoanControllerGUI è null - impossibile caricare la vista");
         }
-
-        // aggiorna bottone attivo nella main view attiva
-        MainControllerGUI controllerMain = stateManager.getStageManager().getActiveMainController();
-        if (controllerMain != null) {
-            controllerMain.updateActiveButtonByState();
-        }
-	}
-
-	@Override
-	public void onExit() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void goBack() {
-        stateManager.goBack();
-	}
-
+    }
 }

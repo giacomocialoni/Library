@@ -3,6 +3,7 @@ package controller.gui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import model.Account;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI {
 
     @FXML private Button catalogoButton, cercaButton, bachecaButton, profileButton, wishlistButton, infoButton;
     @FXML private Label userLabel;
+    @FXML private VBox topContainer; // Aggiungi questo campo
 
     @FXML
     public void initialize() {
@@ -58,10 +60,10 @@ public class MainUserControllerGUI extends AbstractMainControllerGUI {
         stateManager.setState(new WishlistState(stateManager));
     }
 
-	@FXML
-	private void showInfo() {
-		stateManager.setState(new InfoState(stateManager));
-	}
+    @FXML
+    private void showInfo() {
+        stateManager.setState(new InfoState(stateManager));
+    }
 
     private void updateUserLabel() {
         if (userLabel != null && Session.getInstance().isLoggedIn()) {

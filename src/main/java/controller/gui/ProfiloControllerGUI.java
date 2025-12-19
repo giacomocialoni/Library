@@ -64,6 +64,12 @@ public class ProfiloControllerGUI {
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
 
+        if (!Session.getInstance().isLoggedIn()) {
+            // Se non loggato, vai al login
+            stateManager.setState(new app.state.LoginState(stateManager));
+            return;
+        }
+
         String email = Session.getInstance().getLoggedUser().getEmail();
         this.user = appController.getUser(email);
         if (user == null) return;

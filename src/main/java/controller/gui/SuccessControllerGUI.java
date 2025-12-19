@@ -24,6 +24,6 @@ public class SuccessControllerGUI {
 
     @FXML
     private void handleOk() {
-        stateManager.goBackTwoStates();
+        stateManager.goBack();
     }
 }

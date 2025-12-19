@@ -4,36 +4,22 @@ import app.StageManager;
 import controller.gui.LoanControllerGUI;
 import bean.BookBean;
 
-public class ConfirmLoanState implements AppState {
+public class ConfirmLoanState extends SecondaryState {
 
-    private final StateManager stateManager;
-    private final StageManager stageManager;
     private final BookBean book;
 
-    // MODIFICATO: rimuovi previousState dal costruttore
     public ConfirmLoanState(StateManager stateManager, BookBean book) {
-        this.stateManager = stateManager;
-        this.stageManager = stateManager.getStageManager();
+        super(stateManager);
         this.book = book;
     }
 
     @Override
     public void onEnter() {
-        // Carica la vista di conferma prestito
-    	LoanControllerGUI controller = stageManager.loadContent(StageManager.CONFIRM_LOAN_VIEW);
+        LoanControllerGUI controller = stateManager.getStageManager()
+            .<LoanControllerGUI>loadContent(StageManager.CONFIRM_LOAN_VIEW);
         if (controller != null) {
             controller.setStateManager(stateManager);
-            controller.setBorrowData(book); // MODIFICATO: passa solo il libro
+            controller.setBorrowData(book);
         }
-    }
-
-    @Override
-    public void onExit() {
-        // Cleanup se necessario
-    }
-
-    @Override
-    public void goBack() {
-        stateManager.goBack();
     }
 }

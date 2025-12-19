@@ -1,21 +1,18 @@
 package app.state;
 
-import app.StageManager;
-import controller.gui.MainAdminControllerGUI;
-
-public class MainAdminState extends AbstractMainState {
-
+public class MainAdminState extends MainState {
+    
     public MainAdminState(StateManager stateManager) {
         super(stateManager);
     }
-
+    
     @Override
-    public void onEnter() {
-    	initializeMainState(() -> {
-            MainAdminControllerGUI controller = stateManager.getStageManager().loadMainAdminView();
-            if (controller != null) {
-                stateManager.getStageManager().loadContent(StageManager.RESERVATION_VIEW);
-            }
-        });
+    protected void loadMainView() {
+        stateManager.getStageManager().loadMainAdminView();
+    }
+    
+    @Override
+    protected AppState getDefaultPrimaryState() {
+        return new ReservationState(stateManager);
     }
 }

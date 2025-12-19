@@ -2,6 +2,7 @@ package controller.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import app.state.LoginState;
 public class MainGuestControllerGUI extends AbstractMainControllerGUI {
 
     @FXML private Button catalogoButton, cercaButton, bachecaButton, infoButton, loginButton;
+    @FXML private VBox topContainer; // Aggiungi questo campo
 
     @FXML
     public void initialize() {
@@ -41,10 +43,10 @@ public class MainGuestControllerGUI extends AbstractMainControllerGUI {
         stateManager.setState(new BachecaState(stateManager));
     }
 
-	@FXML
-	private void showInfo() {
-		stateManager.setState(new InfoState(stateManager));
-	}
+    @FXML
+    private void showInfo() {
+        stateManager.setState(new InfoState(stateManager));
+    }
 
     @FXML
     private void showLogin() {

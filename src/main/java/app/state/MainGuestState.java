@@ -1,13 +1,18 @@
 package app.state;
 
-public class MainGuestState extends AbstractMainState {
-
+public class MainGuestState extends MainState {
+    
     public MainGuestState(StateManager stateManager) {
         super(stateManager);
     }
-
+    
     @Override
-    public void onEnter() {
-        initializeMainState(() -> stateManager.getStageManager().showGuestView());
+    protected void loadMainView() {
+        stateManager.getStageManager().loadMainGuestView();
+    }
+    
+    @Override
+    protected AppState getDefaultPrimaryState() {
+        return new CatalogoState(stateManager);
     }
 }

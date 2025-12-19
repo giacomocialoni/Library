@@ -12,8 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoginControllerGUI {
 
@@ -24,8 +22,6 @@ public class LoginControllerGUI {
     @FXML private Label errorLabel;
     private FadeTransition errorFade;
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginControllerGUI.class);
-
     private StateManager stateManager;
     private LoginController loginController;
     private Runnable onLoginSuccessCallback;
@@ -33,7 +29,6 @@ public class LoginControllerGUI {
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
         this.loginController = new LoginController();
-        if (backButton != null) updateBackButtonText();
     }
 
     public void setOnLoginSuccessCallback(Runnable callback) {
@@ -66,7 +61,6 @@ public class LoginControllerGUI {
         } catch (IllegalArgumentException e) {
             showError("Compila tutti i campi!");
         } catch (Exception e) {
-            logger.error("Errore login", e);
             showError("Errore durante il login");
         }
     }
@@ -107,18 +101,6 @@ public class LoginControllerGUI {
 
     @FXML
     private void handleBack() {
-        stateManager.goBack();
-    }
-
-    private void updateBackButtonText() {
-        AppState previous = stateManager.getPreviousState();
-        if (previous instanceof CatalogoState)
-            backButton.setText("← Torna al Catalogo");
-        else if (previous instanceof CercaState)
-            backButton.setText("← Torna a Cerca");
-        else if (previous instanceof BachecaState)
-            backButton.setText("← Torna a Bacheca");
-        else
-            backButton.setText("← Torna indietro");
+        stateManager.goBack(); // Standard back per Auth states
     }
 }

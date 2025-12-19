@@ -1067,4 +1067,18 @@
 .new-button:hover {
 	-fx-background-color: #faf8f5;
 }
+
+/* Create Book */
+
+/* Placeholder per ImageView vuoto */
+.book-cover .image-view:empty {
+    -fx-background-color: #f0e8dc;
+    -fx-background-radius: 5;
+}
+
+/* Stile per il form di creazione libro */
+.create-form-grid {
+    -fx-hgap: 15;
+    -fx-vgap: 10;
+}
 /* scss-lint:enable PseudoClassSelector, PropertySortOrder, UnknownProperty */

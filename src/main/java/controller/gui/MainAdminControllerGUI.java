@@ -11,21 +11,23 @@ import app.state.ReservationState;
 import app.state.ReturnLoanState;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 
 public class MainAdminControllerGUI extends AbstractMainControllerGUI {
 
-	@FXML private Button prenotazioniButton, gestioneLibriButton, gestioneUtentiButton, postButton, logoutButton, prestitiButton;
+    @FXML private Button prenotazioniButton, gestioneLibriButton, gestioneUtentiButton, postButton, logoutButton, prestitiButton;
+    @FXML private VBox topContainer; // Aggiungi questo campo
 
-	@FXML
-	public void initialize() {
-	    stateButtonMap = Map.of(
-	        ReservationState.class, prenotazioniButton,
-	        ReturnLoanState.class, prestitiButton,          // <-- nuovo stato
-	        ManageBooksState.class, gestioneLibriButton,
-	        ManageUsersState.class, gestioneUtentiButton,
-	        PostState.class, postButton
-	    );
-	}
+    @FXML
+    public void initialize() {
+        stateButtonMap = Map.of(
+            ReservationState.class, prenotazioniButton,
+            ReturnLoanState.class, prestitiButton,
+            ManageBooksState.class, gestioneLibriButton,
+            ManageUsersState.class, gestioneUtentiButton,
+            PostState.class, postButton
+        );
+    }
 
     @FXML
     private void showReservations() {
@@ -55,6 +57,6 @@ public class MainAdminControllerGUI extends AbstractMainControllerGUI {
     @FXML
     private void handleLogout() {
         Session.getInstance().logout();
-		stateManager.setState(new MainGuestState(stateManager));
+        stateManager.setState(new MainGuestState(stateManager));
     }
 }

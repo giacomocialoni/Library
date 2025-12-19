@@ -1,6 +1,7 @@
 package controller.gui;
 
 import app.state.StateManager;
+import app.state.CreateBookState;
 import app.state.ErrorState;
 import app.state.SuccessState;
 import bean.BookBean;
@@ -68,8 +69,8 @@ public class ManageBooksControllerGUI {
 
     @FXML
     public void addBook() {
-        // TODO: Implementare navigazione alla view di aggiunta libro
-        showSuccess("Info", "Funzionalità di aggiunta libro da implementare");
+        CreateBookState createBookState = new CreateBookState(stateManager);
+        stateManager.setState(createBookState);
     }
 
     public void loadBooks() {

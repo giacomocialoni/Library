@@ -186,13 +186,7 @@ public class BookDetailControllerGUI {
     }
 
     private void updateBackButtonText() {
-        AppState previous = stateManager.getPreviousState();
-        if (previous instanceof CatalogoState)
-            backButton.setText("← Torna al Catalogo");
-        else if (previous instanceof CercaState)
-            backButton.setText("← Torna a Cerca");
-        else
-            backButton.setText("← Torna indietro");
+        backButton.setText("← Torna indietro"); // Testo generico
     }
 
     // Getters
