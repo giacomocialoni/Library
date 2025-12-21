@@ -4,15 +4,14 @@ import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
-import exception.RecordNotFoundException;
 import exception.DuplicateRecordException;
+import exception.RecordNotFoundException;
 import model.Book;
 import model.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import bean.BookBean;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +34,8 @@ public class CercaController {
             return categories.stream()
                     .map(Category::getCategory)
                     .collect(Collectors.toList());
-        } catch (SQLException e) {
-            logger.error("Errore nel recupero delle categorie dal database", e);
+        } catch (DAOException e) {
+            logger.error("Errore nel recupero delle categorie", e);
             return Collections.emptyList();
         }
     }
@@ -74,7 +73,7 @@ public class CercaController {
         } catch (DuplicateRecordException e) {
             logger.warn("Categoria già esistente: " + category.getCategory());
             return false;
-        } catch (SQLException e) {
+        } catch (DAOException e) {
             logger.error("Errore durante l'aggiunta della categoria: " + category.getCategory(), e);
             return false;
         }
@@ -87,7 +86,7 @@ public class CercaController {
         } catch (RecordNotFoundException e) {
             logger.warn("Categoria non trovata: " + categoryName);
             return false;
-        } catch (SQLException e) {
+        } catch (DAOException e) {
             logger.error("Errore durante l'eliminazione della categoria: " + categoryName, e);
             return false;
         }

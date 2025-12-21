@@ -1,0 +1,14 @@
+id,user_email,book_id,status,status_date
+26,luca.bianchi@gmail.com,6,PURCHASED,2025-11-14
+27,simone.cialoni@gmail.com,19,PURCHASED,2025-11-14
+28,simone.cialoni@gmail.com,10,PURCHASED,2025-11-14
+29,simone.cialoni@gmail.com,23,PURCHASED,2025-11-14
+30,simone.cialoni@gmail.com,20,PURCHASED,2025-11-14
+31,simone.cialoni@gmail.com,6,PURCHASED,2025-11-15
+32,luca.bianchi@gmail.com,6,PURCHASED,2025-11-18
+33,simone.cialoni@gmail.com,9,PURCHASED,2025-11-18
+34,simone.cialoni@gmail.com,10,PURCHASED,2025-11-18
+36,simone.cialoni04@gmail.com,7,PURCHASED,2025-11-29
+37,simone.cialoni04@gmail.com,9,PURCHASED,2025-12-18
+38,simone.cialoni04@gmail.com,10,PURCHASED,2025-12-18
+39,simone.cialoni04@gmail.com,10,RESERVED,2025-12-19

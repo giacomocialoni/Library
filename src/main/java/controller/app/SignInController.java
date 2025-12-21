@@ -10,8 +10,6 @@ import exception.IncorrectDataException;
 import model.Account;
 import model.User;
 
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,15 +30,18 @@ public class SignInController {
         }
 
         boolean success;
-		try {
-			success = accountDAO.register(email, password, firstName, lastName);
-		} catch (SQLException | DuplicateRecordException e) {
-            logger.warn("SignIn fallito per {}", email, e);
+        try {
+            success = accountDAO.register(email, password, firstName, lastName);
+        } catch (DuplicateRecordException e) {
+            logger.warn("SignIn fallito: email già registrata per {}", email, e);
             return null;
-		}
+        } catch (DAOException e) {
+            logger.warn("Errore nel DAO durante la registrazione per {}", email, e);
+            return null;
+        }
 
         if (!success) {
-            throw new DAOException("Email già esistente!");
+            throw new DAOException("Registrazione fallita!");
         }
 
         Account account = new User(email, password, firstName, lastName);

@@ -3,7 +3,6 @@ package dao.database;
 import dao.UserDAO;
 import model.User;
 import exception.DAOException;
-import exception.RecordNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     @Override
-    public User getUserByEmail(String email) throws DAOException, RecordNotFoundException {
+    public User getUserByEmail(String email) throws DAOException {
         String sql = "SELECT email, password, first_name, last_name FROM users WHERE email = ?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -33,7 +32,7 @@ public class DatabaseUserDAO implements UserDAO {
                             rs.getString("last_name")
                     );
                 } else {
-                    throw new RecordNotFoundException("Utente non trovato con email: " + email);
+                    throw new DAOException("Utente non trovato con email: " + email);
                 }
             }
 
@@ -45,7 +44,7 @@ public class DatabaseUserDAO implements UserDAO {
     @Override
     public List<User> getAllUsers() throws DAOException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT email, password, first_name, last_name, role FROM users"; // Aggiungi role alla SELECT
+        String sql = "SELECT email, password, first_name, last_name, role FROM users";
 
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -60,15 +59,15 @@ public class DatabaseUserDAO implements UserDAO {
                         rs.getString("first_name"),
                         rs.getString("last_name")
                     ));
-                } else if ("admin".equals(role)) {
-                    // TODO if I want to manage admins too
                 }
+                // Admin non vengono inclusi nella lista degli utenti normali
             }
+
+            return users;
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero di tutti gli utenti", e);
         }
-        return users;
     }
 
     @Override
@@ -89,17 +88,19 @@ public class DatabaseUserDAO implements UserDAO {
                         ));
             }
             
+            return users;
+            
         } catch (SQLException e) {
-            throw new DAOException("Errore durante il recupero di tutti gli utenti", e);
+            throw new DAOException("Errore durante il recupero degli utenti loggati", e);
         }
-        return users;
     }
 
     @Override
-    public List<User> searchUsers(String searchTerm) throws DAOException, RecordNotFoundException {
+    public List<User> searchUsers(String searchTerm) throws DAOException {
         List<User> users = new ArrayList<>();
         String sql = "SELECT email, password, first_name, last_name FROM users " +
                      "WHERE LOWER(email) LIKE LOWER(?) OR LOWER(first_name) LIKE LOWER(?) OR LOWER(last_name) LIKE LOWER(?) " +
+                     "AND role = 'logged_user' " +
                      "ORDER BY email";
 
         try (Connection conn = dbConnection.getConnection();
@@ -121,18 +122,15 @@ public class DatabaseUserDAO implements UserDAO {
                 }
             }
 
-            if (users.isEmpty()) {
-                throw new RecordNotFoundException("Nessun utente trovato per la ricerca: " + searchTerm);
-            }
+            return users;
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante la ricerca degli utenti", e);
         }
-        return users;
     }
 
     @Override
-    public void deleteUser(String email) throws DAOException, RecordNotFoundException {
+    public void deleteUser(String email) throws DAOException {
         String deletePurchasesSql = "DELETE FROM purchases WHERE user_email = ?";
         String deleteLoansSql = "DELETE FROM loans WHERE user_email = ?";
         String deleteWishlistSql = "DELETE FROM wishlist WHERE user_email = ?";
@@ -161,7 +159,7 @@ public class DatabaseUserDAO implements UserDAO {
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected == 0) {
                     conn.rollback();
-                    throw new RecordNotFoundException("Utente non trovato per la cancellazione: " + email);
+                    throw new DAOException("Utente non trovato per la cancellazione: " + email);
                 }
             }
 

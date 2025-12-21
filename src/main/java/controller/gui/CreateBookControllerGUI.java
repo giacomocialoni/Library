@@ -7,6 +7,7 @@ import bean.BookBean;
 import controller.app.ManageBooksController;
 import dao.CategoryDAO;
 import dao.factory.DAOFactory;
+import exception.DAOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -16,7 +17,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,19 +98,24 @@ public class CreateBookControllerGUI {
         });
     }
 
-    private void loadCategoriesFromDatabase() throws SQLException {
-        List<String> categories = new ArrayList<>();
-        List<model.Category> dbCategories = categoryDAO.getAllCategories();
-        
-        for (model.Category cat : dbCategories) {
-            categories.add(cat.getCategory());
-        }
-        
-        categoryCombo.getItems().clear();
-        categoryCombo.getItems().addAll(categories);
-        
-        if (!categories.isEmpty()) {
-            categoryCombo.getSelectionModel().selectFirst();
+    private void loadCategoriesFromDatabase() {
+        try {
+            List<String> categories = new ArrayList<>();
+            List<model.Category> dbCategories = categoryDAO.getAllCategories();
+            
+            for (model.Category cat : dbCategories) {
+                categories.add(cat.getCategory());
+            }
+            
+            categoryCombo.getItems().clear();
+            categoryCombo.getItems().addAll(categories);
+            
+            if (!categories.isEmpty()) {
+                categoryCombo.getSelectionModel().selectFirst();
+            }
+        } catch (DAOException e) {
+            System.err.println("Errore nel caricamento delle categorie: " + e.getMessage());
+            categoryCombo.getItems().clear();
         }
     }
 
@@ -218,7 +223,7 @@ public class CreateBookControllerGUI {
                 }
             }
             return false;
-        } catch (Exception e) {
+        } catch (DAOException e) {
             return false;
         }
     }

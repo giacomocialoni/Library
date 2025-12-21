@@ -1,61 +1,51 @@
 package dao.factory;
 
-import dao.AccountDAO;
-import dao.BookDAO;
-import dao.CategoryDAO;
-import dao.LoanDAO;
-import dao.PostDAO;
-import dao.PurchaseDAO;
-import dao.UserDAO;
-import dao.WishlistDAO;
-import dao.csv.CSVBookDAO;
+import dao.*;
+import dao.csv.*;
 
 public class CSVDAOFactory extends DAOFactory {
 
     @Override
     protected BookDAO createBookDAO() {
-        return new CSVBookDAO();
+        try {
+            return new CSVBookDAO();
+        } catch (Exception e) {
+            throw new RuntimeException("Errore nella creazione di CSVBookDAO", e);
+        }
     }
 
-	@Override
-	protected CategoryDAO createCategoryDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected CategoryDAO createCategoryDAO() {
+        return new CSVCategoryDAO();
+    }
 
-	@Override
-	protected PostDAO createPostDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected PostDAO createPostDAO() {
+        return new CSVPostDAO();
+    }
 
-	@Override
-	protected AccountDAO createAccountDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected AccountDAO createAccountDAO() {
+        return new CSVAccountDAO();
+    }
 
-	@Override
-	protected UserDAO createUserDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected UserDAO createUserDAO() {
+        return new CSVUserDAO();
+    }
 
-	@Override
-	protected LoanDAO createLoanDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected LoanDAO createLoanDAO() {
+        return new CSVLoanDAO();
+    }
 
-	@Override
-	protected PurchaseDAO createPurchaseDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected PurchaseDAO createPurchaseDAO() {
+        return new CSVPurchaseDAO();
+    }
 
-	@Override
-	protected WishlistDAO createWishlistDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected WishlistDAO createWishlistDAO() {
+        return new CSVWishlistDAO();
+    }
 }

@@ -1,6 +1,7 @@
 package dao.database;
 
 import dao.CategoryDAO;
+import exception.DAOException;
 import exception.RecordNotFoundException;
 import exception.DuplicateRecordException;
 import model.Category;
@@ -18,7 +19,7 @@ public class DatabaseCategoryDAO implements CategoryDAO {
     }
 
     @Override
-    public List<Category> getAllCategories() throws SQLException {
+    public List<Category> getAllCategories() throws DAOException {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT category FROM categories ORDER BY category";
 
@@ -29,44 +30,54 @@ public class DatabaseCategoryDAO implements CategoryDAO {
             while (rs.next()) {
                 categories.add(new Category(rs.getString("category")));
             }
+            
+            return categories;
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero delle categorie", e);
         }
-
-        return categories;
     }
 
     @Override
     public void addCategory(Category category)
-            throws SQLException, DuplicateRecordException {
+            throws DAOException, DuplicateRecordException {
 
-        if (exists(category.getCategory())) {
-            throw new DuplicateRecordException("La categoria esiste già: " + category.getCategory());
-        }
+        try {
+            if (exists(category.getCategory())) {
+                throw new DuplicateRecordException("La categoria esiste già: " + category.getCategory());
+            }
 
-        String sql = "INSERT INTO categories (category) VALUES (?)";
+            String sql = "INSERT INTO categories (category) VALUES (?)";
 
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (Connection conn = dbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, category.getCategory());
-            stmt.executeUpdate();
+                stmt.setString(1, category.getCategory());
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante l'aggiunta della categoria", e);
         }
     }
 
     @Override
     public void deleteCategory(String category)
-            throws SQLException, RecordNotFoundException {
+            throws DAOException, RecordNotFoundException {
 
-        if (!exists(category)) {
-            throw new RecordNotFoundException("Categoria non trovata: " + category);
-        }
+        try {
+            if (!exists(category)) {
+                throw new RecordNotFoundException("Categoria non trovata: " + category);
+            }
 
-        String sql = "DELETE FROM categories WHERE category = ?";
+            String sql = "DELETE FROM categories WHERE category = ?";
 
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (Connection conn = dbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, category);
-            stmt.executeUpdate();
+                stmt.setString(1, category);
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante l'eliminazione della categoria", e);
         }
     }
 

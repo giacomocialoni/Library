@@ -47,10 +47,11 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
                 while (rs.next()) purchases.add(extractPurchaseFromResultSet(rs));
             }
 
+            return purchases;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero delle purchases per l'utente", e);
         }
-        return purchases;
     }
 
     @Override
@@ -66,10 +67,11 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
                 while (rs.next()) bookIds.add(rs.getInt("book_id"));
             }
 
+            return bookIds;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero degli ID libri acquistati dall'utente", e);
         }
-        return bookIds;
     }
 
     @Override
@@ -82,12 +84,7 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
             stmt.setString(1, userEmail);
             stmt.setInt(2, bookId);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (!rs.next()) {
-                    throw new RecordNotFoundException(
-                        "L'utente " + userEmail + " non ha acquistato il libro con ID " + bookId
-                    );
-                }
-                return true;
+                return rs.next();
             }
 
         } catch (SQLException e) {
@@ -97,12 +94,14 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
 
     @Override
     public void acceptPurchase(int purchaseId) throws DAOException, RecordNotFoundException {
-        String sql = "UPDATE purchases SET status = 'PURCHASED' WHERE id = ?";
+        String sql = "UPDATE purchases SET status = 'PURCHASED', status_date = ? WHERE id = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, purchaseId);
+            stmt.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+            stmt.setInt(2, purchaseId);
+            
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
                 throw new RecordNotFoundException("Nessuna purchase trovata con ID: " + purchaseId);
@@ -123,11 +122,12 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) purchases.add(extractPurchaseFromResultSet(rs));
+            
+            return purchases;
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero di tutte le purchases", e);
         }
-        return purchases;
     }
 
     @Override
@@ -157,11 +157,11 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
                 }
             }
 
+            return res;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante la ricerca delle purchases riservate per utente", e);
         }
-
-        return res;
     }
 
     @Override
@@ -188,11 +188,11 @@ public class DatabasePurchaseDAO implements PurchaseDAO {
                 }
             }
 
+            return res;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante la ricerca delle purchases riservate per libro", e);
         }
-
-        return res;
     }
 
     private Purchase extractPurchaseFromResultSet(ResultSet rs) throws SQLException {

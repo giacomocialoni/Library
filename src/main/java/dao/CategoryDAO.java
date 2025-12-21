@@ -1,15 +1,14 @@
 package dao;
 
+import model.Category;
+import exception.DAOException;
 import exception.RecordNotFoundException;
 import exception.DuplicateRecordException;
-import model.Category;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface CategoryDAO {
-
-    List<Category> getAllCategories() throws SQLException;
-    void addCategory(Category category) throws SQLException, DuplicateRecordException;
-    void deleteCategory(String category) throws SQLException, RecordNotFoundException;
+    List<Category> getAllCategories() throws DAOException;
+    void addCategory(Category category) throws DAOException, DuplicateRecordException;
+    void deleteCategory(String category) throws DAOException, RecordNotFoundException;
 }

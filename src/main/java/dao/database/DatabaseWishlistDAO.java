@@ -2,7 +2,6 @@ package dao.database;
 
 import dao.WishlistDAO;
 import exception.DAOException;
-import exception.RecordNotFoundException;
 import model.User;
 import model.Wishlist;
 
@@ -69,7 +68,7 @@ public class DatabaseWishlistDAO implements WishlistDAO {
     }
 
     @Override
-    public List<Wishlist> getWishlistByUser(String userEmail) throws DAOException, RecordNotFoundException {
+    public List<Wishlist> getWishlistByUser(String userEmail) throws DAOException {
         List<Wishlist> wishlist = new ArrayList<>();
         String sql = "SELECT * FROM wishlist WHERE user_email = ?";
 
@@ -83,12 +82,11 @@ public class DatabaseWishlistDAO implements WishlistDAO {
                 }
             }
 
+            return wishlist;
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero della wishlist", e);
         }
-
-        return wishlist;
     }
 
     @Override
@@ -113,10 +111,10 @@ public class DatabaseWishlistDAO implements WishlistDAO {
                 }
             }
 
+            return users;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero degli utenti che hanno il libro nella wishlist", e);
         }
-
-        return users;
     }
 }

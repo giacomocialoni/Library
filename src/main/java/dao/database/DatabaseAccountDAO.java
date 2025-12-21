@@ -1,6 +1,7 @@
 package dao.database;
 
 import dao.AccountDAO;
+import exception.DAOException;
 import exception.RecordNotFoundException;
 import exception.DuplicateRecordException;
 import model.Admin;
@@ -21,7 +22,7 @@ public class DatabaseAccountDAO implements AccountDAO {
     }
 
     @Override
-    public Account login(String email, String password) throws SQLException, RecordNotFoundException {
+    public Account login(String email, String password) throws DAOException, RecordNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -50,27 +51,33 @@ public class DatabaseAccountDAO implements AccountDAO {
                         rs.getString("last_name")
                 );
             }
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il login", e);
         }
     }
 
     @Override
     public boolean register(String email, String password, String firstName, String lastName)
-            throws SQLException, DuplicateRecordException {
+            throws DAOException, DuplicateRecordException {
 
-        if (emailExists(email)) {
-            throw new DuplicateRecordException("Email già registrata");
-        }
+        try {
+            if (emailExists(email)) {
+                throw new DuplicateRecordException("Email già registrata");
+            }
 
-        String sql = "INSERT INTO users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, 'logged_user')";
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String sql = "INSERT INTO users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, 'logged_user')";
+            try (Connection conn = dbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            stmt.setString(3, firstName);
-            stmt.setString(4, lastName);
+                stmt.setString(1, email);
+                stmt.setString(2, password);
+                stmt.setString(3, firstName);
+                stmt.setString(4, lastName);
 
-            return stmt.executeUpdate() > 0;
+                return stmt.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante la registrazione", e);
         }
     }
 

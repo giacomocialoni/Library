@@ -35,11 +35,7 @@ public class Main {
         // --- Configurazione DAOFactory ---
         DAOFactory factory;
 
-        if ("DEMO".equalsIgnoreCase(dataSourceType)) {
-
-            factory = DAOFactory.getFactory("DEMO", null);
-
-        } else if ("DB".equalsIgnoreCase(dataSourceType)) {
+        if ("DB".equalsIgnoreCase(dataSourceType)) {
 
             Properties dbProps = new Properties();
             try (InputStream dbInput = new FileInputStream("src/main/resources/db.properties")) {
@@ -59,13 +55,18 @@ public class Main {
 
             DBConnection dbConnection = new DBConnection(url, user, password);
 
-            DatabaseBookDAO bookDAO =
-                    new DatabaseBookDAO(dbConnection, wishlistObservable);
-
+            // Usa il costruttore esistente di DatabaseBookDAO
+            DatabaseBookDAO bookDAO = new DatabaseBookDAO(dbConnection);
+            
+            // Dopo aver creato il bookDAO, imposta l'observable se esiste un setter
+            // bookDAO.setWishlistObservable(wishlistObservable); // Se hai un setter
+            
             factory = new CustomDatabaseDAOFactory(dbConnection, bookDAO);
 
-        } else {
+        } else if ("CSV".equalsIgnoreCase(dataSourceType)) {
             factory = DAOFactory.getFactory("CSV", null);
+        } else {
+            throw new IllegalArgumentException("Tipo di data source non valido: " + dataSourceType);
         }
 
         // --- Impostazione factory globale ---

@@ -1,7 +1,6 @@
 package dao.database;
 
 import dao.BookDAO;
-import dao.PurchaseDAO;
 import dao.factory.DAOFactory;
 import exception.DAOException;
 import exception.RecordNotFoundException;
@@ -15,23 +14,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import controller.observer.WishlistObservable;
-
 public class DatabaseBookDAO implements BookDAO {
 
     private final DBConnection dbConnection;
-    private final WishlistObservable wishlistObservable;
 
     public DatabaseBookDAO(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
-		this.wishlistObservable = null;
     }
-    
-    public DatabaseBookDAO(DBConnection dbConnection, WishlistObservable wishlistObservable) {
-        this.dbConnection = dbConnection;
-        this.wishlistObservable = wishlistObservable;
-    }
-    
+
     @Override
     public List<Book> getAllBooks() throws DAOException {
         List<Book> books = new ArrayList<>();
@@ -90,8 +80,6 @@ public class DatabaseBookDAO implements BookDAO {
 
     @Override
     public void updateBook(Book book) throws DAOException, RecordNotFoundException {
-        int oldStock = getBookById(book.getId()).getStock();
-
         String sql = "UPDATE books SET title=?, author=?, category=?, year=?, publisher=?, pages=?, isbn=?, stock=?, plot=?, image_path=?, price=? WHERE id=?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -112,11 +100,6 @@ public class DatabaseBookDAO implements BookDAO {
             int rows = stmt.executeUpdate();
             if (rows == 0) {
                 throw new RecordNotFoundException("Impossibile aggiornare: nessun libro con ID " + book.getId());
-            }
-
-            // Notifica observer solo se presente
-            if (oldStock == 0 && book.getStock() > 0 && wishlistObservable != null) {
-                wishlistObservable.notifyBookAvailable(book);
             }
 
         } catch (SQLException e) {
@@ -219,8 +202,8 @@ public class DatabaseBookDAO implements BookDAO {
     @Override
     public List<Purchase> getPurchasesByUser(String userEmail) throws DAOException {
         try {
-            PurchaseDAO purchaseDAO = DAOFactory.getActiveFactory().getPurchaseDAO();
-            return purchaseDAO.getPurchasesByUser(userEmail);
+            // Utilizza il DAO Factory per ottenere il PurchaseDAO
+            return DAOFactory.getActiveFactory().getPurchaseDAO().getPurchasesByUser(userEmail);
         } catch (Exception e) {
             throw new DAOException("Errore durante il recupero degli acquisti dell'utente " + userEmail, e);
         }
@@ -229,7 +212,7 @@ public class DatabaseBookDAO implements BookDAO {
     @Override
     public List<Loan> getLoanedBooks(String userEmail) throws DAOException {
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT l.*, b.* FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_email = ?";
+        String sql = "SELECT l.* FROM loans l WHERE l.user_email = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -240,7 +223,6 @@ public class DatabaseBookDAO implements BookDAO {
             while (rs.next()) {
                 int loanId = rs.getInt("id");
                 String email = rs.getString("user_email");
-
                 int bookId = rs.getInt("book_id");
                 LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
                 LocalDate reservedDate = rs.getDate("reserved_date") != null ?

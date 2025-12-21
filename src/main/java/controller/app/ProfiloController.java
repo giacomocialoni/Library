@@ -66,6 +66,7 @@ public class ProfiloController {
             return loanDAO.getActiveLoansByUser(email)
                     .stream()
                     .map(this::toLoanBean)
+                    .filter(loanBean -> loanBean != null && loanBean.getBook() != null) // Filtra loanBean null o senza libro
                     .toList();
         } catch (DAOException e) {
             logger.error("Errore prestiti", e);
@@ -93,22 +94,40 @@ public class ProfiloController {
     }
 
     private LoanBean toLoanBean(Loan loan) {
-        LoanBean bean = new LoanBean();
-        bean.setId(loan.getId());
-        bean.setUserEmail(loan.getUserEmail());
-        bean.setStatus(loan.getStatus());
-        bean.setReservedDate(loan.getReservedDate());
-        bean.setLoanedDate(loan.getLoanedDate());
-        bean.setReturningDate(loan.getReturningDate());
-
-        int bookId = loan.getBookId();
         try {
-            Book book = bookDAO.getBookById(bookId);
-            BookBean bookBean = toBookBean(book);
-            bean.setBook(bookBean);
-        } catch (DAOException e) {
-            logger.warn("Impossibile recuperare il libro per prestito id={}", loan.getId(), e);
+            LoanBean bean = new LoanBean();
+            bean.setId(loan.getId());
+            bean.setUserEmail(loan.getUserEmail());
+            bean.setStatus(loan.getStatus());
+            bean.setReservedDate(loan.getReservedDate());
+            bean.setLoanedDate(loan.getLoanedDate());
+            bean.setReturningDate(loan.getReturningDate());
+
+            int bookId = loan.getBookId();
+            
+            // Controlla se bookId è valido (maggiore di 0)
+            if (bookId <= 0) {
+                logger.warn("BookId non valido ({}) per prestito id={}", bookId, loan.getId());
+                return null; // Ritorna null, verrà filtrato dopo
+            }
+            
+            try {
+                Book book = bookDAO.getBookById(bookId);
+                if (book != null) {
+                    BookBean bookBean = toBookBean(book);
+                    bean.setBook(bookBean);
+                } else {
+                    logger.warn("Libro con ID {} non trovato per prestito id={}", bookId, loan.getId());
+                    return null; // Ritorna null, verrà filtrato dopo
+                }
+            } catch (DAOException e) {
+                logger.warn("Impossibile recuperare il libro con ID {} per prestito id={}", bookId, loan.getId(), e);
+                return null; // Ritorna null, verrà filtrato dopo
+            }
+            return bean;
+        } catch (Exception e) {
+            logger.error("Errore nella conversione del prestito id={}", loan != null ? loan.getId() : "null", e);
+            return null;
         }
-        return bean;
     }
 }

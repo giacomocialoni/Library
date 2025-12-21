@@ -41,10 +41,8 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             WHERE l.user_email = ? AND l.status IN ('LOANED', 'EXPIRED')
         """;
 
@@ -56,10 +54,11 @@ public class DatabaseLoanDAO implements LoanDAO {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero dei prestiti attivi per l'utente", e);
         }
-        return loans;
     }
 
     @Override
@@ -67,10 +66,8 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             WHERE l.user_email = ? AND l.status = 'RESERVED'
         """;
 
@@ -86,10 +83,11 @@ public class DatabaseLoanDAO implements LoanDAO {
                 throw new RecordNotFoundException("Nessun prestito riservato trovato per l'utente: " + userEmail);
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero dei prestiti riservati per l'utente", e);
         }
-        return loans;
     }
 
     @Override
@@ -155,10 +153,8 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             WHERE l.user_email = ?
         """;
 
@@ -170,10 +166,11 @@ public class DatabaseLoanDAO implements LoanDAO {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero dei prestiti dell'utente", e);
         }
-        return loans;
     }
 
     @Override
@@ -181,10 +178,8 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             WHERE l.status = 'RESERVED'
         """;
 
@@ -193,11 +188,12 @@ public class DatabaseLoanDAO implements LoanDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) loans.add(extractLoanFromResultSet(rs));
+            
+            return loans;
 
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero di tutti i prestiti riservati", e);
         }
-        return loans;
     }
 
     @Override
@@ -205,10 +201,8 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             JOIN users u ON l.user_email = u.email
             WHERE l.status = 'LOANED' AND (
                 LOWER(u.email) LIKE ? OR LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ?
@@ -227,11 +221,11 @@ public class DatabaseLoanDAO implements LoanDAO {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante la ricerca dei prestiti LOANED per utente", e);
         }
-
-        return loans;
     }
 
     @Override
@@ -239,8 +233,7 @@ public class DatabaseLoanDAO implements LoanDAO {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
             JOIN books b ON l.book_id = b.id
             WHERE l.status = 'LOANED' AND LOWER(b.title) LIKE ?
@@ -256,36 +249,20 @@ public class DatabaseLoanDAO implements LoanDAO {
                 while (rs.next()) loans.add(extractLoanFromResultSet(rs));
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante la ricerca dei prestiti LOANED per libro", e);
         }
-
-        return loans;
     }
 
-    private Loan extractLoanFromResultSet(ResultSet rs) throws SQLException {
-        int loanId = rs.getInt("loan_id");
-        String userEmail = rs.getString("user_email");
-        int bookId = rs.getInt("book_id");
-
-        LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
-
-        LocalDate reservedDate = rs.getDate("reserved_date") != null ? rs.getDate("reserved_date").toLocalDate() : null;
-        LocalDate loanedDate = rs.getDate("loaned_date") != null ? rs.getDate("loaned_date").toLocalDate() : null;
-        LocalDate returningDate = rs.getDate("returning_date") != null ? rs.getDate("returning_date").toLocalDate() : null;
-
-        return new Loan(loanId, userEmail, bookId, reservedDate, loanedDate, returningDate, status);
-    }
-    
     @Override
     public List<Loan> getAllLoanedLoans() throws DAOException {
         List<Loan> loans = new ArrayList<>();
         String sql = """
             SELECT 
-                l.id AS loan_id, l.user_email, l.status, l.reserved_date, l.loaned_date, l.returning_date,
-                b.id AS book_id, b.title, b.author, b.category, b.year, b.publisher, b.pages, b.isbn, b.stock, b.plot, b.image_path, b.price
+                l.id AS loan_id, l.user_email, l.book_id, l.status, l.reserved_date, l.loaned_date, l.returning_date
             FROM loans l
-            JOIN books b ON l.book_id = b.id
             WHERE l.status IN ('LOANED', 'EXPIRED')
         """;
 
@@ -297,10 +274,26 @@ public class DatabaseLoanDAO implements LoanDAO {
                 loans.add(extractLoanFromResultSet(rs));
             }
 
+            return loans;
+
         } catch (SQLException e) {
             throw new DAOException("Errore durante il recupero dei prestiti in corso", e);
         }
+    }
 
-        return loans;
+    private Loan extractLoanFromResultSet(ResultSet rs) throws SQLException {
+        int loanId = rs.getInt("loan_id");
+        String userEmail = rs.getString("user_email");
+        
+        // Ora book_id è SEMPRE presente nelle query
+        int bookId = rs.getInt("book_id");
+        
+        LoanStatus status = LoanStatus.valueOf(rs.getString("status"));
+
+        LocalDate reservedDate = rs.getDate("reserved_date") != null ? rs.getDate("reserved_date").toLocalDate() : null;
+        LocalDate loanedDate = rs.getDate("loaned_date") != null ? rs.getDate("loaned_date").toLocalDate() : null;
+        LocalDate returningDate = rs.getDate("returning_date") != null ? rs.getDate("returning_date").toLocalDate() : null;
+
+        return new Loan(loanId, userEmail, bookId, reservedDate, loanedDate, returningDate, status);
     }
 }

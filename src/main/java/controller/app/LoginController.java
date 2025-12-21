@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import app.Session;
 
-import java.sql.SQLException;
-
 public class LoginController {
 
     private final AccountDAO accountDAO;
@@ -33,10 +31,10 @@ public class LoginController {
         } catch (RecordNotFoundException e) {
             logger.warn("Login fallito per {}", email, e);
             return null;
-        } catch (SQLException e) {
+        } catch (DAOException e) {
             logger.warn("Errore nel DAO nel login per {}", email, e);
             return null;
-		}
+        }
 
         if (account == null) return null;
 
