@@ -55,11 +55,7 @@ public class Main {
 
             DBConnection dbConnection = new DBConnection(url, user, password);
 
-            // Usa il costruttore esistente di DatabaseBookDAO
             DatabaseBookDAO bookDAO = new DatabaseBookDAO(dbConnection);
-            
-            // Dopo aver creato il bookDAO, imposta l'observable se esiste un setter
-            // bookDAO.setWishlistObservable(wishlistObservable); // Se hai un setter
             
             factory = new CustomDatabaseDAOFactory(dbConnection, bookDAO);
 
@@ -80,8 +76,7 @@ public class Main {
             ApplicationGUI.setDaoFactory(factory);
             ApplicationGUI.launchApp(args);
         } else if ("CLI".equalsIgnoreCase(viewType)) {
-            System.out.println("Avvio CLI...");
-            // ApplicationCLI.start();
+            ApplicationCLI.start();
         } else {
             throw new IllegalArgumentException("Tipo di view non valido: " + viewType);
         }

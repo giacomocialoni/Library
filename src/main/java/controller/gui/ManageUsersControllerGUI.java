@@ -1,16 +1,14 @@
 package controller.gui;
 
 import app.state.StateManager;
-import app.state.ErrorState;
 import app.state.SuccessState;
+import app.state.ErrorState;
 import controller.app.ManageUsersController;
-import exception.DAOException;
-import exception.RecordNotFoundException;
+import view.dto.UserDisplayDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import view.components.ManageUsersCardFactory;
-import bean.UserBean;
 
 import java.util.List;
 
@@ -25,21 +23,16 @@ public class ManageUsersControllerGUI {
     private StateManager stateManager;
     private final ManageUsersController appController = new ManageUsersController();
     private ManageUsersCardFactory cardFactory;
-    
-    private boolean initialized = false;
 
-    public void setStateManager(StateManager stateManager) throws RecordNotFoundException, DAOException {
+    public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
         this.cardFactory = new ManageUsersCardFactory();
-        
-        if (initialized) {
-            loadUsers();
-        }
+        loadUsers();
     }
 
     @FXML
     public void initialize() {
-        initialized = true;
+        // Inizializzazione FXML
     }
 
     @FXML
@@ -48,48 +41,40 @@ public class ManageUsersControllerGUI {
         loadUsers();
     }
 
-    public void loadUsers() {
-        if (cardFactory == null) return;
-
-        try {
-            List<UserBean> users = appController.getLoggedUsers(); // Usa getLoggedUsers invece di getAllUsers
-            displayUsers(users);
-        } catch (Exception e) {
-            showError("Errore", "Errore nel caricamento utenti: " + e.getMessage());
-        }
-    }
-
     @FXML
     public void handleSearch() {
-        if (cardFactory == null) {
-            showError("Attenzione", "Sistema non ancora inizializzato");
-            return;
-        }
-
         String searchText = searchField.getText().trim();
-        List<UserBean> users;
-
+        
+        List<UserDisplayDTO> usersForDisplay;
         if (searchText.isEmpty()) {
-            users = appController.getLoggedUsers(); // Usa getLoggedUsers
+            usersForDisplay = appController.getAllUsersForDisplay();
         } else {
-            users = appController.searchUsers(searchText);
+            usersForDisplay = appController.searchUsersForDisplay(searchText);
         }
-
-        displayUsers(users);
+        
+        displayUsers(usersForDisplay);
     }
 
-    private void displayUsers(List<UserBean> users) {
+    public void loadUsers() {
+        List<UserDisplayDTO> usersForDisplay = appController.getAllUsersForDisplay();
+        displayUsers(usersForDisplay);
+    }
+
+    private void displayUsers(List<UserDisplayDTO> usersForDisplay) {
         resultsContainer.getChildren().clear();
 
-        for (UserBean user : users) {
+        for (UserDisplayDTO userDTO : usersForDisplay) {
             var userCard = cardFactory.createUserCard(
-                user,
-                () -> handleRemoveUser(user.getEmail())
+                userDTO.getUser(),
+                userDTO.getLastPurchaseInfo(),
+                userDTO.getLastLoanInfo(),
+                userDTO.getStatsInfo(),
+                () -> handleRemoveUser(userDTO.getUser().getEmail()) // Rimuove direttamente
             );
             resultsContainer.getChildren().add(userCard);
         }
 
-        updateResultsLabel(users.size());
+        updateResultsLabel(usersForDisplay.size());
     }
 
     private void updateResultsLabel(int count) {
@@ -102,38 +87,20 @@ public class ManageUsersControllerGUI {
         }
     }
 
-    // ===== GESTIONE AZIONI =====
-
     private void handleRemoveUser(String email) {
         try {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Conferma eliminazione");
-            alert.setHeaderText("Eliminare l'utente?");
-            alert.setContentText("Questa operazione cancellerà anche tutte le prenotazioni dell'utente.\nL'operazione non può essere annullata.");
+            boolean success = appController.deleteUser(email);
+            String msg = "L'utente " + email + " è stato eliminato con successo";
             
-            if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                boolean success = appController.deleteUser(email);
-                if (success) {
-                    loadUsers();
-                    showSuccess("Successo", "Utente eliminato con successo");
-                } else {
-                    showError("Errore", "Impossibile eliminare l'utente");
-                }
+            if (success) {
+                loadUsers();
+                stateManager.setState(new SuccessState(stateManager, msg));
+            } else {
+                stateManager.setState(new ErrorState(stateManager, "Impossibile eliminare l'utente"));
             }
+
         } catch (Exception e) {
-            showError("Errore", "Errore nell'eliminare l'utente: " + e.getMessage());
+            stateManager.setState(new ErrorState(stateManager, "Errore nell'eliminare l'utente: " + e.getMessage()));
         }
-    }
-
-    // ===== GESTIONE STATI =====
-
-    private void showSuccess(String title, String message) {
-        SuccessState successState = new SuccessState(stateManager, message);
-        stateManager.setState(successState);
-    }
-
-    private void showError(String title, String message) {
-        ErrorState errorState = new ErrorState(stateManager, message);
-        stateManager.setState(errorState);
     }
 }
